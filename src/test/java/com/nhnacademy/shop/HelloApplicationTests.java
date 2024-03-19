@@ -1,4 +1,4 @@
-package com.nhnacademy.hello;
+package com.nhnacademy.shop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
