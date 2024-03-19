@@ -14,7 +14,7 @@ package com.nhnacademy.shop.web;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
-import com.nhnacademy.hello.actuator.ApplicationStatus;
+import com.nhnacademy.shop.actuator.ApplicationStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

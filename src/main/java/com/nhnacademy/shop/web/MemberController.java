@@ -12,8 +12,8 @@
 
 package com.nhnacademy.shop.web;
 
-import com.nhnacademy.auth.domain.Member;
-import com.nhnacademy.hello.adapter.MemberAdapter;
+import com.nhnacademy.shop.domain.Member;
+import com.nhnacademy.shop.adapter.MemberAdapter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

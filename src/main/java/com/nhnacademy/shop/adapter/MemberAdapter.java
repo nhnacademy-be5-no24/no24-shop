@@ -13,7 +13,7 @@
 package com.nhnacademy.shop.adapter;
 
 
-import com.nhnacademy.auth.domain.Member;
+import com.nhnacademy.shop.domain.Member;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
