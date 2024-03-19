@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/hello")
-public class HelloController {
+@RequestMapping("/shop")
+public class ShopController {
 
     @Autowired
     private  MemberAdapter memberAdapter;
@@ -37,8 +37,8 @@ public class HelloController {
 
 
     @GetMapping
-    public String getHello(){
-        return port + ":hello";
+    public String getShop(){
+        return port + ":shop";
     }
 
 
