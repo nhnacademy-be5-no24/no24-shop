@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.domain;
 
 
+import com.nhnacademy.shop.author.domain.Author;
 import lombok.*;
 
 import javax.persistence.*;

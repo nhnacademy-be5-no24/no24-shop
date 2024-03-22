@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.domain;
+package com.nhnacademy.shop.author.domain;
 
 
 import lombok.*;
