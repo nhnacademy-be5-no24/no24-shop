@@ -21,7 +21,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class BookAuthor {
     @EmbeddedId
-    private PK pk;
+    private Pk pk;
 
     @ManyToOne
     @JoinColumn(name = "book_isbn")
@@ -37,7 +37,7 @@ public class BookAuthor {
     @Getter
     @Setter
     @Embeddable
-    public static class PK implements Serializable {
+    public static class Pk implements Serializable {
         @Column(name = "book_isbn", insertable = false)
         private String bookIsbn;
         @Column(name = "author_id")
