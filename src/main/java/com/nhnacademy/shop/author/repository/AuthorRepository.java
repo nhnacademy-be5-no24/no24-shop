@@ -2,9 +2,9 @@ package com.nhnacademy.shop.author.repository;
 
 import com.nhnacademy.shop.author.domain.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @Author : 박동희

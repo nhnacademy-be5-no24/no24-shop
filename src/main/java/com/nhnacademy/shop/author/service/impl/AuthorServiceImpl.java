@@ -9,6 +9,7 @@ import com.nhnacademy.shop.author.repository.AuthorRepository;
 import com.nhnacademy.shop.author.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<AuthorResponseDto> getAuthorsByAuthorName(String authorName) {
          List<Author> authors = authorRepository.findAuthorsByAuthorName(authorName);
          List<AuthorResponseDto> dtos = new ArrayList<>();
@@ -34,22 +36,28 @@ public class AuthorServiceImpl implements AuthorService {
          return dtos;
     }
     @Override
+    @Transactional(readOnly = true)
     public Optional<Author> getAuthorById(Long authorId) {
         return authorRepository.findById(authorId);
     }
 
     @Override
+    @Transactional
     public AuthorResponseDto saveAuthor(AuthorRequestDto authorRequestDto) {
-        Author author = new Author();
-        author.setAuthorName(authorRequestDto.getAuthorName());
-        authorRepository.save(author);
+        Author author = new Author(null, authorRequestDto.getAuthorName());
+        Author createdAuthor = authorRepository.save(author);
+
+        if (createdAuthor == null){
+            throw new NotFoundAuthorException();
+        }
         AuthorResponseDto authorResponseDto = new AuthorResponseDto();
-        authorResponseDto.setAuthorId(author.getAuthorId());
-        authorResponseDto.setAuthorName(author.getAuthorName());
+        authorResponseDto.setAuthorId(createdAuthor.getAuthorId());
+        authorResponseDto.setAuthorName(createdAuthor.getAuthorName());
         return authorResponseDto;
     }
 
     @Override
+    @Transactional
     public AuthorResponseDto modifyAuthor(ModifyAuthorRequestDto modifyAuthorRequestDto) {
         Optional<Author> optionalAuthor = authorRepository.findById(modifyAuthorRequestDto.getAuthorId());
 
@@ -59,17 +67,21 @@ public class AuthorServiceImpl implements AuthorService {
 
         Author author = optionalAuthor.get();
         author.setAuthorName(modifyAuthorRequestDto.getAuthorName());
-        authorRepository.save(author);
+        Author updatedAuthor = authorRepository.save(author);
 
         AuthorResponseDto authorResponseDto = new AuthorResponseDto();
-        authorResponseDto.setAuthorId(author.getAuthorId());
-        authorResponseDto.setAuthorName(author.getAuthorName());
+        authorResponseDto.setAuthorId(updatedAuthor.getAuthorId());
+        authorResponseDto.setAuthorName(updatedAuthor.getAuthorName());
         return authorResponseDto;
     }
 
 
     @Override
+    @Transactional
     public void deleteAuthorById(Long authorId) {
+        if(authorRepository.findById(authorId).isEmpty()){
+            throw new NotFoundAuthorException();
+        }
         authorRepository.deleteById(authorId);
     }
 }

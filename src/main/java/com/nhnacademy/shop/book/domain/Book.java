@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Book {
     @Id
+    @Column(name = "book_isbn")
     private String bookIsbn;
 
     @Column(name = "book_title")

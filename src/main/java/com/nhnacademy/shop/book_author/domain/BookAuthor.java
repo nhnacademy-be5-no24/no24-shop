@@ -24,10 +24,12 @@ public class BookAuthor {
     @EmbeddedId
     private Pk pk;
 
+    @MapsId(value = "bookIsbn")
     @ManyToOne
     @JoinColumn(name = "book_isbn")
     private Book book;
 
+    @MapsId(value = "authorId")
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
@@ -39,7 +41,7 @@ public class BookAuthor {
     @Setter
     @Embeddable
     public static class Pk implements Serializable {
-        @Column(name = "book_isbn", insertable = false)
+        @Column(name = "book_isbn")
         private String bookIsbn;
         @Column(name = "author_id")
         private Long authorId;

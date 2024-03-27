@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 저자 controller 입니다.
@@ -21,15 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/shop")
 public class AuthorController {
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
     @GetMapping("/authors/{authorName}")
     public ResponseEntity<List<AuthorResponseDto>> getAuthorsByAuthorName(@PathVariable String authorName){
-        return ResponseEntity.status(HttpStatus.OK).body(authorService.getAuthorsByAuthorName(authorName));
+        List<AuthorResponseDto> authorResponseDtos = authorService.getAuthorsByAuthorName(authorName);
+        if(Objects.isNull(authorResponseDtos)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND" + authorName);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(authorResponseDtos);
     }
     @PostMapping("/authors")
     public ResponseEntity<AuthorResponseDto> saveAuthor(@RequestBody AuthorRequestDto authorRequestDto){
         AuthorResponseDto authorResponseDto = authorService.saveAuthor(authorRequestDto);
+        if(Objects.isNull(authorResponseDto)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(authorResponseDto);
     }
 
@@ -39,10 +48,13 @@ public class AuthorController {
             @RequestBody ModifyAuthorRequestDto modifyAuthorRequestDto
     ){
         AuthorResponseDto authorResponseDto = authorService.modifyAuthor(modifyAuthorRequestDto);
+        if (Objects.isNull(authorResponseDto)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND");
+        }
         return ResponseEntity.ok().body(authorResponseDto);
     }
 
-    @DeleteMapping("/{authorId}")
+    @DeleteMapping("/authors/{authorId}")
     public ResponseEntity<Void> deleteAuthorById(@PathVariable Long authorId) {
         authorService.deleteAuthorById(authorId);
         return ResponseEntity.noContent().build();
