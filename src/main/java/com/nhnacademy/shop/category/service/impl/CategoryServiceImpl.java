@@ -45,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void createCategory(CategoryRequestDto categoryRequestDto) {
+    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
         Category parentCategory = getParentCategory(categoryRequestDto.getParentCategoryId());
         if (Objects.nonNull(categoryRepository.findByCategoryName(categoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
@@ -53,11 +53,16 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         category.setCategoryName(categoryRequestDto.getCategoryName());
         category.setParentCategory(parentCategory);
-        categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+
+        if (Objects.nonNull(savedCategory.getParentCategory())) {
+            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), savedCategory.getParentCategory().getCategoryId());
+        }
+        return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), null);
     }
 
     @Override
-    public void modifyCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
+    public CategoryResponseDto modifyCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
         Category parentCategory = getParentCategory(modifyCategoryRequestDto.getParentCategoryId());
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
@@ -66,18 +71,25 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCategoryId(modifyCategoryRequestDto.getCategoryId());
         category.setCategoryName(modifyCategoryRequestDto.getCategoryName());
         category.setParentCategory(parentCategory);
-        categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+
+        if (Objects.nonNull(savedCategory.getParentCategory())) {
+            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), savedCategory.getParentCategory().getCategoryId());
+        }
+        return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), null);
     }
 
     @Override
-    public void modifyParentCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
+    public ParentCategoryResponseDto modifyParentCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
         }
         Category category = new Category();
         category.setCategoryId(modifyCategoryRequestDto.getCategoryId());
         category.setCategoryName(modifyCategoryRequestDto.getCategoryName());
-        categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+
+        return new ParentCategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName());
     }
 
     @Override
