@@ -78,9 +78,9 @@ public class CategoryController {
     @PostMapping("/categories")
     public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryRequestDto categoryRequestDto) {
         try {
-            categoryService.createCategory(categoryRequestDto);
+            CategoryResponseDto dto = categoryService.createCategory(categoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -89,9 +89,9 @@ public class CategoryController {
     @PutMapping("/categories")
     public ResponseEntity<CategoryResponseDto> modifyCategory(@RequestBody @Valid ModifyCategoryRequestDto modifyCategoryRequestDto) {
         try {
-            categoryService.modifyCategory(modifyCategoryRequestDto);
+            CategoryResponseDto dto = categoryService.modifyCategory(modifyCategoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -100,9 +100,9 @@ public class CategoryController {
     @PutMapping("/categories/parents")
     public ResponseEntity<ParentCategoryResponseDto> modifyParentCategory(@RequestBody @Valid ModifyCategoryRequestDto modifyCategoryRequestDto) {
         try {
-            categoryService.modifyParentCategory(modifyCategoryRequestDto);
+            ParentCategoryResponseDto dto = categoryService.modifyParentCategory(modifyCategoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }

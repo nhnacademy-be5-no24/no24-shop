@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.category.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.dto.request.CategoryRequestDto;
 import com.nhnacademy.shop.category.dto.request.ModifyCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
@@ -35,15 +36,19 @@ public class CategoryControllerTest {
     @MockBean
     private CategoryService categoryService;
     private ObjectMapper objectMapper = new ObjectMapper();
-
     CategoryRequestDto categoryRequestDto;
-
     ModifyCategoryRequestDto modifyCategoryRequestDto;
+    Category category;
+    CategoryResponseDto categoryResponseDto;
+    ParentCategoryResponseDto parentCategoryResponseDto;
 
     @BeforeEach
     void setUp() {
         categoryRequestDto = new CategoryRequestDto("로맨스", null);
         modifyCategoryRequestDto = new ModifyCategoryRequestDto(1L, "판타지", null);
+        category = new Category(1L, "판타지", null);
+        categoryResponseDto = new CategoryResponseDto(1L, "판타지", null);
+        parentCategoryResponseDto = new ParentCategoryResponseDto(1L, "판타지");
     }
 
     // TODO dto test 필요
@@ -51,7 +56,7 @@ public class CategoryControllerTest {
     void createCategoryTest_Success() {
         ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
         ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
-        doNothing().when(categoryService).createCategory(categoryRequestDto);
+        when(categoryService.createCategory(categoryRequestDto)).thenReturn(categoryResponseDto);
         try {
             mockMvc.perform(post("/shop/categories")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -230,7 +235,7 @@ public class CategoryControllerTest {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "parentCategoryId", null);
-        doNothing().when(categoryService).modifyParentCategory(modifyCategoryRequestDto);
+        when(categoryService.modifyParentCategory(modifyCategoryRequestDto)).thenReturn(parentCategoryResponseDto);
         try {
             mockMvc.perform(put("/shop/categories/parents")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -262,7 +267,7 @@ public class CategoryControllerTest {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "parentCategoryId", null);
-        doNothing().when(categoryService).modifyCategory(modifyCategoryRequestDto);
+        when(categoryService.modifyCategory(modifyCategoryRequestDto)).thenReturn(categoryResponseDto);
         try {
             mockMvc.perform(put("/shop/categories")
                             .contentType(MediaType.APPLICATION_JSON)

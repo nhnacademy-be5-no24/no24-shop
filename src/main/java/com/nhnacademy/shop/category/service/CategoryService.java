@@ -22,11 +22,11 @@ public interface CategoryService {
 
     CategoryResponseDto getCategoryByCategoryName(String categoryName);
 
-    void createCategory(CategoryRequestDto categoryRequestDto);
+    CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto);
 
-    void modifyCategory(ModifyCategoryRequestDto modifyCategoryRequestDto);
+    CategoryResponseDto modifyCategory(ModifyCategoryRequestDto modifyCategoryRequestDto);
 
-    void modifyParentCategory(ModifyCategoryRequestDto modifyCategoryRequestDto);
+    ParentCategoryResponseDto modifyParentCategory(ModifyCategoryRequestDto modifyCategoryRequestDto);
 
     void deleteCategory(Long categoryId);
 
