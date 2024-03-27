@@ -18,10 +18,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients
+//@EnableDiscoveryClient
+//@EnableFeignClients
 public class HelloApplication {
-
+    // TODO #1 Auth Server GET Admin member Path 정하기
     public static void main(String[] args) {
         SpringApplication.run(HelloApplication.class, args);
     }

@@ -12,8 +12,6 @@
 
 package com.nhnacademy.shop.web;
 
-import com.nhnacademy.shop.adapter.MemberAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/shop")
 public class ShopController {
 
-    @Autowired
-    private  MemberAdapter memberAdapter;
 
     @Value("${server.port}")
     private String port;
-
-
 
     @GetMapping
     public String getShop(){
