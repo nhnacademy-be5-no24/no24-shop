@@ -28,9 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
          List<Author> authors = authorRepository.findAuthorsByAuthorName(authorName);
          List<AuthorResponseDto> dtos = new ArrayList<>();
          for(Author author : authors){
-             AuthorResponseDto dto = new AuthorResponseDto();
-             dto.setAuthorId(author.getAuthorId());
-             dto.setAuthorName(author.getAuthorName());
+             AuthorResponseDto dto = new AuthorResponseDto(author.getAuthorId(), author.getAuthorName());
              dtos.add(dto);
          }
          return dtos;
@@ -46,10 +44,6 @@ public class AuthorServiceImpl implements AuthorService {
     public AuthorResponseDto saveAuthor(AuthorRequestDto authorRequestDto) {
         Author author = new Author(null, authorRequestDto.getAuthorName());
         Author createdAuthor = authorRepository.save(author);
-
-        if (createdAuthor == null){
-            throw new NotFoundAuthorException();
-        }
         AuthorResponseDto authorResponseDto = new AuthorResponseDto();
         authorResponseDto.setAuthorId(createdAuthor.getAuthorId());
         authorResponseDto.setAuthorName(createdAuthor.getAuthorName());
@@ -65,8 +59,7 @@ public class AuthorServiceImpl implements AuthorService {
             throw new NotFoundAuthorException();
         }
 
-        Author author = optionalAuthor.get();
-        author.setAuthorName(modifyAuthorRequestDto.getAuthorName());
+        Author author = new Author(optionalAuthor.get().getAuthorId(), optionalAuthor.get().getAuthorName());
         Author updatedAuthor = authorRepository.save(author);
 
         AuthorResponseDto authorResponseDto = new AuthorResponseDto();

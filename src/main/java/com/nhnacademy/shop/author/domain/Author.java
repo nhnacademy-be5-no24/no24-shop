@@ -11,7 +11,6 @@ import javax.persistence.*;
  */
 @Entity
 @Getter
-@Setter
 @EqualsAndHashCode
 @Builder
 @NoArgsConstructor

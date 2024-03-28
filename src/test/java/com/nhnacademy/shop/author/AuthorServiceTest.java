@@ -29,7 +29,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 @Transactional
 @WebAppConfiguration
 class AuthorServiceTest {
@@ -86,9 +85,7 @@ class AuthorServiceTest {
     void testSaveAuthor(){
         String authorName = "박동희";
 
-        Author author = new Author();
-        author.setAuthorId(1L);
-        author.setAuthorName(authorName);
+        Author author = new Author(1L, authorName);
         when(authorRepository.save(any())).thenReturn(author);
 
         AuthorRequestDto authorRequestDto = new AuthorRequestDto();
@@ -100,17 +97,6 @@ class AuthorServiceTest {
         assertEquals(author.getAuthorName(), authorResponseDto.getAuthorName());
     }
     @Test
-    void testSaveAuthor_WhenAuthorNotFound(){
-        String authorName = "박동희";
-        when(authorRepository.save(any())).thenReturn(null);
-        AuthorRequestDto authorRequestDto = new AuthorRequestDto();
-        authorRequestDto.setAuthorName(authorName);
-        assertThrows(NotFoundAuthorException.class, () -> {
-            authorService.saveAuthor(authorRequestDto);
-        });
-    }
-
-    @Test
     void testModifyAuthor(){
         Long authorId = 1L;
         ModifyAuthorRequestDto modifyAuthorRequestDto = new ModifyAuthorRequestDto();
@@ -118,9 +104,7 @@ class AuthorServiceTest {
         modifyAuthorRequestDto.setAuthorName("바꿀 이름");
 
 
-        Author existingAuthor = new Author();
-        existingAuthor.setAuthorId(authorId);
-        existingAuthor.setAuthorName("원래 이름");
+        Author existingAuthor = new Author(authorId, "원래 이름");
         when(authorRepository.findById(authorId)).thenReturn(Optional.of(existingAuthor));
         when(authorRepository.save(any())).thenReturn(new Author(1L, "바꿀 이름"));
         AuthorResponseDto authorResponseDto = authorService.modifyAuthor(modifyAuthorRequestDto);

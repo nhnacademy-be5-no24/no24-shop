@@ -29,7 +29,7 @@ public class AuthorController {
     public ResponseEntity<List<AuthorResponseDto>> getAuthorsByAuthorName(@PathVariable String authorName){
         List<AuthorResponseDto> authorResponseDtos = authorService.getAuthorsByAuthorName(authorName);
         if(Objects.isNull(authorResponseDtos)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND" + authorName);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "GET : AUTHOR NOT FOUND" + authorName);
         }
         return ResponseEntity.status(HttpStatus.OK).body(authorResponseDtos);
     }
@@ -37,7 +37,7 @@ public class AuthorController {
     public ResponseEntity<AuthorResponseDto> saveAuthor(@RequestBody AuthorRequestDto authorRequestDto){
         AuthorResponseDto authorResponseDto = authorService.saveAuthor(authorRequestDto);
         if(Objects.isNull(authorResponseDto)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "POST : AUTHOR NOT FOUND");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(authorResponseDto);
     }
@@ -49,7 +49,7 @@ public class AuthorController {
     ){
         AuthorResponseDto authorResponseDto = authorService.modifyAuthor(modifyAuthorRequestDto);
         if (Objects.isNull(authorResponseDto)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AUTHOR NOT FOUND");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PUT : AUTHOR NOT FOUND");
         }
         return ResponseEntity.ok().body(authorResponseDto);
     }
