@@ -30,19 +30,22 @@ public class CategoryRepositoryTest {
     void testGetParentCategories() {
         categoryRepository.deleteAll();
 
-        Category category = new Category();
-        category.setCategoryName("Hello");
+        Category category = Category.builder()
+                .categoryName("Hello")
+                .build();
 
         categoryRepository.save(category);
 
-        Category category1 = new Category();
-        category1.setCategoryName("World");
+        Category category1 = Category.builder()
+                .categoryName("World")
+                .build();;
 
         categoryRepository.save(category1);
 
-        Category category2 = new Category();
-        category2.setCategoryName("Bye");
-        category2.setParentCategory(category);
+        Category category2 = Category.builder()
+                .categoryName("Bye")
+                .parentCategory(category)
+                .build();;
 
         categoryRepository.save(category2);
 
@@ -52,19 +55,22 @@ public class CategoryRepositoryTest {
     @Test
     void testGetParentCategoriesWithChildCategories() {
 
-        Category category = new Category();
-        category.setCategoryName("Hello");
+        Category category = Category.builder()
+                .categoryName("Hello")
+                .build();
 
         categoryRepository.save(category);
 
-        Category category1 = new Category();
-        category1.setCategoryName("World");
+        Category category1 = Category.builder()
+                .categoryName("World")
+                .build();;
 
         categoryRepository.save(category1);
 
-        Category category2 = new Category();
-        category2.setCategoryName("Bye");
-        category2.setParentCategory(category);
+        Category category2 = Category.builder()
+                .categoryName("Bye")
+                .parentCategory(category)
+                .build();;
 
         categoryRepository.save(category2);
 
@@ -75,19 +81,22 @@ public class CategoryRepositoryTest {
     void testgetParentCategory() {
         categoryRepository.deleteAll();
 
-        Category category = new Category();
-        category.setCategoryName("Hello");
+        Category category = Category.builder()
+                .categoryName("Hello")
+                .build();
 
         categoryRepository.save(category);
 
-        Category category1 = new Category();
-        category1.setCategoryName("World");
+        Category category1 = Category.builder()
+                .categoryName("World")
+                .build();;
 
         categoryRepository.save(category1);
 
-        Category category2 = new Category();
-        category2.setCategoryName("Bye");
-        category2.setParentCategory(category);
+        Category category2 = Category.builder()
+                .categoryName("Bye")
+                .parentCategory(category)
+                .build();;
 
         categoryRepository.save(category2);
 

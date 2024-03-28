@@ -50,9 +50,10 @@ public class CategoryServiceImpl implements CategoryService {
         if (Objects.nonNull(categoryRepository.findByCategoryName(categoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
         }
-        Category category = new Category();
-        category.setCategoryName(categoryRequestDto.getCategoryName());
-        category.setParentCategory(parentCategory);
+        Category category = Category.builder()
+                .categoryName(categoryRequestDto.getCategoryName())
+                .parentCategory(parentCategory)
+                .build();
         Category savedCategory = categoryRepository.save(category);
 
         if (Objects.nonNull(savedCategory.getParentCategory())) {
@@ -67,10 +68,11 @@ public class CategoryServiceImpl implements CategoryService {
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
         }
-        Category category = new Category();
-        category.setCategoryId(modifyCategoryRequestDto.getCategoryId());
-        category.setCategoryName(modifyCategoryRequestDto.getCategoryName());
-        category.setParentCategory(parentCategory);
+        Category category = Category.builder()
+                .categoryId(modifyCategoryRequestDto.getCategoryId())
+                .categoryName(modifyCategoryRequestDto.getCategoryName())
+                .parentCategory(parentCategory)
+                .build();
         Category savedCategory = categoryRepository.save(category);
 
         if (Objects.nonNull(savedCategory.getParentCategory())) {
@@ -84,9 +86,10 @@ public class CategoryServiceImpl implements CategoryService {
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
         }
-        Category category = new Category();
-        category.setCategoryId(modifyCategoryRequestDto.getCategoryId());
-        category.setCategoryName(modifyCategoryRequestDto.getCategoryName());
+        Category category = Category.builder()
+                .categoryId(modifyCategoryRequestDto.getCategoryId())
+                .categoryName(modifyCategoryRequestDto.getCategoryName())
+                .build();
         Category savedCategory = categoryRepository.save(category);
 
         return new ParentCategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName());
