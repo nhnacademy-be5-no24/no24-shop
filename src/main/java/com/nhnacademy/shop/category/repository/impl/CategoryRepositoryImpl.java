@@ -2,14 +2,11 @@ package com.nhnacademy.shop.category.repository.impl;
 
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.domain.QCategory;
-import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ChildCategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.repository.CategoryRepositoryCustom;
 import com.querydsl.core.types.Projections;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
