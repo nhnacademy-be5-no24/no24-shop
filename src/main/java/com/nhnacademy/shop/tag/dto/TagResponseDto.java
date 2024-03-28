@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetTagResponseDto {
+public class TagResponseDto {
     private Long tagId;
     private String tagName;
 
-    public GetTagResponseDto(Tag tag) {
+    public TagResponseDto(Tag tag) {
         this.tagId = tag.getTagId();
         this.tagName = tag.getTagName();
     }
