@@ -18,11 +18,12 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-//@EnableDiscoveryClient
-//@EnableFeignClients
-public class HelloApplication {
+@EnableDiscoveryClient
+@EnableFeignClients
+public class ShopApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(HelloApplication.class, args);
+        SpringApplication.run(ShopApplication.class, args);
     }
 
 }
