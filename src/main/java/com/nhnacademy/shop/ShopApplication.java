@@ -15,11 +15,12 @@ package com.nhnacademy.shop;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
-public class HelloApplication {
+@EnableDiscoveryClient
+@EnableFeignClients
+public class ShopApplication {
     public static void main(String[] args) {
-        SpringApplication.run(HelloApplication.class, args);
+        SpringApplication.run(ShopApplication.class, args);
     }
 
 }
