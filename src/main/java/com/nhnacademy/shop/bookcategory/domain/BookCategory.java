@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-// TODO BookCategory Repository만 유지 나머지는 삭제(?)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter

@@ -3,32 +3,41 @@ package com.nhnacademy.shop.category.repository.impl;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.domain.QCategory;
 import com.nhnacademy.shop.category.dto.response.ChildCategoryResponseDto;
-import com.nhnacademy.shop.category.dto.response.ParentCategoryInfoResponseDto;
+import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.repository.CategoryRepositoryCustom;
 import com.querydsl.core.types.Projections;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
-
+/**
+ * 카테고리 Custom Repository 구현체 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-03-29
+ **/
 public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements CategoryRepositoryCustom{
     public CategoryRepositoryImpl() {
         super(Category.class);
     }
 
     QCategory parentCategory = new QCategory("parentCategory");
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<ParentCategoryInfoResponseDto> getParentCategories() {
+    public List<CategoryInfoResponseDto> getCategoriesInfo() {
         return from(parentCategory)
-                .where(parentCategory.parentCategory.isNull())
-                .select(Projections.constructor(ParentCategoryInfoResponseDto.class,
+                .select(Projections.constructor(CategoryInfoResponseDto.class,
                         parentCategory.categoryId,
                         parentCategory.categoryName))
                 .orderBy(parentCategory.categoryName.asc())
+                .distinct()
                 .fetch();
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ParentCategoryResponseDto> getParentCategoriesWithChildCategories() {
         List<ParentCategoryResponseDto> parentList = from(parentCategory)
@@ -53,7 +62,9 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
         });
         return parentList;
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParentCategoryResponseDto getParentCategory(Long categoryId) {
         ParentCategoryResponseDto parentDto = from(parentCategory)
