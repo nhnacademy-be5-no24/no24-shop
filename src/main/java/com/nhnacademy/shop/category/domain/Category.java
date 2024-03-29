@@ -5,6 +5,12 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 
+/**
+ * 카테고리(Category) 테이블.
+ *
+ * @author : 강병구
+ * @date : 2024-03-29
+ **/
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Builder
@@ -20,10 +26,8 @@ public class Category {
     @Length(min = 1, max = 20)
     private String categoryName;
 
-
-    // TODO #5 Fetch Type LAZY or EAGER ??
     @JoinColumn(name = "parent_category_id", referencedColumnName = "category_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category parentCategory;
 
 }

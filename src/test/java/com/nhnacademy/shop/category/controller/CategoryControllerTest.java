@@ -2,14 +2,16 @@ package com.nhnacademy.shop.category.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.category.dto.request.CategoryRequestDto;
+import com.nhnacademy.shop.category.dto.request.CreateCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.request.ModifyCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
-import com.nhnacademy.shop.category.dto.response.ParentCategoryInfoResponseDto;
+import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.shop.category.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -27,6 +29,12 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Category RestController 테스트 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-03-29
+ **/
 @WebMvcTest(CategoryController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs(outputDir = "target/snippets")
@@ -36,7 +44,7 @@ public class CategoryControllerTest {
     @MockBean
     private CategoryService categoryService;
     private ObjectMapper objectMapper = new ObjectMapper();
-    CategoryRequestDto categoryRequestDto;
+    CreateCategoryRequestDto createCategoryRequestDto;
     ModifyCategoryRequestDto modifyCategoryRequestDto;
     Category category;
     CategoryResponseDto categoryResponseDto;
@@ -44,23 +52,24 @@ public class CategoryControllerTest {
 
     @BeforeEach
     void setUp() {
-        categoryRequestDto = new CategoryRequestDto("로맨스", null);
+        createCategoryRequestDto = new CreateCategoryRequestDto("로맨스", null);
         modifyCategoryRequestDto = new ModifyCategoryRequestDto(1L, "판타지", null);
         category = new Category(1L, "판타지", null);
         categoryResponseDto = new CategoryResponseDto(1L, "판타지", null);
         parentCategoryResponseDto = new ParentCategoryResponseDto(1L, "판타지");
     }
 
-    // TODO dto test 필요
     @Test
+    @Order(1)
+    @DisplayName(value = "카테고리 생성 시 성공")
     void createCategoryTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
-        when(categoryService.createCategory(categoryRequestDto)).thenReturn(categoryResponseDto);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
+        when(categoryService.createCategory(createCategoryRequestDto)).thenReturn(categoryResponseDto);
         try {
             mockMvc.perform(post("/shop/categories")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(categoryRequestDto)))
+                    .content(objectMapper.writeValueAsString(createCategoryRequestDto)))
                     .andExpect(status().isCreated());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -68,14 +77,16 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(2)
+    @DisplayName(value = "카테고리 생성 시 이름 중복으로 인한 CONFLICT 반환")
     void createCategoryTest_Conflict() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
-        doThrow(CategoryAlreadyExistsException.class).when(categoryService).createCategory(categoryRequestDto);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
+        doThrow(CategoryAlreadyExistsException.class).when(categoryService).createCategory(createCategoryRequestDto);
         try {
             mockMvc.perform(post("/shop/categories")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(categoryRequestDto)))
+                            .content(objectMapper.writeValueAsString(createCategoryRequestDto)))
                     .andExpect(status().isConflict());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -83,9 +94,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(3)
+    @DisplayName(value = "카테고리 단건 조회 성공 (카테고리 아이디)")
     void getCategoryTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
         when(categoryService.getCategory(anyLong())).thenReturn(new CategoryResponseDto());
         try {
             mockMvc.perform(get("/shop/categories/1")
@@ -97,9 +110,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(4)
+    @DisplayName(value = "카테고리 단건 조회 실패 (카테고리 아이디) - Not Found")
     void getCategoryTest_NotFound() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
         when(categoryService.getCategory(anyLong())).thenReturn(null);
         try {
             mockMvc.perform(get("/shop/categories/1")
@@ -111,9 +126,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(5)
+    @DisplayName(value = "카테고리 단건 조회 성공 (카테고리 이름)")
     void getCategoryByNameTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
         when(categoryService.getCategoryByCategoryName(anyString())).thenReturn(new CategoryResponseDto());
         try {
             mockMvc.perform(get("/shop/categories/name/hello")
@@ -125,9 +142,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(6)
+    @DisplayName(value = "카테고리 단건 조회 실패 (카테고리 이름) - Not Found")
     void getCategoryByNameTest_NotFound() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
         when(categoryService.getCategoryByCategoryName(anyString())).thenReturn(null);
         try {
             mockMvc.perform(get("/shop/categories/name/hello")
@@ -139,9 +158,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(7)
+    @DisplayName(value = "상위 카테고리 및 해당 하위 카테고리 목록 조회 성공")
     void getCategoriesTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
         List<ParentCategoryResponseDto> dtoList = new ArrayList<>();
         when(categoryService.getParentWithChildCategories()).thenReturn(dtoList);
@@ -155,9 +176,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(8)
+    @DisplayName(value = "상위 카테고리 및 해당 하위 카테고리 목록 조회 실패 - Not Found")
     void getCategoriesTest_NotFound() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
         when(categoryService.getParentWithChildCategories()).thenReturn(null);
         try {
@@ -170,12 +193,14 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(9)
+    @DisplayName(value = "상위 카테고리 목록 조회 성공")
     void getParentCategoriesTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
-        List<ParentCategoryInfoResponseDto> dtoList = new ArrayList<>();
-        when(categoryService.getParentCategories()).thenReturn(dtoList);
+        List<CategoryInfoResponseDto> dtoList = new ArrayList<>();
+        when(categoryService.getCategoriesInfo()).thenReturn(dtoList);
         try {
             mockMvc.perform(get("/shop/categories/parents")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -186,11 +211,13 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(10)
+    @DisplayName(value = "상위 카테고리 목록 조회 실패 - Not Found")
     void getParentCategoriesTest_NotFound() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
-        when(categoryService.getParentCategories()).thenReturn(null);
+        when(categoryService.getCategoriesInfo()).thenReturn(null);
         try {
             mockMvc.perform(get("/shop/categories/parents")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -201,9 +228,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(11)
+    @DisplayName(value = "상위 카테고리 및 해당 하위 카테고리 단건 조회 성공")
     void getParentWithChildCategoryTest_Success() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
         when(categoryService.getParentWithChildCategoryByParentCategoryId(anyLong())).thenReturn(new ParentCategoryResponseDto());
         try {
@@ -216,9 +245,11 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(12)
+    @DisplayName(value = "상위 카테고리 및 해당 하위 카테고리 단건 조회 실패 - Not Found")
     void getParentWithChildCategoryTest_NotFound() {
-        ReflectionTestUtils.setField(categoryRequestDto, "categoryName", "hello");
-        ReflectionTestUtils.setField(categoryRequestDto, "parentCategoryId", null);
+        ReflectionTestUtils.setField(createCategoryRequestDto, "categoryName", "hello");
+        ReflectionTestUtils.setField(createCategoryRequestDto, "parentCategoryId", null);
 
         when(categoryService.getParentWithChildCategoryByParentCategoryId(anyLong())).thenReturn(null);
         try {
@@ -231,6 +262,8 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(13)
+    @DisplayName(value = "상위 카테고리 수정 성공")
     void modifyParentCategoryTest_Success() {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
@@ -247,6 +280,8 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(14)
+    @DisplayName(value = "상위 카테고리 중복 이름으로 인한 수정 실패 - Conflict")
     void modifyParentCategoryTest_Conflict() {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
@@ -263,6 +298,8 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(15)
+    @DisplayName(value = "하위 카테고리 수정 성공")
     void modifyCategoryTest_Success() {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
@@ -279,6 +316,8 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @Order(16)
+    @DisplayName(value = "하위 카테고리 이름 중복으로 인한 수정 실패")
     void modifyCategoryTest_Conflict() {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");
@@ -296,6 +335,8 @@ public class CategoryControllerTest {
 
 
     @Test
+    @Order(17)
+    @DisplayName(value = "카테고리 삭제 성공")
     void deleteCategoryTest_Success() {
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryId", 1L);
         ReflectionTestUtils.setField(modifyCategoryRequestDto, "categoryName", "hello");

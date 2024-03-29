@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.member.entity;
+package com.nhnacademy.shop.member.domain;
 
 import com.nhnacademy.shop.customer.entity.Customer;
 import lombok.AllArgsConstructor;
@@ -19,9 +19,8 @@ import java.time.LocalDateTime;
 @Table(name = "member")
 public class Member implements Serializable {
     @Id
-    @OneToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @Column(name = "customer_id")
+    private Long customerId;
 
     @Column(name = "member_id", nullable = false)
     @Length(min = 20)

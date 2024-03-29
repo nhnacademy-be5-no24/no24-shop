@@ -7,7 +7,12 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
+/**
+ * 카테고리 수정을 위한 dto 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-03-29
+ **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

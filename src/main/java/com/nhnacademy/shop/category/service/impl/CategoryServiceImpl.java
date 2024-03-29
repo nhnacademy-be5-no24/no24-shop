@@ -1,10 +1,10 @@
 package com.nhnacademy.shop.category.service.impl;
 
 import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.category.dto.request.CategoryRequestDto;
+import com.nhnacademy.shop.category.dto.request.CreateCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.request.ModifyCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
-import com.nhnacademy.shop.category.dto.response.ParentCategoryInfoResponseDto;
+import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.shop.category.exception.CategoryNotFoundException;
@@ -45,13 +45,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
-        Category parentCategory = getParentCategory(categoryRequestDto.getParentCategoryId());
-        if (Objects.nonNull(categoryRepository.findByCategoryName(categoryRequestDto.getCategoryName()))) {
+    public CategoryResponseDto createCategory(CreateCategoryRequestDto createCategoryRequestDto) {
+        Category parentCategory = getParentCategory(createCategoryRequestDto.getParentCategoryId());
+        if (Objects.nonNull(categoryRepository.findByCategoryName(createCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
         }
         Category category = Category.builder()
-                .categoryName(categoryRequestDto.getCategoryName())
+                .categoryName(createCategoryRequestDto.getCategoryName())
                 .parentCategory(parentCategory)
                 .build();
         Category savedCategory = categoryRepository.save(category);
@@ -110,12 +110,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<ParentCategoryInfoResponseDto> getParentCategories() {
-        List<ParentCategoryInfoResponseDto> parentCategoryInfoResponseDtoList = categoryRepository.getParentCategories();
-        if(Objects.isNull(parentCategoryInfoResponseDtoList)) {
+    public List<CategoryInfoResponseDto> getCategoriesInfo() {
+        List<CategoryInfoResponseDto> categoryInfoResponseDtoList = categoryRepository.getCategoriesInfo();
+        if(Objects.isNull(categoryInfoResponseDtoList)) {
             throw new CategoryNotFoundException();
         }
-        return parentCategoryInfoResponseDtoList;
+        return categoryInfoResponseDtoList;
     }
 
     @Override
