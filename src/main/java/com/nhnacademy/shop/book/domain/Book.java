@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.*;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Getter
 @Entity
 @Table(name = "book")
@@ -29,7 +31,7 @@ public class Book {
 
     @Column(name = "book_publisher")
     private String bookPublisher;
-    
+
     @Column(name = "book_publish_at")
     private LocalDate bookPublishAt;
 
@@ -44,6 +46,7 @@ public class Book {
 
     @Column(name = "book_views")
     private Long bookViews;
+
     @Column(name = "book_status")
     private Integer bookStatus;
 
