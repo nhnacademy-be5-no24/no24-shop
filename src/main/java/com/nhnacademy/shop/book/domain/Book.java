@@ -1,34 +1,35 @@
 package com.nhnacademy.shop.book.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.*;
-
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 
-@Entity
-@Getter
-@Setter
-@EqualsAndHashCode
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Entity
+@Table(name = "book")
 public class Book {
     @Id
     @Column(name = "book_isbn")
     private String bookIsbn;
 
     @Column(name = "book_title")
-    private String bookTittle;
+    private String bookTitle;
 
     @Column(name = "book_desc")
     private String bookDesc;
 
     @Column(name = "book_publisher")
     private String bookPublisher;
-
+    
     @Column(name = "book_publish_at")
     private LocalDate bookPublishAt;
 
@@ -43,14 +44,6 @@ public class Book {
 
     @Column(name = "book_views")
     private Long bookViews;
-
-    /*
-    book status
-    0 : 판매중
-    1 : 수량부족
-    2 : 판매종료
-    3 : 삭제된 도서
-     */
     @Column(name = "book_status")
     private Integer bookStatus;
 
@@ -59,5 +52,4 @@ public class Book {
 
     @Column(name = "book_image")
     private String bookImage;
-
 }
