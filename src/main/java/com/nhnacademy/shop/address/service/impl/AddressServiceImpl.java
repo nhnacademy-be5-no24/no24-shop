@@ -1,6 +1,8 @@
 package com.nhnacademy.shop.address.service.impl;
 
 import com.nhnacademy.shop.address.domain.Address;
+import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
+import com.nhnacademy.shop.address.dto.request.AddressRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
@@ -27,5 +29,12 @@ public class AddressServiceImpl implements AddressService {
     public List<AddressResponseDto> getAddresses(Long customerNo) {
         List<Address> addresses = addressRepository.findByCustomerNo(customerNo);
         return AddressMapper.addressToAddressResponseDtoList(addresses);
+    }
+
+    // 주소 삭제
+    @Override
+    @Transactional
+    public void deleteAddress(Long addressId) {
+        addressRepository.deleteById(addressId);
     }
 }

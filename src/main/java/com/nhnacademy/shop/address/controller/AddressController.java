@@ -2,10 +2,9 @@ package com.nhnacademy.shop.address.controller;
 
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +35,10 @@ public class AddressController {
     // 주소 수정
 
     // 주소 삭제
-
+    @DeleteMapping("/address/{addressId}")
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
+        addressService.deleteAddress(addressId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 }

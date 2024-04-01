@@ -13,4 +13,7 @@ import java.util.List;
 public interface AddressService {
     // 주소 조회
     List<AddressResponseDto> getAddresses(Long customerNo);
+
+    // 주소 삭제
+    void deleteAddress(Long addressId);
 }
