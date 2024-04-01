@@ -1,7 +1,5 @@
 package com.nhnacademy.shop.address.service;
 
-import com.nhnacademy.shop.address.dto.request.AddressDeleteRequestDto;
-import com.nhnacademy.shop.address.dto.request.AddressRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 
 import java.util.List;
