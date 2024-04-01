@@ -1,0 +1,158 @@
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "IT"
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "html/css",
+  "parentCategoryId": 1
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "java",
+  "parentCategoryId": 1
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "C++",
+  "parentCategoryId": 1
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "Tool"
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "Saw",
+  "parentCategoryId": 10
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "ScrewDriver",
+  "parentCategoryId": 10
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "Hammer",
+  "parentCategoryId": 10
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "English",
+  "parentCategoryId": 5
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "Korean",
+  "parentCategoryId": 5
+}
+
+###
+
+POST http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryName": "French",
+  "parentCategoryId": 5
+}
+
+###
+
+DELETE http://localhost:8081/shop/categories/9
+Content-Type: application/json
+X-USER-ID: 1
+
+###
+
+GET http://localhost:8081/shop/categories
+Content-Type: application/json
+
+###
+
+GET http://localhost:8081/shop/categories/parents
+Content-Type: application/json
+
+###
+
+GET http://localhost:8081/shop/categories/12
+Content-Type: application/json
+
+###
+
+GET http://localhost:8081/shop/categories/name/english
+Content-Type: application/json
+
+###
+
+GET http://localhost:8081/shop/categories/parents/1
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8081/shop/categories
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "categoryId": 1,
+  "categoryName": "IT/Language"
+}
