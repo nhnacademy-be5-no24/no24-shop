@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.categorycoupon.entity;
+package com.nhnacademy.shop.coupon.entity;
 
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import lombok.*;
