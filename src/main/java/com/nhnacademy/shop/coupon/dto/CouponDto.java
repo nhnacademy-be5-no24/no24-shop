@@ -1,9 +1,10 @@
-package com.nhnacademy.shop.coupon.dto.response;
+package com.nhnacademy.shop.coupon.dto;
 
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 설명
@@ -14,18 +15,21 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public abstract class ResponseCouponDto {
+public class CouponDto {
 
     private Long couponId;
-
     private String couponName;
-
-    private LocalDateTime deadline;
-
-    private Long couponStatus;
-
+    private Date deadline;
+    private Coupon.Status couponStatus;
     private Coupon.CouponType couponType;
-
     private Coupon.CouponTarget couponTarget;
+
+    // for target
+    private String bookIsbn;
+    private Long categoryId;
+
+    // for coupon type
+    private Long discountPrice;
+    private Long discountRate;
+    private Long maxDiscountPrice;
 }
