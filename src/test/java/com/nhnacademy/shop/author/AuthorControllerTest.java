@@ -5,22 +5,26 @@ import com.nhnacademy.shop.author.controller.AuthorController;
 import com.nhnacademy.shop.author.dto.AuthorRequestDto;
 import com.nhnacademy.shop.author.dto.AuthorResponseDto;
 import com.nhnacademy.shop.author.dto.ModifyAuthorRequestDto;
+import com.nhnacademy.shop.author.exception.NotFoundAuthorException;
 import com.nhnacademy.shop.author.service.AuthorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -50,18 +54,27 @@ class AuthorControllerTest {
 
     @Test
     void testGetAuthorsByAuthorName() throws Exception {
+        List<AuthorResponseDto> authors = Collections.singletonList(new AuthorResponseDto());
+        when(authorService.getAuthorsByAuthorName("Test", 0, 10))
+                .thenReturn(new PageImpl<>(authors, PageRequest.of(0, 10), authors.size()));
 
-        when(authorService.getAuthorsByAuthorName("Test")).thenReturn(Collections.singletonList(new AuthorResponseDto()));
         mockMvc.perform(MockMvcRequestBuilders.get("/shop/authors/Test"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
     @Test
     void testGetAuthorsByNonExistentAuthorName() throws Exception {
-        when(authorService.getAuthorsByAuthorName("NonExistent")).thenReturn(null);
-        mockMvc.perform(MockMvcRequestBuilders.get("/shop/authors/NonExistent"))
-                .andExpect(status().isNotFound());
+        String authorName = "NonExistentAuthor";
+        int page = 0;
+        int size = 10;
+        when(authorService.getAuthorsByAuthorName(authorName, page, size))
+                .thenThrow(new NotFoundAuthorException());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/{authorName}", authorName)
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
     @Test
     void testSaveAuthor() throws Exception {
@@ -72,8 +85,8 @@ class AuthorControllerTest {
                         .content(objectMapper.writeValueAsString(authorRequestDto)))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorId").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorName").value("test authorName"));
+                .andExpect(jsonPath("$.authorId").value(1))
+                .andExpect(jsonPath("$.authorName").value("test authorName"));
     }
 
     @Test
@@ -89,8 +102,8 @@ class AuthorControllerTest {
                         .content(objectMapper.writeValueAsString(modifyAuthorRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorId").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorName").value("test authorName"));
+                .andExpect(jsonPath("$.authorId").value(1))
+                .andExpect(jsonPath("$.authorName").value("test authorName"));
     }
 
     @Test
