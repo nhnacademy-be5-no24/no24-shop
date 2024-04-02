@@ -1,15 +1,16 @@
 package com.nhnacademy.shop.address.service.impl;
 
 import com.nhnacademy.shop.address.domain.Address;
-import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
-import com.nhnacademy.shop.address.dto.request.AddressRequestDto;
+import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -29,6 +30,32 @@ public class AddressServiceImpl implements AddressService {
     public List<AddressResponseDto> getAddresses(Long customerNo) {
         List<Address> addresses = addressRepository.findByCustomerNo(customerNo);
         return AddressMapper.addressToAddressResponseDtoList(addresses);
+    }
+
+    // 주소 등록
+
+    // 주소 수정
+    @Override
+    @Transactional
+    public AddressResponseDto modifyAddress(Long addressId, AddressModifyRequestDto addressModifyRequestDto) {
+        Address originAddress = addressRepository.findById(addressId)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        Address updatedAddress = Address.builder()
+                .addressId(originAddress.getAddressId())
+                .alias(addressModifyRequestDto.getAlias())
+                .receiverName(addressModifyRequestDto.getReceiverName())
+                .receiverPhoneNumber(addressModifyRequestDto.getReceiverPhoneNumber())
+                .zipcode(addressModifyRequestDto.getZipcode())
+                .address(addressModifyRequestDto.getAddress())
+                .addressDetail(addressModifyRequestDto.getAddressDetail())
+                .isDefault(addressModifyRequestDto.getIsDefault())
+                .customerNo(originAddress.getCustomerNo())
+                .build();
+
+        addressRepository.save(updatedAddress);
+
+        return AddressMapper.addressToAddressResponseDto(updatedAddress);
     }
 
     // 주소 삭제

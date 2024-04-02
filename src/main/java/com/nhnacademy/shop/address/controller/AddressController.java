@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.address.controller;
 
+import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,10 @@ public class AddressController {
     // 주소 등록
 
     // 주소 수정
+    @PutMapping("/address/{addressId}")
+    public AddressResponseDto modifyAddress(@PathVariable Long addressId, @RequestBody AddressModifyRequestDto addressModifyRequestDto) {
+        return addressService.modifyAddress(addressId, addressModifyRequestDto);
+    }
 
     // 주소 삭제
     @DeleteMapping("/address/{addressId}")

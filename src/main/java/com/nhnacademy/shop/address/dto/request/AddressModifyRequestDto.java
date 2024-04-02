@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.address.dto;
+package com.nhnacademy.shop.address.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AddressRequestDto {
-    @JsonProperty("customer_no")
-    private Long customerNo;
-
     private String alias;
 
     @JsonProperty("receiver_name")
