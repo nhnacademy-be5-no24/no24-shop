@@ -7,9 +7,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.auth.user.domain.Member;
-import com.nhnacademy.auth.user.dto.MemberCreateDto;
-import com.nhnacademy.auth.user.repository.MemberRepository;
+import com.nhnacademy.shop.member.domain.Member;
+import com.nhnacademy.shop.member.dto.MemberDto;
+import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.book.domain.Book;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
 import com.nhnacademy.shop.book.repository.BookRepository;
@@ -69,15 +69,14 @@ public class LikeServiceImpl implements LikeService{
      */
     @Override
     @Transactional
-    public List<MemberCreateDto> getLikeByIsbn(String bookIsbn) {
+    public List<MemberDto> getLikeByIsbn(String bookIsbn) {
         Book book = bookRepository.findByBookIsbn(bookIsbn);
-        List<MemberCreateDto> response = new ArrayList<>();
+        List<MemberDto> response = new ArrayList<>();
         List<Like> likes = likeRepository.findByBook(book);
 
         for(Like like : likes){
             Member member = like.getMember();
-            response.add(new MemberCreateDto(member.getMemberId(), member.getCustomer().getCustomerPassword(), member.getCustomer().getCustomerName(), member.getCustomer().getCustomerPhoneNumber(),
-            member.getCustomer().getCustomerEmail(), member.getCustomer().getCustomerBirthday(), member.getGrade().getGradeId()));
+            response.add(new MemberDto(null, member.getMemberId(), member.getLastLoginAt(), member.getGradeId(), member.getIsActive(), member.getIsLeave(), member.getRole()));
         }
 
         return response;

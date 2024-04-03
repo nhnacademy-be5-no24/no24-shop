@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import com.nhnacademy.auth.user.domain.Member;
+import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.book.domain.Book;
 
 import lombok.AllArgsConstructor;

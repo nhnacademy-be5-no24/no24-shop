@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.nhnacademy.auth.user.dto.MemberCreateDto;
+import com.nhnacademy.shop.member.dto.MemberDto;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
 import com.nhnacademy.shop.like.dto.request.LikeMemberBookReqeustDto;
 import com.nhnacademy.shop.like.service.LikeService;
@@ -68,13 +68,13 @@ public class LikeController {
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
     @GetMapping
-    public ResponseEntity<List<MemberCreateDto>> getLikeByIsbn(String bookIsbn){
-        List<MemberCreateDto> memberCreateDtos = likeService.getLikeByIsbn(bookIsbn);
-        if(Objects.isNull(memberCreateDtos)){
+    public ResponseEntity<List<MemberDto>> getLikeByIsbn(String bookIsbn){
+        List<MemberDto> memberDtos = likeService.getLikeByIsbn(bookIsbn);
+        if(Objects.isNull(memberDtos)){
              throw new ResponseStatusException(HttpStatus.NOT_FOUND, "GET : Any Like NOT FOUND");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(memberCreateDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(memberDtos);
     }
 
     /**

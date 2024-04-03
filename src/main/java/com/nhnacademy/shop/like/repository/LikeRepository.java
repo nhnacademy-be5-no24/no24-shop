@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.nhnacademy.shop.like.domain.Like;
 import com.nhnacademy.shop.book.domain.Book;
-import com.nhnacademy.auth.user.domain.Member;
+import com.nhnacademy.shop.member.domain.Member;
 import java.util.List;
 
 

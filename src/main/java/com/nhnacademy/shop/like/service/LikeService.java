@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.auth.user.domain.Customer;
-import com.nhnacademy.auth.user.dto.MemberCreateDto;
+
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
 import com.nhnacademy.shop.like.dto.request.LikeMemberBookReqeustDto;
+import com.nhnacademy.shop.member.dto.MemberDto;
 
 /**
  * 도서관리 Service interface
@@ -22,7 +22,7 @@ public interface LikeService {
 
     void deleteLike(LikeMemberBookReqeustDto reqeust);
 
-    List<MemberCreateDto> getLikeByIsbn(String bookIsbn);
+    List<MemberDto> getLikeByIsbn(String bookIsbn);
 
     List<BookResponseDto> getLikeByMember(Long customerNo);
 

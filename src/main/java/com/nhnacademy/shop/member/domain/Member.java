@@ -22,6 +22,10 @@ public class Member implements Serializable {
     @Column(name = "customer_id")
     private Long customerId;
 
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     @Column(name = "member_id", nullable = false)
     @Length(min = 20)
     private String memberId;
@@ -31,4 +35,12 @@ public class Member implements Serializable {
 
     @Column(name = "grade_id", nullable = false)
     private Long gradeId;
+
+    @Column(name = "role")
+    private String role;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+    @Column(name = "is_leave")
+    private Boolean isLeave;
 }
