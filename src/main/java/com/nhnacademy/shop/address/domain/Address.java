@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.address.domain;
 
+import com.nhnacademy.shop.customer.domain.Customer;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,12 +33,12 @@ public class Address {
     private String address;
 
     @Column(name = "address_detail", nullable = false)
-    private String addressDeatail;
+    private String addressDetail;
 
     @Column(name = "is_default")
     private Boolean isDefault;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_no")
-    private Customer customerNo;
+    private Customer customer;
 }
