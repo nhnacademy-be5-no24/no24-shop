@@ -2,7 +2,7 @@ package com.nhnacademy.shop.book_author.domain;
 
 
 import com.nhnacademy.shop.author.domain.Author;
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.Book;
 import lombok.*;
 
 import javax.persistence.*;

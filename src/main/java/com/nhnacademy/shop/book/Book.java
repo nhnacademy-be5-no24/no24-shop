@@ -1,4 +1,5 @@
-package com.nhnacademy.shop.book.domain;
+package com.nhnacademy.shop.book;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
