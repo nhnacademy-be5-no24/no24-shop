@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.address.dto;
+package com.nhnacademy.shop.address.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -10,16 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NonMemberAddressRequestDto {
-    @JsonProperty("customer_no")
-    private Long customerNo;
-
-    @JsonProperty("order_id")
-    private Long orderId;
-
-    @JsonProperty("address_id")
-    private Long addressId;
-
+public class AddressCreateRequestDto {
     private String alias;
 
     @JsonProperty("receiver_name")
@@ -37,4 +28,7 @@ public class NonMemberAddressRequestDto {
 
     @JsonProperty("is_default")
     private Boolean isDefault;
+
+    @JsonProperty("customer_no")
+    private Long customerNo;
 }

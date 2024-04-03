@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddressRequestDto {
+public class AddressModifyRequestDto {
     private String alias;
 
     @JsonProperty("receiver_name")

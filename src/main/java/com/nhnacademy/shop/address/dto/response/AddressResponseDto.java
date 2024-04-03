@@ -1,4 +1,4 @@
-package com.nhnacademy.shop.address.dto;
+package com.nhnacademy.shop.address.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
