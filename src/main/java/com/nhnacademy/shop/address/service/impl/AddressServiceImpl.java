@@ -1,10 +1,12 @@
 package com.nhnacademy.shop.address.service.impl;
 
 import com.nhnacademy.shop.address.domain.Address;
+import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
+import com.nhnacademy.shop.customer.domain.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
+    private final CustomerRepository customerRepository;
 
     // 주소 조회
     @Override
@@ -33,6 +36,26 @@ public class AddressServiceImpl implements AddressService {
     }
 
     // 주소 등록
+    @Override
+    @Transactional
+    public AddressResponseDto saveAddress(AddressCreateRequestDto addressCreateRequestDto) {
+        Customer customer = customerRepository.findByCustomerNo(addressCreateRequestDto.getCustomerNo());
+
+        Address newAddress = Address.builder()
+                .alias(addressCreateRequestDto.getAlias())
+                .receiverName(addressCreateRequestDto.getReceiverName())
+                .receiverPhoneNumber(addressCreateRequestDto.getReceiverPhoneNumber())
+                .zipcode(addressCreateRequestDto.getZipcode())
+                .address(addressCreateRequestDto.getAddress())
+                .addressDetail(addressCreateRequestDto.getAddressDetail())
+                .isDefault(addressCreateRequestDto.getIsDefault())
+                .customer(customer)
+                .build();
+
+        addressRepository.save(newAddress);
+
+        return AddressMapper.addressToAddressResponseDto(newAddress);
+    }
 
     // 주소 수정
     @Override
@@ -50,7 +73,7 @@ public class AddressServiceImpl implements AddressService {
                 .address(addressModifyRequestDto.getAddress())
                 .addressDetail(addressModifyRequestDto.getAddressDetail())
                 .isDefault(addressModifyRequestDto.getIsDefault())
-                .customerNo(originAddress.getCustomerNo())
+                .customer(originAddress.getCustomer())
                 .build();
 
         addressRepository.save(updatedAddress);

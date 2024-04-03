@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.address.controller;
 
+import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
@@ -30,8 +31,11 @@ public class AddressController {
         return addressService.getAddresses(customerNo);
     }
 
-
     // 주소 등록
+    @PostMapping("/address")
+    public AddressResponseDto saveAddress(@RequestBody AddressCreateRequestDto addressCreateRequestDto) {
+        return addressService.saveAddress(addressCreateRequestDto);
+    }
 
     // 주소 수정
     @PutMapping("/address/{addressId}")

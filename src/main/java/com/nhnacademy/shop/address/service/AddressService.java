@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.address.service;
 
+import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 
@@ -16,6 +17,7 @@ public interface AddressService {
     List<AddressResponseDto> getAddresses(Long customerNo);
 
     // 주소 등록
+    AddressResponseDto saveAddress(AddressCreateRequestDto addressCreateRequestDto);
 
     // 주소 수정
     AddressResponseDto modifyAddress(Long addressId, AddressModifyRequestDto addressModifyRequestDto);
