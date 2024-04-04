@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.category.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 /**
@@ -10,12 +11,8 @@ import lombok.NoArgsConstructor;
  **/
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChildCategoryResponseDto {
     private Long categoryId;
     private String categoryName;
-
-    public ChildCategoryResponseDto(Long categoryId, String categoryName) {
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-    }
 }

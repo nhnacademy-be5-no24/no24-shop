@@ -17,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,6 +53,10 @@ public class CategoryControllerTest {
     Category category;
     CategoryResponseDto categoryResponseDto;
     ParentCategoryResponseDto parentCategoryResponseDto;
+    Page<CategoryResponseDto> categoryPage;
+    Integer pageSize;
+    Integer offset;
+    Pageable pageable;
 
     @BeforeEach
     void setUp() {
@@ -57,6 +65,11 @@ public class CategoryControllerTest {
         category = new Category(1L, "판타지", null);
         categoryResponseDto = new CategoryResponseDto(1L, "판타지", null);
         parentCategoryResponseDto = new ParentCategoryResponseDto(1L, "판타지");
+        pageSize = 0;
+        offset = 10;
+        pageable = PageRequest.of(pageSize, offset);
+        categoryPage = new PageImpl<>(List.of(categoryResponseDto), pageable, 1);
+
     }
 
     @Test
@@ -346,6 +359,22 @@ public class CategoryControllerTest {
             mockMvc.perform(delete("/shop/categories/1")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName(value = "카테고리 전체 조회")
+    void getCategories_Success() {
+        when(categoryService.getCategories(pageSize, offset)).thenReturn(categoryPage);
+        try {
+            mockMvc.perform(get("/shop/categories/page")
+                    .param("pageSize", "10")
+                    .param("offset", "0")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
