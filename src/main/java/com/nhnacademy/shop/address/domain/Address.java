@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.address.domain;
 
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.member.domain.Member;
 import lombok.*;
 
 import javax.persistence.*;
@@ -40,5 +40,5 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_no")
-    private Customer customer;
+    private Member member;
 }

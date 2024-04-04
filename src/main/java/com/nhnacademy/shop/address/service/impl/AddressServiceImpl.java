@@ -6,8 +6,8 @@ import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
-import com.nhnacademy.shop.customer.domain.Customer;
-import com.nhnacademy.shop.customer.repository.CustomerRepository;
+import com.nhnacademy.shop.member.domain.Member;
+import com.nhnacademy.shop.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +25,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
-    private final CustomerRepository customerRepository;
+    private final MemberRepository memberRepository;
 
     // 주소 조회
     @Override
     @Transactional(readOnly = true)
     public List<AddressResponseDto> getAddresses(Long customerNo) {
-        List<Address> addresses = addressRepository.findByCustomerNo(customerNo);
+        List<Address> addresses = addressRepository.findByCustomerCustomerNo(customerNo);
         return AddressMapper.addressToAddressResponseDtoList(addresses);
     }
 
@@ -39,7 +39,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AddressResponseDto saveAddress(AddressCreateRequestDto addressCreateRequestDto) {
-        Customer customer = customerRepository.findByCustomerNo(addressCreateRequestDto.getCustomerNo());
+        Member member = memberRepository.findMemberByCustomerNo(addressCreateRequestDto.getCustomerNo());
 
         Address newAddress = Address.builder()
                 .alias(addressCreateRequestDto.getAlias())
@@ -49,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
                 .address(addressCreateRequestDto.getAddress())
                 .addressDetail(addressCreateRequestDto.getAddressDetail())
                 .isDefault(addressCreateRequestDto.getIsDefault())
-                .customer(customer)
+                .member(member)
                 .build();
 
         addressRepository.save(newAddress);
@@ -73,7 +73,7 @@ public class AddressServiceImpl implements AddressService {
                 .address(addressModifyRequestDto.getAddress())
                 .addressDetail(addressModifyRequestDto.getAddressDetail())
                 .isDefault(addressModifyRequestDto.getIsDefault())
-                .customer(originAddress.getCustomer())
+                .member(originAddress.getMember())
                 .build();
 
         addressRepository.save(updatedAddress);
