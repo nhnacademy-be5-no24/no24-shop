@@ -4,6 +4,7 @@ import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
+import com.nhnacademy.shop.address.exception.AddressOutOfBoundsException;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
 import com.nhnacademy.shop.member.domain.Member;
@@ -39,22 +40,28 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AddressResponseDto saveAddress(AddressCreateRequestDto addressCreateRequestDto) {
-        Member member = memberRepository.findMemberByCustomerNo(addressCreateRequestDto.getCustomerNo());
+        List<Address> addresses = addressRepository.findByMemberCustomerNo(addressCreateRequestDto.getCustomerNo());
 
-        Address newAddress = Address.builder()
-                .alias(addressCreateRequestDto.getAlias())
-                .receiverName(addressCreateRequestDto.getReceiverName())
-                .receiverPhoneNumber(addressCreateRequestDto.getReceiverPhoneNumber())
-                .zipcode(addressCreateRequestDto.getZipcode())
-                .address(addressCreateRequestDto.getAddress())
-                .addressDetail(addressCreateRequestDto.getAddressDetail())
-                .isDefault(addressCreateRequestDto.getIsDefault())
-                .member(member)
-                .build();
+        if (addresses.size() >= 10) {
+            throw new AddressOutOfBoundsException();
+        } else {
+            Member member = memberRepository.findMemberByCustomerNo(addressCreateRequestDto.getCustomerNo());
 
-        addressRepository.save(newAddress);
+            Address newAddress = Address.builder()
+                    .alias(addressCreateRequestDto.getAlias())
+                    .receiverName(addressCreateRequestDto.getReceiverName())
+                    .receiverPhoneNumber(addressCreateRequestDto.getReceiverPhoneNumber())
+                    .zipcode(addressCreateRequestDto.getZipcode())
+                    .address(addressCreateRequestDto.getAddress())
+                    .addressDetail(addressCreateRequestDto.getAddressDetail())
+                    .isDefault(addressCreateRequestDto.getIsDefault())
+                    .member(member)
+                    .build();
 
-        return AddressMapper.addressToAddressResponseDto(newAddress);
+            addressRepository.save(newAddress);
+
+            return AddressMapper.addressToAddressResponseDto(newAddress);
+        }
     }
 
     // 주소 수정
