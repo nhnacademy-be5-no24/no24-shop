@@ -31,7 +31,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional(readOnly = true)
     public List<AddressResponseDto> getAddresses(Long customerNo) {
-        List<Address> addresses = addressRepository.findByCustomerCustomerNo(customerNo);
+        List<Address> addresses = addressRepository.findByMemberCustomerNo(customerNo);
         return AddressMapper.addressToAddressResponseDtoList(addresses);
     }
 
