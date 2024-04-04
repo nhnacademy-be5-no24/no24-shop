@@ -9,6 +9,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * 리뷰(Review) 테이블 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-04-01
+ */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
