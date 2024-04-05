@@ -4,28 +4,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
+/**
+ * 리뷰 수정을 위한 dto 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-04-01
+ **/
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModifyReviewRequestDto {
-    @NotNull
-    @NotBlank(message = "수정할 리뷰 아이디를 입력해주세요.")
+    @NotNull(message = "수정할 리뷰 아이디를 입력해주세요.")
     private Long reviewId;
     @NotNull
     @NotBlank(message = "리뷰 내용을 작성해주세요.")
     private String reviewContent;
     @NotNull
-    @Size(min = 1, max = 5, message = "평점은 1점 ~ 5점까지 입력 가능합니다.")
+    @Min(value = 1, message = "평점은 1점 ~ 5점까지 입력 가능합니다.")
+    @Max(value = 5, message = "평점은 1점 ~ 5점까지 입력 가능합니다.")
     private Integer reviewScore;
     private String reviewImage;
     @NotNull
     @NotBlank(message = "도서 고유 번호를 입력해주세요.")
     private String bookIsbn;
-    @NotNull
-    @NotBlank(message = "회원 번호를 입력해주세요.")
+    @NotNull(message = "회원 번호를 입력해주세요.")
     private Long customerNo;
 }

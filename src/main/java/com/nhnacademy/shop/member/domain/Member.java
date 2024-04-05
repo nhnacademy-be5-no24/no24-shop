@@ -1,10 +1,6 @@
 package com.nhnacademy.shop.member.domain;
 
-import com.nhnacademy.shop.customer.entity.Customer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -13,17 +9,16 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Getter @Builder
 @Entity
 @Table(name = "member")
 public class Member implements Serializable {
     @Id
-    @Column(name = "customer_id")
-    private Long customerId;
+    @Column(name = "customer_no")
+    private Long customerNo;
 
     @Column(name = "member_id", nullable = false)
-    @Length(min = 20)
+    @Length(max = 20)
     private String memberId;
 
     @Column(name = "last_login_at")
