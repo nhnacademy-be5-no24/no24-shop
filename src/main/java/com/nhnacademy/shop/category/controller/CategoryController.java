@@ -7,7 +7,9 @@ import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.shop.category.service.CategoryService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +33,24 @@ public class CategoryController {
     }
 
     /**
+     * 카테고리 전체 조회 요청 시 사용되는 메소드입니다.
+     *
+     * @param pageSize 페이지 사이즈 입니다.
+     * @param offset 페이지 오프셋 입니다.
+     * @throws ResponseStatusException 카테고리를 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
+     * @return 성공했을 때 응답코드 200 OK 반환합니다.
+     */
+    @GetMapping("/categories/page")
+    public ResponseEntity<Page<CategoryResponseDto>> getCategories(@RequestParam Integer pageSize,
+                                                                   @RequestParam Integer offset) {
+        Page<CategoryResponseDto> dtoList = categoryService.getCategories(pageSize, offset);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dtoList);
+    }
+
+    /**
      * 카테고리 단건 조회 요청 시 사용되는 메소드입니다.
      *
      * @param categoryId 조회를 위한 해당 카테고리 아이디 입니다.
@@ -43,7 +63,9 @@ public class CategoryController {
         if (Objects.isNull(categoryResponseDto)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category Not Found : %d", categoryId));
         }
-        return ResponseEntity.ok(categoryResponseDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryResponseDto);
     }
 
     /**
@@ -59,7 +81,9 @@ public class CategoryController {
         if (Objects.isNull(categoryResponseDto)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category Not Found : %s", categoryName));
         }
-        return ResponseEntity.ok(categoryResponseDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryResponseDto);
     }
 
     /**
@@ -74,7 +98,9 @@ public class CategoryController {
         if (Objects.isNull(categoryResponseDtoList)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categories Not Found");
         }
-        return ResponseEntity.ok(categoryResponseDtoList);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryResponseDtoList);
     }
 
     /**
@@ -89,7 +115,9 @@ public class CategoryController {
         if (Objects.isNull(categoryResponseDtoList)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categories Not Found");
         }
-        return ResponseEntity.ok(categoryResponseDtoList);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryResponseDtoList);
     }
 
     /**
@@ -105,7 +133,9 @@ public class CategoryController {
         if (Objects.isNull(parentCategory)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category Not Found : %d", categoryId));
         }
-        return ResponseEntity.ok(parentCategory);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(parentCategory);
     }
 
     /**
@@ -120,7 +150,9 @@ public class CategoryController {
         try {
             CategoryResponseDto dto = categoryService.createCategory(createCategoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -138,7 +170,9 @@ public class CategoryController {
         try {
             CategoryResponseDto dto = categoryService.modifyCategory(modifyCategoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -156,7 +190,9 @@ public class CategoryController {
         try {
             ParentCategoryResponseDto dto = categoryService.modifyParentCategory(modifyCategoryRequestDto);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto);
         } catch (CategoryAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -171,6 +207,8 @@ public class CategoryController {
     @DeleteMapping("/categories/{categoryId}")
     public ResponseEntity<CategoryResponseDto> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
     }
 }

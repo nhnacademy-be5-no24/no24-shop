@@ -14,6 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -34,11 +38,16 @@ class CategoryServiceTest {
     private CategoryRepository categoryRepository;
 
     private CategoryService categoryService;
-    private Category category;
-    private Category childCategory;
-    private CreateCategoryRequestDto createCategoryRequestDto;
-    private CreateCategoryRequestDto childCreateCategoryRequestDto;
-    private ModifyCategoryRequestDto modifyCategoryRequestDto;
+    Category category;
+    Category childCategory;
+    CreateCategoryRequestDto createCategoryRequestDto;
+    CreateCategoryRequestDto childCreateCategoryRequestDto;
+    ModifyCategoryRequestDto modifyCategoryRequestDto;
+    CategoryResponseDto parentCategoryDto;
+    Integer pageSize;
+    Integer offset;
+    Pageable pageable;
+
     @BeforeEach
     void setUp() {
         categoryRepository = mock(CategoryRepository.class);
@@ -47,7 +56,11 @@ class CategoryServiceTest {
         childCreateCategoryRequestDto = new CreateCategoryRequestDto("World", 1L);
         category = new Category(1L, "Hello", null);
         createCategoryRequestDto = new CreateCategoryRequestDto("Hello", null);
-        modifyCategoryRequestDto = new ModifyCategoryRequestDto(1L, "Hello", null);
+        modifyCategoryRequestDto = new ModifyCategoryRequestDto(2L, "Hello", 1L);
+        parentCategoryDto = new CategoryResponseDto(1L, "Hello", null);
+        pageSize = 0;
+        offset = 10;
+        pageable = PageRequest.of(pageSize, offset);
     }
 
     @Test
@@ -114,7 +127,7 @@ class CategoryServiceTest {
         CategoryResponseDto categoryResponseDto = new CategoryResponseDto();
         categoryRepository.save(childCategory);
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
-        ReflectionTestUtils.setField(categoryResponseDto, "parentCategoryId", 1L);
+        ReflectionTestUtils.setField(categoryResponseDto, "parentCategory", parentCategoryDto);
 
         when(categoryRepository.save(any())).thenReturn(childCategory);
         when(categoryRepository.findByCategoryName(anyString())).thenReturn(childCategory);
@@ -183,7 +196,6 @@ class CategoryServiceTest {
         verify(categoryRepository, times(1)).save(childCategory);
         assertThat(childCategory.getCategoryId()).isEqualTo(dto.getCategoryId());
         assertThat(childCategory.getCategoryName()).isEqualTo(dto.getCategoryName());
-        assertThat(childCategory.getParentCategory()).isEqualTo(dto.getParentCategoryId());
     }
 
     @Test
@@ -214,20 +226,21 @@ class CategoryServiceTest {
         String categoryName = "Hello";
 
         CategoryResponseDto categoryResponseDto = new CategoryResponseDto();
-        categoryRepository.save(childCategory);
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
 
         when(categoryRepository.save(any())).thenReturn(childCategory);
         when(categoryRepository.findByCategoryName(anyString())).thenReturn(null);
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 
+        category = categoryRepository.save(category);
+        childCategory = categoryRepository.save(childCategory);
+
         CategoryResponseDto dto = categoryService.modifyCategory(modifyCategoryRequestDto);
 
         verify(categoryRepository, times(1)).findByCategoryName(modifyCategoryRequestDto.getCategoryName());
         verify(categoryRepository, times(1)).save(childCategory);
-        assertThat(childCategory.getCategoryId()).isEqualTo(dto.getCategoryId());
-        assertThat(childCategory.getCategoryName()).isEqualTo(dto.getCategoryName());
-        assertThat(childCategory.getParentCategory()).isEqualTo(dto.getParentCategoryId());
+        assertThat(dto.getCategoryId()).isEqualTo(childCategory.getCategoryId());
+        assertThat(dto.getCategoryName()).isEqualTo(childCategory.getCategoryName());
     }
 
     @Test
@@ -318,11 +331,11 @@ class CategoryServiceTest {
         dtoList.add(categoryResponseDto);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getParentCategoriesWithChildCategories()).thenReturn(dtoList);
+        when(categoryRepository.findParentCategoriesWithChildCategories()).thenReturn(dtoList);
 
         categoryService.getParentWithChildCategories();
 
-        verify(categoryRepository, times(1)).getParentCategoriesWithChildCategories();
+        verify(categoryRepository, times(1)).findParentCategoriesWithChildCategories();
     }
 
     @Test
@@ -336,7 +349,7 @@ class CategoryServiceTest {
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getParentCategoriesWithChildCategories()).thenReturn(null);
+        when(categoryRepository.findParentCategoriesWithChildCategories()).thenReturn(null);
 
 
         assertThatThrownBy(() -> categoryService.getParentWithChildCategories())
@@ -358,11 +371,11 @@ class CategoryServiceTest {
         dtoList.add(categoryResponseDto);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getCategoriesInfo()).thenReturn(dtoList);
+        when(categoryRepository.findCategoriesInfo()).thenReturn(dtoList);
 
         categoryService.getCategoriesInfo();
 
-        verify(categoryRepository, times(1)).getCategoriesInfo();
+        verify(categoryRepository, times(1)).findCategoriesInfo();
     }
 
 
@@ -377,7 +390,7 @@ class CategoryServiceTest {
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getCategoriesInfo()).thenReturn(null);
+        when(categoryRepository.findCategoriesInfo()).thenReturn(null);
 
         assertThatThrownBy(() -> categoryService.getCategoriesInfo())
                 .isInstanceOf(CategoryNotFoundException.class)
@@ -395,11 +408,11 @@ class CategoryServiceTest {
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getParentCategory(1L)).thenReturn(categoryResponseDto);
+        when(categoryRepository.findParentCategory(1L)).thenReturn(categoryResponseDto);
 
         categoryService.getParentWithChildCategoryByParentCategoryId(1L);
 
-        verify(categoryRepository, times(1)).getParentCategory(1L);
+        verify(categoryRepository, times(1)).findParentCategory(1L);
     }
 
     @Test
@@ -413,7 +426,7 @@ class CategoryServiceTest {
         ReflectionTestUtils.setField(categoryResponseDto, "categoryName", categoryName);
 
         when(categoryRepository.save(any())).thenReturn(category);
-        when(categoryRepository.getParentCategory(1L)).thenReturn(null);
+        when(categoryRepository.findParentCategory(1L)).thenReturn(null);
 
         assertThatThrownBy(() -> categoryService.getParentWithChildCategoryByParentCategoryId(1L))
                 .isInstanceOf(CategoryNotFoundException.class)
@@ -439,6 +452,26 @@ class CategoryServiceTest {
         assertThatThrownBy(() -> categoryService.getParentWithChildCategoryByParentCategoryId(1L))
                 .isInstanceOf(CategoryNotFoundException.class)
                 .hasMessageContaining("해당 카테고리를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName(value = "Category 전체 조회")
+    void getCategories() {
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto(1L, "Hello", null);
+        Page<CategoryResponseDto> categoryPage = new PageImpl<>(List.of(categoryResponseDto), pageable, 1);
+
+        when(categoryRepository.findCategories(any())).thenReturn(categoryPage);
+
+        Page<CategoryResponseDto> dtoPage = categoryService.getCategories(pageSize, offset);
+        List<CategoryResponseDto> categoryList = dtoPage.getContent();
+
+        verify(categoryRepository, times(1)).findCategories(pageable);
+
+        assertThat(categoryList).isNotEmpty();
+        assertThat(categoryList.get(0).getCategoryId()).isEqualTo(category.getCategoryId());
+        assertThat(categoryList.get(0).getCategoryName()).isEqualTo(category.getCategoryName());
+        assertThat(categoryList.get(0).getParentCategory()).isNull();
     }
 
 }
