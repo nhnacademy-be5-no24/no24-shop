@@ -58,6 +58,15 @@ public class AddressServiceImpl implements AddressService {
                     .member(member)
                     .build();
 
+            // todo: 주소 등록 시, 기본 설정(is_default) 처리
+            if (addressCreateRequestDto.getIsDefault()) {
+                for (Address address : addresses) {
+                    if (address.getIsDefault()) {
+                        address.setIsDefault(false);
+                    }
+                }
+            }
+
             addressRepository.save(newAddress);
 
             return AddressMapper.addressToAddressResponseDto(newAddress);
@@ -82,6 +91,17 @@ public class AddressServiceImpl implements AddressService {
                 .isDefault(addressModifyRequestDto.getIsDefault())
                 .member(originAddress.getMember())
                 .build();
+
+        // todo: 주소 수정 시, 기본 설정(is_default) 처리
+        List<Address> addresses = addressRepository.findByMemberCustomerNo(originAddress.getMember().getCustomerNo());
+
+        if (addressModifyRequestDto.getIsDefault()) {
+            for (Address address : addresses) {
+                if (address.getIsDefault()) {
+                    address.setIsDefault(false);
+                }
+            }
+        }
 
         addressRepository.save(updatedAddress);
 
