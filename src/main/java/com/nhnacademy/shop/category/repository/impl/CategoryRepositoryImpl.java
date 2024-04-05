@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.category.repository.impl;
 
+
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.domain.QCategory;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;

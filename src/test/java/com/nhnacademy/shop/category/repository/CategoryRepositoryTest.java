@@ -4,7 +4,7 @@ import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeEach;.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -106,7 +106,6 @@ class CategoryRepositoryTest {
         assertThat(dtoList.get(0).getChildCategories().get(0).getCategoryId()).isEqualTo(child.getCategoryId());
         assertThat(dtoList.get(0).getChildCategories().get(0).getCategoryName()).isEqualTo(child.getCategoryName());
     }
-
     @Test
     @Order(4)
     @DisplayName(value = "상위 카테고리 단건 조회")
@@ -121,6 +120,5 @@ class CategoryRepositoryTest {
         assertThat(dto.getCategoryName()).isEqualTo(parent.getCategoryName());
         assertThat(dto.getChildCategories().get(0).getCategoryId()).isEqualTo(child.getCategoryId());
         assertThat(dto.getChildCategories().get(0).getCategoryName()).isEqualTo(child.getCategoryName());
-
     }
 }

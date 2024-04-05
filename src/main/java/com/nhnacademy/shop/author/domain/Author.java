@@ -6,8 +6,10 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
+ * 저자(Author) 테이블.
+ *
  * @Author : 박동희
- * @Date : 20/03/2024
+ * @Date : 2024-03-20
  */
 @Entity
 @Getter
