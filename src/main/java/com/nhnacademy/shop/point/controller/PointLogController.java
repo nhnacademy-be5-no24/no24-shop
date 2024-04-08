@@ -82,8 +82,8 @@ public class PointLogController {
      */
             @GetMapping("/points/{customerNo}/date")
             public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNoAndCreatedAt(@PathVariable Long customerNo,
-                    @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
-                    @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
+                    @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime startDate,
+                    @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime endDate,
                     Pageable pageable) {
                 try {
                     Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNoAndCreatedAt(customerNo, startDate, endDate, pageable);

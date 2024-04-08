@@ -75,8 +75,8 @@ class PointControllerTest {
         pointRequestDto = new PointRequestDto(member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
                 LocalDateTime.of(2024, 4, 5, 0, 0, 0));
         pointPage = new PageImpl<>(List.of(pointResponseDto), pageable, 1);
-        startDate = "2024-04-03 00:00:00";
-        endDate = "2024-04-06 00:00:00";
+        startDate = "2024-04-03T00:00:00";
+        endDate = "2024-04-06T00:00:00";
     }
 
     @Test
