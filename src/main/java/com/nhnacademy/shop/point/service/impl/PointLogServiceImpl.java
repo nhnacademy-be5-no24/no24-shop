@@ -10,6 +10,7 @@ import com.nhnacademy.shop.point.repository.PointLogRepository;
 import com.nhnacademy.shop.point.service.PointLogService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +38,8 @@ public class PointLogServiceImpl implements PointLogService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<PointResponseDto> getPointLogs(Integer pageSize, Integer offset) {
-        return pointLogRepository.findPoints(PageRequest.of(pageSize, offset));
+    public Page<PointResponseDto> getPoints(Pageable pageable) {
+        return pointLogRepository.findPoints(pageable);
     }
 
     /**
@@ -48,11 +49,11 @@ public class PointLogServiceImpl implements PointLogService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<PointResponseDto> getPointsByCustomerNo(Long customerNo, Integer pageSize, Integer offset) {
+    public Page<PointResponseDto> getPointsByCustomerNo(Long customerNo, Pageable pageable) {
         if (!memberRepository.existsById(customerNo)) {
             throw new MemberNotFoundException();
         }
-        return pointLogRepository.findPointsByCustomerNo(customerNo, PageRequest.of(pageSize, offset));
+        return pointLogRepository.findPointsByCustomerNo(customerNo, pageable);
     }
 
     /**
@@ -62,11 +63,11 @@ public class PointLogServiceImpl implements PointLogService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<PointResponseDto> getPointsByCustomerNoAndCreatedAt(Long customerNo, LocalDateTime startDate, LocalDateTime endDate, Integer pageSize, Integer offset) {
+    public Page<PointResponseDto> getPointsByCustomerNoAndCreatedAt(Long customerNo, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if (!memberRepository.existsById(customerNo)) {
             throw new MemberNotFoundException();
         }
-        return pointLogRepository.findPointsByCustomerNoAndCreatedAt(customerNo, startDate, endDate, PageRequest.of(pageSize, offset));
+        return pointLogRepository.findPointsByCustomerNoAndCreatedAt(customerNo, startDate, endDate, pageable);
     }
 
     /**

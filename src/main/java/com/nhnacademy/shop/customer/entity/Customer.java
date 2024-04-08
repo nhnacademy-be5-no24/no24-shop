@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,7 +37,7 @@ public class Customer {
     private String customerEmail;
 
     @Column(name = "customer_birthday")
-    private LocalDate customerBirthday;
+    private LocalDateTime customerBirthday;
 
     @Column(name = "customer_type", nullable = false)
     private Boolean customerType;

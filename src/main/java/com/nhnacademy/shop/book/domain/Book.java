@@ -7,7 +7,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -39,7 +39,7 @@ public class Book {
     private String bookPublisher;
 
     @Column(name = "book_publisher_at", nullable = false)
-    private LocalDate bookPublisherAt;
+    private LocalDateTime bookPublisherAt;
 
     @Column(name = "book_fixed_price", nullable = false)
     private int bookFixedPrice;

@@ -3,6 +3,7 @@ package com.nhnacademy.shop.point.service;
 import com.nhnacademy.shop.point.dto.request.PointRequestDto;
 import com.nhnacademy.shop.point.dto.response.PointResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,21 +19,19 @@ public interface PointLogService {
     /**
      * 관리자가 전체 포인트 내역 조회를 위한 메소드 입니다.
      *
-     * @param pageSize 페이지 사이즈
-     * @param offset   페이지 오프셋
+     * @param pageable 페이징 정보
      * @return PointResponseDto 포인트 내역 정보를 담고 있는 Dto 페이지가 반환됩니다.
      */
-    Page<PointResponseDto> getPointLogs(Integer pageSize, Integer offset);
+    Page<PointResponseDto> getPoints(Pageable pageable);
 
     /**
      * 회원 포인트 내역 조회를 위한 메소드 입니다.
      *
      * @param customerNo 조회를 위한 회원 번호
-     * @param pageSize   페이지 사이즈
-     * @param offset     페이지 오프셋
+     * @param pageable 페이징 정보
      * @return PointResponseDto 포인트 내역 정보를 담고 있는 Dto 페이지가 반환됩니다.
      */
-    Page<PointResponseDto> getPointsByCustomerNo(Long customerNo, Integer pageSize, Integer offset);
+    Page<PointResponseDto> getPointsByCustomerNo(Long customerNo, Pageable pageable);
 
     /**
      * 회원 포인트 내역 날짜 별 조회를 위한 메소드 입니다.
@@ -40,11 +39,10 @@ public interface PointLogService {
      * @param customerNo 조회를 위한 회원 번호
      * @param startDate  시작 일자
      * @param endDate    종료 일자
-     * @param pageSize   페이지 사이즈
-     * @param offset     페이지 오프셋
+     * @param pageable 페이징 정보
      * @return PointResponseDto 포인트 내역 정보를 담고 있는 Dto 페이지가 반환됩니다.
      */
-    Page<PointResponseDto> getPointsByCustomerNoAndCreatedAt(Long customerNo, LocalDateTime startDate, LocalDateTime endDate, Integer pageSize, Integer offset);
+    Page<PointResponseDto> getPointsByCustomerNoAndCreatedAt(Long customerNo, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     /**
      * 회원 포인트 내역 생성을 위한 메소드 입니다.

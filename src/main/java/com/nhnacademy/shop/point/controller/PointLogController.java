@@ -6,6 +6,8 @@ import com.nhnacademy.shop.point.dto.response.PointResponseDto;
 import com.nhnacademy.shop.point.service.PointLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +37,12 @@ public class PointLogController {
     /**
      * 포인트 내역 전체 조회 요청 시 사용되는 메소드입니다.
      *
-     * @param pageSize 페이지 구성을 위한 페이지 사이즈 입니다.
-     * @param offset   페이지 구성을 위한 페이지 오프셋 입니다.
+     * @param pageable 페이지 정보 입니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
     @GetMapping("/points")
-    public ResponseEntity<Page<PointResponseDto>> getPoints(@RequestParam Integer pageSize,
-                                                            @RequestParam Integer offset) {
-        Page<PointResponseDto> dtoList = pointLogService.getPointLogs(pageSize, offset);
+    public ResponseEntity<Page<PointResponseDto>> getPoints(Pageable pageable) {
+        Page<PointResponseDto> dtoList = pointLogService.getPoints(pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -53,17 +53,14 @@ public class PointLogController {
      * 회원 포인트 내역 전체 조회 요청 시 사용되는 메소드입니다.
      *
      * @param customerNo 조회를 위한 회원 번호 입니다.
-     * @param pageSize 페이지 구성을 위한 페이지 사이즈 입니다.
-     * @param offset 페이지 구성을 위한 페이지 오프셋 입니다.
+     * @param pageable 페이지 정보 입니다.
      * @throws ResponseStatusException 회원을 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
     @GetMapping("/points/{customerNo}")
-    public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNo(@PathVariable Long customerNo,
-                                                                        @RequestParam Integer pageSize,
-                                                                        @RequestParam Integer offset) {
+    public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNo(@PathVariable Long customerNo, Pageable pageable) {
         try {
-            Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNo(customerNo, pageSize, offset);
+            Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNo(customerNo, pageable);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -79,19 +76,17 @@ public class PointLogController {
      * @param customerNo 조회를 위한 회원 번호 입니다.
      * @param startDate 시작 일자 입니다.
      * @param endDate 종료 일자 입니다.
-     * @param pageSize 페이지 구성을 위한 페이지 사이즈 입니다.
-     * @param offset 페이지 구성을 위한 페이지 오프셋 입니다.
-     * @throws ResponseStatusException 회원을 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
+                    * @param pageable 페이지 정보 입니다.
+                    * @throws ResponseStatusException 회원을 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
-    @GetMapping("/points/{customerNo}/date")
-    public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNoAndCreatedAt(@PathVariable Long customerNo,
-                                                                        @RequestParam LocalDateTime startDate,
-                                                                        @RequestParam LocalDateTime endDate,
-                                                                        @RequestParam Integer pageSize,
-                                                                        @RequestParam Integer offset) {
-        try {
-            Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNoAndCreatedAt(customerNo, startDate, endDate, pageSize, offset);
+            @GetMapping("/points/{customerNo}/date")
+            public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNoAndCreatedAt(@PathVariable Long customerNo,
+                    @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
+                    @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
+                    Pageable pageable) {
+                try {
+                    Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNoAndCreatedAt(customerNo, startDate, endDate, pageable);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)

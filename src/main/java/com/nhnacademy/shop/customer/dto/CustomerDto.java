@@ -3,7 +3,7 @@ package com.nhnacademy.shop.customer.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +13,6 @@ public class CustomerDto {
     private String customerName;
     private String customerPhoneNumber;
     private String customerEmail;
-    private LocalDate customerBirthDay;
+    private LocalDateTime customerBirthDay;
     private Boolean customerType;
 }

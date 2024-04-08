@@ -8,6 +8,7 @@ import com.nhnacademy.shop.point.dto.request.PointRequestDto;
 import com.nhnacademy.shop.point.dto.response.PointResponseDto;
 import com.nhnacademy.shop.point.repository.PointLogRepository;
 import com.nhnacademy.shop.point.service.impl.PointLogServiceImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.*;
  * @author : 강병구
  * @date : 2024-04-05
  */
-public class PointServiceTest {
+class PointServiceTest {
     private PointLogRepository pointLogRepository;
     private MemberRepository memberRepository;
     private PointLogService pointLogService;
@@ -54,17 +55,17 @@ public class PointServiceTest {
         pointLogService = new PointLogServiceImpl(pointLogRepository, memberRepository);
         member = new Member(1L, "abc111", null, 1L);
         pointLog = new PointLog(1L, member, 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0,0,0));
+                LocalDateTime.parse("2024-04-05T00:00:00"));
         pageSize = 0;
         offset = 10;
         pageable = PageRequest.of(pageSize, offset);
         pointResponseDto = new PointResponseDto(1L, member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0, 0, 0));
+                LocalDateTime.parse("2024-04-05T00:00:00"));
         pointRequestDto = new PointRequestDto(member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0, 0, 0));
+                LocalDateTime.parse("2024-04-05T00:00:00"));
         pointPage = new PageImpl<>(List.of(pointResponseDto), pageable, 1);
-        startDate = LocalDateTime.of(2024, 4, 3, 0, 0, 0);
-        endDate = LocalDateTime.of(2024, 4, 6, 0, 0, 0);
+        startDate = LocalDateTime.parse("2024-04-03T00:00:00");
+        endDate = LocalDateTime.parse("2024-04-06T00:00:00");
     }
 
     @Test
@@ -74,7 +75,7 @@ public class PointServiceTest {
         when(pointLogRepository.save(any())).thenReturn(pointLog);
         when(pointLogRepository.findPoints(any())).thenReturn(pointPage);
 
-        Page<PointResponseDto> dtoPage = pointLogService.getPointLogs(pageSize, offset);
+        Page<PointResponseDto> dtoPage = pointLogService.getPoints(pageable);
         List<PointResponseDto> pointList = dtoPage.getContent();
 
         verify(pointLogRepository, times(1)).findPoints(any());
@@ -97,7 +98,7 @@ public class PointServiceTest {
         when(memberRepository.existsById(anyLong())).thenReturn(true);
         when(pointLogRepository.findPointsByCustomerNo(anyLong(), any())).thenReturn(pointPage);
 
-        Page<PointResponseDto> dtoPage = pointLogService.getPointsByCustomerNo(pointLog.getMember().getCustomerNo(), pageSize, offset);
+        Page<PointResponseDto> dtoPage = pointLogService.getPointsByCustomerNo(pointLog.getMember().getCustomerNo(), pageable);
         List<PointResponseDto> pointList = dtoPage.getContent();
 
         verify(memberRepository, times(1)).existsById(anyLong());
@@ -119,7 +120,7 @@ public class PointServiceTest {
     void getPointsByCustomerNoTest_MemberNotFound() {
         when(memberRepository.existsById(anyLong())).thenReturn(false);
 
-        assertThatThrownBy(() -> pointLogService.getPointsByCustomerNo(anyLong(), pageSize, offset))
+        assertThatThrownBy(() -> pointLogService.getPointsByCustomerNo(anyLong(), pageable))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessageContaining("회원을 찾을 수 없습니다.");
     }
@@ -132,7 +133,7 @@ public class PointServiceTest {
         when(memberRepository.existsById(anyLong())).thenReturn(true);
         when(pointLogRepository.findPointsByCustomerNoAndCreatedAt(anyLong(), any(), any(), any())).thenReturn(pointPage);
 
-        Page<PointResponseDto> dtoPage = pointLogService.getPointsByCustomerNoAndCreatedAt(pointLog.getMember().getCustomerNo(), startDate, endDate, pageSize, offset);
+        Page<PointResponseDto> dtoPage = pointLogService.getPointsByCustomerNoAndCreatedAt(pointLog.getMember().getCustomerNo(), startDate, endDate, pageable);
         List<PointResponseDto> pointList = dtoPage.getContent();
 
         verify(memberRepository, times(1)).existsById(anyLong());
@@ -154,7 +155,7 @@ public class PointServiceTest {
     void getPointsByCustomerNoAndCreatedAtTest_MemberNotFound() {
         when(memberRepository.existsById(anyLong())).thenReturn(false);
 
-        assertThatThrownBy(() -> pointLogService.getPointsByCustomerNoAndCreatedAt(anyLong(), startDate, endDate, pageSize, offset))
+        assertThatThrownBy(() -> pointLogService.getPointsByCustomerNoAndCreatedAt(anyLong(), startDate, endDate, pageable))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessageContaining("회원을 찾을 수 없습니다.");
     }

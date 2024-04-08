@@ -61,7 +61,7 @@ public class PointRepositoryTest {
                 .pointDescription("리뷰 작성")
                 .usage(500)
                 .isUsed(false)
-                .createdAt(LocalDateTime.of(2024, 4, 5, 11, 15, 0)).build();
+                .createdAt(LocalDateTime.parse("2024-04-05T00:00:00")).build();
     }
 
     @Test
@@ -116,8 +116,8 @@ public class PointRepositoryTest {
 
         pointLogRepository.save(pointLog);
 
-        LocalDateTime startDate = LocalDateTime.of(2024, 4, 3, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2024, 4, 6, 0, 0, 0);
+        LocalDateTime startDate = LocalDateTime.parse("2024-04-03T00:00:00");
+        LocalDateTime endDate = LocalDateTime.parse("2024-04-06T00:00:00");
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<PointResponseDto> dtoPage = pointLogRepository.findPointsByCustomerNoAndCreatedAt(pointLog.getMember().getCustomerNo(), startDate, endDate, pageable);
