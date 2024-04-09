@@ -10,20 +10,19 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.nhnacademy.shop;
+package com.nhnacademy.shop.member.adapter;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-@SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients
-@EnableAspectJAutoProxy
-public class ShopApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ShopApplication.class, args);
-    }
+import com.nhnacademy.shop.member.domain.Member;
+import com.nhnacademy.shop.member.dto.MemberDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
+
+@FeignClient(value="auth-service", path="/auth/member")
+public interface MemberAdapter {
+    @GetMapping
+    Member getMember(HttpServletRequest request);
+
 }
