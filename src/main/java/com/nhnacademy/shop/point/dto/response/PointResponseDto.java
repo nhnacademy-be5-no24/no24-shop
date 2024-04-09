@@ -25,6 +25,6 @@ public class PointResponseDto {
     private Long orderId;
     private String pointDescription;
     private Integer usage;
-    private Boolean isUsed;
+    private Boolean type;
     private LocalDateTime createdAt;
 }

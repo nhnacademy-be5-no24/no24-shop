@@ -32,7 +32,7 @@ public class CouponServiceImpl implements CouponService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CouponDto> getAllCoupons() {
         return couponRepository.findAll().stream()
                 .map(this::convertCouponToCouponDto)
@@ -40,7 +40,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CouponDto> getBookCoupons(String bookIsbn) {
         return bookCouponRepository.findAll().stream()
                 .filter(coupon -> Objects.equals(coupon.getBookIsbn(), bookIsbn))
@@ -49,7 +49,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CouponDto> getCategoryCoupons(Long categoryId) {
         return categoryCouponRepository.findAll().stream()
                 .filter(coupon -> Objects.equals(coupon.getCategoryId(), categoryId))

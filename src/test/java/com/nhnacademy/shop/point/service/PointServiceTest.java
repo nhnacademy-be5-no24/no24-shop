@@ -86,7 +86,7 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -110,7 +110,7 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -145,7 +145,7 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -178,7 +178,7 @@ class PointServiceTest {
         assertThat(dto.getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(dto.getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(dto.getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(dto.getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(dto.getType()).isEqualTo(pointLog.getType());
         assertThat(dto.getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 

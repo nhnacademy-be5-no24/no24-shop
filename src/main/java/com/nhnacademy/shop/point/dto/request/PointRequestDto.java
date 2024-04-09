@@ -38,7 +38,7 @@ public class PointRequestDto {
     private Integer usage;
 
     @NotNull(message = "사용 및 적립 여부를 입력해주세요.")
-    private Boolean isUsed;
+    private Boolean type;
 
     @NotNull(message = "사용 내역 날짜를 입력해주세요.")
     private LocalDateTime createdAt;

@@ -60,7 +60,7 @@ public class PointRepositoryTest {
                 .orderId(1L)
                 .pointDescription("리뷰 작성")
                 .usage(500)
-                .isUsed(false)
+                .type(false)
                 .createdAt(LocalDateTime.parse("2024-04-05T00:00:00")).build();
     }
 
@@ -82,7 +82,7 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -104,7 +104,7 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -129,7 +129,7 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getIsUsed()).isEqualTo(pointLog.getIsUsed());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
