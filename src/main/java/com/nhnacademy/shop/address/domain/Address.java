@@ -35,6 +35,7 @@ public class Address {
     @Column(name = "address_detail", nullable = false)
     private String addressDetail;
 
+    @Setter
     @Column(name = "is_default")
     private Boolean isDefault;
 

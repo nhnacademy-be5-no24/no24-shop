@@ -58,10 +58,13 @@ public class AddressServiceImpl implements AddressService {
                     .member(member)
                     .build();
 
-            // todo: 주소 등록 시, 기본 설정(is_default) 처리
-            if (addressCreateRequestDto.getIsDefault()) {
+            // 주소 등록 시, 기본 설정(is_default) 처리
+            boolean updateAddressIsDefaultCheck = addressCreateRequestDto.getIsDefault();
+
+            if (updateAddressIsDefaultCheck) {
                 for (Address address : addresses) {
-                    if (address.getIsDefault()) {
+                    boolean addressIsDefaultCheck = address.getIsDefault();
+                    if (addressIsDefaultCheck) {
                         address.setIsDefault(false);
                     }
                 }
@@ -92,12 +95,15 @@ public class AddressServiceImpl implements AddressService {
                 .member(originAddress.getMember())
                 .build();
 
-        // todo: 주소 수정 시, 기본 설정(is_default) 처리
+        // 주소 수정 시, 기본 설정(is_default) 처리
         List<Address> addresses = addressRepository.findByMemberCustomerNo(originAddress.getMember().getCustomerNo());
 
-        if (addressModifyRequestDto.getIsDefault()) {
+        boolean modifyRequestDtoIsDefaultCheck = addressModifyRequestDto.getIsDefault();
+
+        if (modifyRequestDtoIsDefaultCheck) {
             for (Address address : addresses) {
-                if (address.getIsDefault()) {
+                boolean addressIsDefaultCheck = address.getIsDefault();
+                if (addressIsDefaultCheck) {
                     address.setIsDefault(false);
                 }
             }
