@@ -17,7 +17,7 @@ import java.util.List;
  * @Date : 29/03/2024
  */
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/shop/address")
 public class AddressController {
     private final AddressService addressService;
 
@@ -26,28 +26,28 @@ public class AddressController {
     }
 
     // 주소 조회
-    @GetMapping("/customer/{customerNo}/addresses")
+    @GetMapping("/{customerNo}")
     public List<AddressResponseDto> getAddresses(@PathVariable Long customerNo) {
         return addressService.getAddresses(customerNo);
     }
 
     // 주소 등록
-    @PostMapping("/address")
-    public AddressResponseDto saveAddress(@RequestBody AddressCreateRequestDto addressCreateRequestDto) {
-        return addressService.saveAddress(addressCreateRequestDto);
+    @PostMapping("/create")
+    public ResponseEntity<AddressResponseDto> saveAddress(@RequestBody AddressCreateRequestDto addressCreateRequestDto) {
+        AddressResponseDto addressResponseDto = addressService.saveAddress(addressCreateRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addressResponseDto);
     }
 
     // 주소 수정
-    @PutMapping("/address/{addressId}")
+    @PutMapping("/modify/{addressId}")
     public AddressResponseDto modifyAddress(@PathVariable Long addressId, @RequestBody AddressModifyRequestDto addressModifyRequestDto) {
         return addressService.modifyAddress(addressId, addressModifyRequestDto);
     }
 
     // 주소 삭제
-    @DeleteMapping("/address/{addressId}")
+    @DeleteMapping("/delete/{addressId}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
         addressService.deleteAddress(addressId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 }
