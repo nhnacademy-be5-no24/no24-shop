@@ -1,15 +1,23 @@
 package com.nhnacademy.shop.category.repository.impl;
 
+
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.domain.QCategory;
+import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ChildCategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.repository.CategoryRepositoryCustom;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
+import java.util.Optional;
+
 /**
  * 카테고리 Custom Repository 구현체 입니다.
  *
@@ -22,11 +30,36 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
     }
 
     QCategory parentCategory = new QCategory("parentCategory");
+
+    @Override
+    public Page<CategoryResponseDto> findCategories(Pageable pageable) {
+        QCategory category = QCategory.category;
+        JPQLQuery<Long> count = from(category)
+                .select(category.count());
+
+        List<CategoryResponseDto> content = from(category)
+                .select(Projections.constructor(CategoryResponseDto.class,
+                        category.categoryId,
+                        category.categoryName,
+                        Projections.fields(CategoryResponseDto.class,
+                                parentCategory.categoryId,
+                                parentCategory.categoryName)))
+                .leftJoin(category.parentCategory, parentCategory)
+                .on(category.parentCategory.categoryId.eq(parentCategory.categoryId))
+                .orderBy(category.categoryId.asc()).orderBy(category.categoryName.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
+    }
+
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<CategoryInfoResponseDto> getCategoriesInfo() {
+    public List<CategoryInfoResponseDto> findCategoriesInfo() {
         return from(parentCategory)
                 .select(Projections.constructor(CategoryInfoResponseDto.class,
                         parentCategory.categoryId,
@@ -39,7 +72,7 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
      * {@inheritDoc}
      */
     @Override
-    public List<ParentCategoryResponseDto> getParentCategoriesWithChildCategories() {
+    public List<ParentCategoryResponseDto> findParentCategoriesWithChildCategories() {
         List<ParentCategoryResponseDto> parentList = from(parentCategory)
                 .where(parentCategory.parentCategory.isNull())
                 .select(Projections.constructor(ParentCategoryResponseDto.class,
@@ -66,7 +99,7 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
      * {@inheritDoc}
      */
     @Override
-    public ParentCategoryResponseDto getParentCategory(Long categoryId) {
+    public ParentCategoryResponseDto findParentCategory(Long categoryId) {
         ParentCategoryResponseDto parentDto = from(parentCategory)
                 .where(parentCategory.parentCategory.isNull().and(parentCategory.categoryId.eq(categoryId)))
                 .select(Projections.constructor(ParentCategoryResponseDto.class,

@@ -5,6 +5,8 @@ import com.nhnacademy.shop.category.dto.request.ModifyCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,14 @@ import java.util.List;
  */
 @Service
 public interface CategoryService {
+
+    /**
+     * 카테고리 전체 조회를 위한 메소드입니다.
+     *
+     * @return CategoryResponseDto 카테고리 정보 페이지가 반환됩니다.
+     */
+    Page<CategoryResponseDto> getCategories(Integer pageSize, Integer offset);
+
     /**
      * 카테고리 단건 조회를 위한 메소드입니다.
      *

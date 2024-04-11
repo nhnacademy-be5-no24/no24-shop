@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.book.domain;
 
+
 import com.nhnacademy.shop.author.domain.Author;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.tag.domain.Tag;
@@ -57,11 +58,11 @@ public class Book implements Serializable {
     private Long bookViews;
 
     /*
-    Express "book_status" to integer
-    0 : 판매중
-    1 : 수량부족
-    2 : 판매종료
-    3 : 삭제된 도서
+     * Express "book_status" to integer
+     * 0 : 판매중
+     * 1 : 수량부족
+     * 2 : 판매종료
+     * 3 : 삭제된 도서
      */
     @Column(name = "book_status", nullable = false)
     private int bookStatus;
