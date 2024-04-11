@@ -8,9 +8,8 @@ package com.nhnacademy.shop.book.exception;
  * @date : 2024-03-30
  */
 public class BookNotFoundException extends RuntimeException{
-    public static final String Message = " : not found.";
 
     public BookNotFoundException(){
-        super(Message);
+        super("This book is not found");
     }
 }

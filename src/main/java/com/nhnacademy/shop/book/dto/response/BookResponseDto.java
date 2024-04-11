@@ -62,7 +62,7 @@ public class BookResponseDto {
 
     private List<Tag> tags;
 
-    private List<Author> authors;
+    private Author author;
 
     private List<Category> categories;
 

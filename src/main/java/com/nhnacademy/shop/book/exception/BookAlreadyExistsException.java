@@ -9,9 +9,7 @@ package com.nhnacademy.shop.book.exception;
  */
 public class BookAlreadyExistsException extends RuntimeException{
 
-    public static final String Message = ": is alreadt exist.";
-
     public BookAlreadyExistsException(){
-        super(Message);
+        super("This book is already exist.");
     }
 }
