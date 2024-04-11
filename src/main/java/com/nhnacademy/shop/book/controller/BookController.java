@@ -42,7 +42,7 @@ public class BookController {
      /**
      *  새로운 book을 생성하는 method
      *
-     * @param BookCreateRequestDto : 새로운 Book을 생성하기 위한 DTO 
+     * @param request : 새로운 Book을 생성하기 위한 DTO
      * @throws ResponseStatusException 해당 DTO를 통해 이미 존재하는 경우 응답코드 208 ALREADY_REPORTED 을 return
      * @return 성공했을 때 응답코드 201 CREATED return
      */
@@ -59,7 +59,7 @@ public class BookController {
     /**
      * book isbn을 통해서 book을 삭제된 도서로 만드는 method
      *
-     * @param String BookIsbn : book 삭제를 위한 정보.
+     * @param BookIsbn : book 삭제를 위한 정보.
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND 반환합니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */

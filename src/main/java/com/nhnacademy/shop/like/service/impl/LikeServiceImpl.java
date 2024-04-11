@@ -76,7 +76,7 @@ public class LikeServiceImpl implements LikeService{
 
         for(Like like : likes){
             Member member = like.getMember();
-            response.add(new MemberDto(null, member.getMemberId(), member.getLastLoginAt(), member.getGradeId(), member.getIsActive(), member.getIsLeave(), member.getRole()));
+            response.add(new MemberDto(null, member.getMemberId(), member.getLastLoginAt(), member.getGradeId(), 0, member.getRole()));
         }
 
         return response;
