@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Author : marco@nhnacademy.com
- * @Date : 27/06/2023
+ * @author : marco@nhnacademy.com
+ * @date : 27/06/2023
  */
 
 @RestController

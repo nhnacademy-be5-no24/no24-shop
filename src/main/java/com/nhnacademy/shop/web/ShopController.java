@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Author : marco@nhnacademy.com
- * @Date : 25/05/2023
+ * @author : marco@nhnacademy.com
+ * @date : 25/05/2023
  */
 
 @RestController

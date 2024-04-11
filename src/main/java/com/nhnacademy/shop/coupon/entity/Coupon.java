@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
- * 설명
+ * 쿠폰(Coupon) 테이블 입니다.
  *
- * @Author : 박병휘
- * @Date : 2024/03/29
+ * @author : 박병휘
+ * @date : 2024/03/29
  */
 @Entity
 @Getter

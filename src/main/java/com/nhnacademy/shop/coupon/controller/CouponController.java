@@ -1,21 +1,24 @@
 package com.nhnacademy.shop.coupon.controller;
 
-import com.nhnacademy.shop.coupon.dto.*;
+import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
+import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Coupon Controller
  *
- * @Author : 박병휘
- * @Date : 2024/03/29
+ * @author : 박병휘, 강병구
+ * @date : 2024/03/29
  */
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +27,10 @@ public class CouponController {
     private final CouponService couponService;
 
     @GetMapping("/")
-    public ResponseEntity<List<CouponDto>> getCoupons() {
+    public ResponseEntity<Page<CouponResponseDto>> getCoupons(@RequestParam Integer pageSize,
+                                                              @RequestParam Integer offset) {
         try {
-            List<CouponDto> couponDtoList = couponService.getAllCoupons();
+            Page<CouponResponseDto> couponDtoList = couponService.getAllCoupons(pageSize, offset);
             return ResponseEntity.ok(couponDtoList);
         } catch(NotFoundCouponException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -34,9 +38,9 @@ public class CouponController {
     }
 
     @GetMapping("/{couponId}")
-    public ResponseEntity<CouponDto> getCoupon(@PathVariable("couponId") Long couponId) {
+    public ResponseEntity<CouponResponseDto> getCoupon(@PathVariable("couponId") Long couponId) {
         try {
-            CouponDto couponDto = couponService.getCouponById(couponId);
+            CouponResponseDto couponDto = couponService.getCouponById(couponId);
             return ResponseEntity.ok(couponDto);
         } catch(NotFoundCouponException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -44,9 +48,11 @@ public class CouponController {
     }
 
     @GetMapping("/search/{couponName}")
-    public ResponseEntity<List<CouponDto>> getCouponsByContainingName(@PathVariable("couponName") String couponName) {
+    public ResponseEntity<Page<CouponResponseDto>> getCouponsByContainingName(@PathVariable("couponName") String couponName,
+                                                                              @RequestParam Integer pageSize,
+                                                                              @RequestParam Integer offset) {
         try {
-            List<CouponDto> couponDtoList = couponService.getCouponsByContainingName(couponName);
+            Page<CouponResponseDto> couponDtoList = couponService.getCouponsByContainingName(couponName, pageSize, offset);
             return ResponseEntity.ok(couponDtoList);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -54,9 +60,11 @@ public class CouponController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<CouponDto>> getCouponsByCategoryId(@PathVariable("categoryId") Long categoryId) {
+    public ResponseEntity<Page<CouponResponseDto>> getCouponsByCategoryId(@PathVariable("categoryId") Long categoryId,
+                                                                          @RequestParam Integer pageSize,
+                                                                          @RequestParam Integer offset) {
         try {
-            List<CouponDto> couponDtoList = couponService.getCategoryCoupons(categoryId);
+            Page<CouponResponseDto> couponDtoList = couponService.getCategoryCoupons(categoryId, pageSize, offset);
             return ResponseEntity.ok(couponDtoList);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -64,9 +72,11 @@ public class CouponController {
     }
 
     @GetMapping("/book/{bookIsbn}")
-    public ResponseEntity<List<CouponDto>> getCouponsByBookIsbn(@PathVariable("bookIsbn") String bookIsbn) {
+    public ResponseEntity<Page<CouponResponseDto>> getCouponsByBookIsbn(@PathVariable("bookIsbn") String bookIsbn,
+                                                                        @RequestParam Integer pageSize,
+                                                                        @RequestParam Integer offset) {
         try {
-            List<CouponDto> couponDtoList = couponService.getBookCoupons(bookIsbn);
+            Page<CouponResponseDto> couponDtoList = couponService.getBookCoupons(bookIsbn, pageSize, offset);
             return ResponseEntity.ok(couponDtoList);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -74,22 +84,24 @@ public class CouponController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CouponDto> createCoupon(@RequestBody CouponDto couponDtoList) {
+    public ResponseEntity<CouponResponseDto> createCoupon(@RequestBody CouponRequestDto couponDtoList) {
         try {
-            couponService.saveCoupon(couponDtoList);
-            return ResponseEntity.ok(couponDtoList);
+            CouponResponseDto dto = couponService.saveCoupon(couponDtoList);
+            return ResponseEntity.ok(dto);
         } catch(IllegalFormCouponRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @PostMapping("/create/coupons")
-    public ResponseEntity<List<CouponDto>> createCoupons(@RequestBody List<CouponDto> couponDtoList) {
+    public ResponseEntity<List<CouponResponseDto>> createCoupons(@RequestBody List<CouponRequestDto> couponDtoList) {
         try {
-            for(CouponDto requestCouponDto : couponDtoList) {
-                couponService.saveCoupon(requestCouponDto);
+            List<CouponResponseDto> dtoList = new ArrayList<>();
+            for(CouponRequestDto requestCouponDto : couponDtoList) {
+                dtoList.add(couponService.saveCoupon(requestCouponDto));
+
             }
-            return ResponseEntity.ok(couponDtoList);
+            return ResponseEntity.ok(dtoList);
         } catch(IllegalFormCouponRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
