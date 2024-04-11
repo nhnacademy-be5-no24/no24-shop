@@ -37,8 +37,12 @@ public class CartServiceImpl implements CartService {
     private CartResponseDto mapToDto(Cart cart) {
         return CartResponseDto.builder()
                 .cartId(cart.getCartId())
+                .bookTitle(cart.getBook().getBookTitle())
+                .bookFixedPrice(cart.getBook().getBookFixedPrice())
+                .bookSalePrice(cart.getBook().getBookSalePrice())
+                .bookStatus(cart.getBook().getBookStatus())
                 .bookQuantity(cart.getBookQuantity())
-                .bookIsbn(cart.getBook().getBookIsbn())
+                .bookImage(cart.getBook().getBookImage())
                 .customerNo(cart.getMember().getCustomerNo())
                 .build();
     }
