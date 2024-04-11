@@ -3,9 +3,10 @@ package com.nhnacademy.shop.book.service;
 import com.nhnacademy.shop.book.dto.request.BookCreateRequestDto;
 import com.nhnacademy.shop.book.dto.request.BookRequestDto;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 /*
  * TagRepository 에 접근하기 위한 service interface
@@ -21,25 +22,25 @@ public interface BookService {
 
     BookResponseDto deleteBook(String bookIsbn);
 
-    List<BookResponseDto> findAllBooks();
+    Page<BookResponseDto> findAllBook(Pageable pageable);
 
-    List<BookResponseDto> findByCategoryId(Long categoryId);
+    Page<BookResponseDto> findByCategoryId(Pageable pageable,Long categoryId);
 
-    List<BookResponseDto> findByName(String bookName);
+    Page<BookResponseDto> findByTitle(Pageable pageable, String bookName);
 
-    List<BookResponseDto> findByAuthor(Long authorId);
+    Page<BookResponseDto> findByAuthor(Pageable pageable, Long authorId);
 
     BookResponseDto findByIsbn(String bookIsbn);
 
-    List<BookResponseDto> findByDescription(String bookDescription);
+    Page<BookResponseDto> findByDescription(Pageable pageable, String bookDescription);
 
-    List<BookResponseDto> findByTag(Long tagId);
-
-    BookResponseDto findIndividualBook(String bookIsbn);
+    Page<BookResponseDto> findByTag(Pageable pageable, Long tagId);
 
     BookResponseDto modifyBook(BookRequestDto bookRequestDto);
 
     BookResponseDto modifyBookStatus(String bookIsbn, int bookStatus);
+
+
 
 
 
