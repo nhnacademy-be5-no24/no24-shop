@@ -14,6 +14,4 @@ import java.util.List;
  * @date : 2024/03/29
  */
 public interface CouponRepository extends JpaRepository<Coupon, Long>, CouponRepositoryCustom {
-    @Query("select c from Coupon c where c.couponName like %:couponName%")
-    List<Coupon> findCouponsByContainingCouponName(@Param("couponName") String couponName);
 }

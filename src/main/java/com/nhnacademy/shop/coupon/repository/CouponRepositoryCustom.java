@@ -12,6 +12,7 @@ import java.util.Optional;
  * @author : 강병구
  * @date : 2024-04-09
  */
+@NoRepositoryBean
 public interface CouponRepositoryCustom {
 
     /**
