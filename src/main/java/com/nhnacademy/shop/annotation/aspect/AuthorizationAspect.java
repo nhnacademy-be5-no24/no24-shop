@@ -42,6 +42,8 @@ public class AuthorizationAspect {
         if(Objects.isNull(member)) {
             throw new MemberNotFoundException();
         }
+
+
         return  pjp.proceed();
     }
 }
