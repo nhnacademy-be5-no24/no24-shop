@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.review.domain;
 
 import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,8 @@ import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Builder
+@Getter
+@Builder
 @Entity
 @Table(name = "review")
 public class Review {
@@ -32,6 +34,7 @@ public class Review {
     @JoinColumn(name = "book_isbn", nullable = false)
     private Book book;
 
-    @Column(name = "customer_no", nullable = false)
-    private Integer customerNo;
+    @ManyToOne
+    @JoinColumn(name = "customer_no", nullable = false)
+    private Member member;
 }

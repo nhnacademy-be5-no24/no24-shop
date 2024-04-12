@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,7 +23,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+@Table(name = "book")
+public class Book implements Serializable {
 
     @Id
     @Column(name = "book_isbn", nullable = false)
@@ -69,13 +71,16 @@ public class Book {
     @Column(name = "book_image")
     private String bookImage;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Tag> tags;
-
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Category> categories;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Author> authors;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Tag> tags;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    private Long likes;
 
 }
