@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 public class CategoryResponseDto {
     private Long categoryId;
     private String categoryName;
-    private Long parentCategoryId;
+    private CategoryResponseDto parentCategory;
 }

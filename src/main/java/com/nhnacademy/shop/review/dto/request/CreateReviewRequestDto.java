@@ -6,6 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 
+/**
+ * 리뷰 등록을 위한 dto 입니다.
+ *
+ * @author : 강병구
+ * @date : 2024-04-01
+ **/
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

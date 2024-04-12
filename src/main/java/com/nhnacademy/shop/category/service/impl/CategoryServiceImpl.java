@@ -10,7 +10,11 @@ import com.nhnacademy.shop.category.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.shop.category.exception.CategoryNotFoundException;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.category.service.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,12 +35,22 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CategoryResponseDto> getCategories(Integer pageSize, Integer offset) {
+        Pageable pageable = PageRequest.of(pageSize, offset);
+        return categoryRepository.findCategories(pageable);
+    }
 
     /**
      * {@inheritDoc}
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponseDto getCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
         return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName(), null);
@@ -47,15 +61,18 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponseDto getCategoryByCategoryName(String categoryName) {
         Category category = categoryRepository.findByCategoryName(categoryName);
         if(Objects.isNull(category)) {
             throw new CategoryNotFoundException();
         }
-        if(Objects.isNull(category.getParentCategory())) {
+        Category parent = category.getParentCategory();
+        if(Objects.isNull(parent)) {
             return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName(), null);
         }
-        return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName(), category.getParentCategory().getCategoryId());
+        CategoryResponseDto parentDto = new CategoryResponseDto(parent.getCategoryId(), parent.getCategoryName(), null);
+        return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName(), parentDto);
     }
 
     /**
@@ -63,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryAlreadyExistsException 이미 존재하는 카테고리 생성 혹은 수정 요청 시 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional
     public CategoryResponseDto createCategory(CreateCategoryRequestDto createCategoryRequestDto) {
         Category parentCategory = getParentCategory(createCategoryRequestDto.getParentCategoryId());
         if (Objects.nonNull(categoryRepository.findByCategoryName(createCategoryRequestDto.getCategoryName()))) {
@@ -74,8 +92,10 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
         Category savedCategory = categoryRepository.save(category);
 
-        if (Objects.nonNull(savedCategory.getParentCategory())) {
-            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), savedCategory.getParentCategory().getCategoryId());
+        Category parent = savedCategory.getParentCategory();
+        if (Objects.nonNull(parent)) {
+            CategoryResponseDto parentDto = new CategoryResponseDto(parent.getCategoryId(), parent.getCategoryName(), null);
+            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), parentDto);
         }
         return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), null);
     }
@@ -85,6 +105,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryAlreadyExistsException 이미 존재하는 카테고리 생성 혹은 수정 요청 시 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional
     public CategoryResponseDto modifyCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
         Category parentCategory = getParentCategory(modifyCategoryRequestDto.getParentCategoryId());
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
@@ -96,9 +117,10 @@ public class CategoryServiceImpl implements CategoryService {
                 .parentCategory(parentCategory)
                 .build();
         Category savedCategory = categoryRepository.save(category);
-
-        if (Objects.nonNull(savedCategory.getParentCategory())) {
-            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), savedCategory.getParentCategory().getCategoryId());
+        Category parent = savedCategory.getParentCategory();
+        if (Objects.nonNull(parent)) {
+            CategoryResponseDto parentDto = new CategoryResponseDto(parent.getCategoryId(), parent.getCategoryName(), null);
+            return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), parentDto);
         }
         return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName(), null);
     }
@@ -108,6 +130,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryAlreadyExistsException 이미 존재하는 카테고리 생성 혹은 수정 요청 시 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional
     public ParentCategoryResponseDto modifyParentCategory(ModifyCategoryRequestDto modifyCategoryRequestDto) {
         if (Objects.nonNull(categoryRepository.findByCategoryName(modifyCategoryRequestDto.getCategoryName()))) {
             throw new CategoryAlreadyExistsException();
@@ -125,6 +148,7 @@ public class CategoryServiceImpl implements CategoryService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
@@ -134,8 +158,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional(readOnly = true)
     public List<ParentCategoryResponseDto> getParentWithChildCategories() {
-        List<ParentCategoryResponseDto> parentCategoryResponseDtoList = categoryRepository.getParentCategoriesWithChildCategories();
+        List<ParentCategoryResponseDto> parentCategoryResponseDtoList = categoryRepository.findParentCategoriesWithChildCategories();
         if(Objects.isNull(parentCategoryResponseDtoList)) {
             throw new CategoryNotFoundException();
         }
@@ -147,8 +172,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryInfoResponseDto> getCategoriesInfo() {
-        List<CategoryInfoResponseDto> categoryInfoResponseDtoList = categoryRepository.getCategoriesInfo();
+        List<CategoryInfoResponseDto> categoryInfoResponseDtoList = categoryRepository.findCategoriesInfo();
         if(Objects.isNull(categoryInfoResponseDtoList)) {
             throw new CategoryNotFoundException();
         }
@@ -160,8 +186,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     @Override
+    @Transactional(readOnly = true)
     public ParentCategoryResponseDto getParentWithChildCategoryByParentCategoryId(Long categoryId) {
-        ParentCategoryResponseDto parentCategoryResponseDto = categoryRepository.getParentCategory(categoryId);
+        ParentCategoryResponseDto parentCategoryResponseDto = categoryRepository.findParentCategory(categoryId);
         if (Objects.isNull(parentCategoryResponseDto)) {
             throw new CategoryNotFoundException();
         }
@@ -169,7 +196,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * {@inheritDoc}
+     * 상위 카테고리 존재 확인을 위한 메소드 입니다.
+     *
+     * @param categoryId 상위 카테고리 확인을 위한 카테고리 아이디 입니다.
      * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
      */
     private Category getParentCategory(Long categoryId) {
