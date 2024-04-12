@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.book.domain;
 
-
 import com.nhnacademy.shop.author.domain.Author;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.tag.domain.Tag;

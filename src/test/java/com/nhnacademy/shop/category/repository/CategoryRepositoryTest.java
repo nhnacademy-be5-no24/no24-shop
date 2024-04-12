@@ -4,7 +4,7 @@ import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
-import org.junit.jupiter.api.BeforeEach;.
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
