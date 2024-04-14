@@ -3,11 +3,10 @@ package com.nhnacademy.shop.cart.controller;
 import com.nhnacademy.shop.cart.dto.request.CartRequestDto;
 import com.nhnacademy.shop.cart.dto.response.CartResponseDto;
 import com.nhnacademy.shop.cart.service.CartService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/shop/cart")
@@ -20,8 +19,9 @@ public class CartController {
 
     // 장바구니 조회
     @GetMapping("/{customerNo}")
-    public List<CartResponseDto> getCart(@PathVariable Long customerNo) {
-        return cartService.getCart(customerNo);
+    public ResponseEntity<Page<CartResponseDto>> getCarts(@PathVariable Long customerNo, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<CartResponseDto> carts = cartService.getCarts(customerNo, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(carts);
     }
 
     // 장바구니 등록
