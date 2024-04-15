@@ -14,12 +14,12 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface BookRepositoryCustom{
 
-    Page<BookResponseDto> getAllBooks(Pageable pageable);
-    Page<BookResponseDto> getBooksByBookTitle(Pageable pageable, String bookTitle);
+    Page<BookResponseDto> findAllBooks(Pageable pageable);
+    Page<BookResponseDto> findBooksByBookTitle(Pageable pageable, String bookTitle);
 
-    Page<BookResponseDto> getBooksByBookDesc(Pageable pageable, String desc);
+    Page<BookResponseDto> findBooksByBookDesc(Pageable pageable, String desc);
 
-    Page<BookResponseDto> getBooksByAuthor(Pageable pageable, Long authorId);
+    Page<BookResponseDto> findBooksByAuthor(Pageable pageable, Long authorId);
 
 
 }

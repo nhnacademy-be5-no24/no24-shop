@@ -1,14 +1,13 @@
-package com.nhnacademy.shop.book.domain;
+package com.nhnacademy.shop.book.entity;
 
 
 import com.nhnacademy.shop.author.domain.Author;
-import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.tag.domain.Tag;
+import com.nhnacademy.shop.book_tag.domain.BookTag;
+import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "book")
-public class Book implements Serializable {
+public class Book {
 
     @Id
     @Column(name = "book_isbn", nullable = false)
@@ -74,10 +73,10 @@ public class Book implements Serializable {
     private String bookImage;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<Category> categories;
+    private List<BookCategory> categories;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<Tag> tags;
+    private List<BookTag> tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")

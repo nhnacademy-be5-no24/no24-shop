@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.review.repository;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;

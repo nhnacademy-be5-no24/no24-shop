@@ -1,7 +1,7 @@
 package com.nhnacademy.shop.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;

@@ -38,8 +38,8 @@ public class BookController {
      * @throws ResponseStatusException 해당 DTO를 통해 이미 존재하는 경우 응답코드 208 ALREADY_REPORTED
      * @return 성공했을 때 응답코드 201 CREATED
      */
-    @PostMapping("/books")
-    public ResponseEntity<BookResponseDto> createBook(BookCreateRequestDto request){
+    @PostMapping("/books/page")
+    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookCreateRequestDto request){
         BookResponseDto book = bookService.createBook(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(book);
@@ -71,7 +71,7 @@ public class BookController {
      */
     @GetMapping("/books")
     public ResponseEntity<Page<BookResponseDto>> getAllBooks(Pageable pageable){
-        Page<BookResponseDto> books = bookService.findAllBook(pageable);
+        Page<BookResponseDto> books = bookService.findAllBooks(pageable);
         if(Objects.isNull(books)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -187,7 +187,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @PutMapping
+    @PutMapping("books")
     public ResponseEntity<BookResponseDto> modifyBook(@RequestBody BookRequestDto bookRequestDto){
         BookResponseDto book = bookService.modifyBook(bookRequestDto);
         if(Objects.isNull(book)){
@@ -204,7 +204,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @PutMapping
+    @PutMapping("books/status")
     public ResponseEntity<BookResponseDto> modifyBookStatus(String bookIsbn, int bookStatus){
         BookResponseDto book = bookService.modifyBookStatus(bookIsbn, bookStatus);
         if(Objects.isNull(book)){

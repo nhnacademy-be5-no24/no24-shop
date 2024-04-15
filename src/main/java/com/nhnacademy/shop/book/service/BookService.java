@@ -22,7 +22,7 @@ public interface BookService {
 
     BookResponseDto deleteBook(String bookIsbn);
 
-    Page<BookResponseDto> findAllBook(Pageable pageable);
+    Page<BookResponseDto> findAllBooks(Pageable pageable);
 
     Page<BookResponseDto> findByCategoryId(Pageable pageable,Long categoryId);
 

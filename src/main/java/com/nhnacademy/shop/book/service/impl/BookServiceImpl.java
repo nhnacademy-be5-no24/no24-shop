@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.book.service.impl;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.dto.request.BookCreateRequestDto;
 import com.nhnacademy.shop.book.dto.request.BookRequestDto;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
@@ -9,6 +9,8 @@ import com.nhnacademy.shop.book.exception.BookIsDeletedException;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.book.service.BookService;
+import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
+import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.tag.domain.Tag;
@@ -33,12 +35,13 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private final BookCategoryRepository bookCategoryRepository;
+    private final BookTagRespository bookTagRespository;
 
 
     /*
@@ -46,6 +49,7 @@ public class BookServiceImpl implements BookService {
      * @Param : request
      */
     @Override
+    @Transactional
     public BookResponseDto createBook(BookCreateRequestDto request){
         if(Objects.nonNull(bookRepository.findByBookIsbn(request.getBookIsbn()))){
             throw new BookAlreadyExistsException();
@@ -68,9 +72,13 @@ public class BookServiceImpl implements BookService {
                 .author(request.getAuthor())
                 .likes(0L).build();
 
+        bookCategoryRepository.saveAll(book.getCategories());
+        bookTagRespository.saveAll(book.getTags());
+
         bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
                 book.getCategories(), book.getTags(), book.getAuthor() ,book.getLikes()));
+
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
@@ -82,13 +90,17 @@ public class BookServiceImpl implements BookService {
      * @Param : bookIsbn
      */
     @Override
+    @Transactional
     public BookResponseDto deleteBook(String bookIsbn){
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
+        if(book.getBookStatus()==3){
+            throw new BookIsDeletedException();
+        }
 
         bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), 3, book.getBookQuantity(), book.getBookImage(),
-                null, null, null, book.getLikes()));
+                book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
         return  new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
@@ -100,8 +112,9 @@ public class BookServiceImpl implements BookService {
      * @Param : pageable
      */
     @Override
-    public Page<BookResponseDto> findAllBook(Pageable pageable) {
-        Page<BookResponseDto> response = bookRepository.getAllBooks(pageable);
+    @Transactional(readOnly = true)
+    public Page<BookResponseDto> findAllBooks(Pageable pageable) {
+        Page<BookResponseDto> response = bookRepository.findAllBooks(pageable);
 
         if(response.getContent().isEmpty() || response.getTotalElements() == 0){
             throw new BookNotFoundException();
@@ -116,55 +129,59 @@ public class BookServiceImpl implements BookService {
      * @Param : pageable, categoryId
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<BookResponseDto> findByCategoryId(Pageable pageable,Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: "));
 
-        Page<Book> books = bookRepository.findByCategoriesContaining(pageable, category);
+        Page<Book> bookList = bookCategoryRepository.findByCategory(pageable, category);
 
-        List<BookResponseDto> bookResponseDtoList = books.getContent().stream()
+        List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
                 .map(this::findBookByCategories)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(bookResponseDtoList, pageable, books.getTotalElements());
+        return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
     }
 
     private BookResponseDto findBookByCategories(Book book){
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), null);
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
+
     /*
      * book tag에 일치하는 book list 탐색
      * @Param : pageable, tagId
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<BookResponseDto> findByTag(Pageable pageable, Long tagId) {
         Tag tag = tagRepository.findByTagId(tagId);
 
-        Page<Book> books = bookRepository.findByTagsContaining(pageable, tag);
+        Page<Book> bookList = bookTagRespository.findByTag(pageable, tag);
 
-        List<BookResponseDto> bookResponseDtoList = books.getContent().stream()
+        List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
                 .map(this::findBookByTags)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(bookResponseDtoList, pageable, books.getTotalElements());
+        return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
     }
 
     private BookResponseDto findBookByTags(Book book){
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), null);
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
     /*
      * book name에 일치하는 book list 탐색
      * @Param : pageable, bookName
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<BookResponseDto> findByTitle(Pageable pageable, String bookTitle) {
-        return bookRepository.getBooksByBookTitle(pageable, bookTitle);
+        return bookRepository.findBooksByBookTitle(pageable, bookTitle);
     }
 
     /*
@@ -172,8 +189,9 @@ public class BookServiceImpl implements BookService {
      * @Param : pageable, authorId
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<BookResponseDto> findByAuthor(Pageable pageable, Long authorId) {
-        Page<BookResponseDto> response = bookRepository.getBooksByAuthor(pageable, authorId);
+        Page<BookResponseDto> response = bookRepository.findBooksByAuthor(pageable, authorId);
 
         if(response.getContent().isEmpty() || response.getTotalElements() == 0){
             throw new BookNotFoundException();
@@ -188,10 +206,9 @@ public class BookServiceImpl implements BookService {
      */
 
     @Override
+    @Transactional(readOnly = true)
     public BookResponseDto findByIsbn(String bookIsbn) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
-
-
 
         if(book.getBookStatus()==3){
             throw new BookIsDeletedException();
@@ -199,15 +216,16 @@ public class BookServiceImpl implements BookService {
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), null);
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
     /*
      * book description에 일치하는 book list 탐색
      * @Param : bookDescription
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<BookResponseDto> findByDescription(Pageable pageable, String bookDescription) {
-        return bookRepository.getBooksByBookDesc(pageable, bookDescription);
+        return bookRepository.findBooksByBookDesc(pageable, bookDescription);
     }
 
     /*
@@ -215,8 +233,12 @@ public class BookServiceImpl implements BookService {
      * @Param : BookRequestDto
      */
     @Override
+    @Transactional
     public BookResponseDto modifyBook(BookRequestDto bookRequestDto) {
         Book book = bookRepository.findById(bookRequestDto.getBookIsbn()).orElseThrow(BookNotFoundException::new);
+
+        bookCategoryRepository.saveAll(book.getCategories());
+        bookTagRespository.saveAll(book.getTags());
 
         bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
@@ -224,7 +246,7 @@ public class BookServiceImpl implements BookService {
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),null);
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
     }
 
     /*
@@ -232,6 +254,7 @@ public class BookServiceImpl implements BookService {
      * @Param : bookIsbn, bookStatus
      */
     @Override
+    @Transactional
     public BookResponseDto modifyBookStatus(String bookIsbn, int bookStatus) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
@@ -242,6 +265,6 @@ public class BookServiceImpl implements BookService {
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),null);
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
     }
 }

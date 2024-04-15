@@ -1,10 +1,6 @@
 package com.nhnacademy.shop.book.repository;
 
-import com.nhnacademy.shop.book.domain.Book;
-import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.tag.domain.Tag;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.nhnacademy.shop.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -16,9 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BookRepository extends JpaRepository<Book, String>, BookRepositoryCustom{
 
     Book findByBookIsbn(String bookIsbn);
-
-    Page<Book> findByCategoriesContaining(Pageable pageable, Category category);
-
-    Page<Book> findByTagsContaining(Pageable pageable, Tag tag);
 
 }

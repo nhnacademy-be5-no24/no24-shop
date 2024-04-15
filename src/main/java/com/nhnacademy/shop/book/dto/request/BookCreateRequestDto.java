@@ -5,14 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.shop.author.domain.Author;
-import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.tag.domain.Tag;
+import com.nhnacademy.shop.book_tag.domain.BookTag;
+import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 도서관리 도서 생성 DTO
@@ -20,9 +16,9 @@ import lombok.NoArgsConstructor;
  * @author : 이재원
  * @date : 2024-03-28
  */
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Builder
 @Getter
 public class BookCreateRequestDto {
@@ -64,11 +60,11 @@ public class BookCreateRequestDto {
     @JsonProperty("book_image")
     private String bookImage;
 
-    private List<Tag> tags;
+    private List<BookTag> tags;
 
     private Author author;
 
-    private List<Category> categories;
+    private List<BookCategory> categories;
 
     private Long likes;
 }

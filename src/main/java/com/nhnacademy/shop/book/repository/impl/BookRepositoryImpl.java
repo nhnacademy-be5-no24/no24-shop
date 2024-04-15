@@ -1,8 +1,8 @@
 package com.nhnacademy.shop.book.repository.impl;
 
 import com.nhnacademy.shop.author.domain.QAuthor;
-import com.nhnacademy.shop.book.domain.Book;
-import com.nhnacademy.shop.book.domain.QBook;
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.entity.QBook;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepositoryCustom;
@@ -24,28 +24,28 @@ import java.util.Objects;
  * @author : 이재원
  * @date : 2024-03-11
  */
-public class BookRepositoryCustomImpl extends QuerydslRepositorySupport implements BookRepositoryCustom {
+public class BookRepositoryImpl extends QuerydslRepositorySupport implements BookRepositoryCustom {
 
     private final EntityManager entityManager;
 
-    public BookRepositoryCustomImpl(EntityManager entityManager){
+    public BookRepositoryImpl(EntityManager entityManager){
         super(Book.class);
         this.entityManager = entityManager;
     }
 
     @Override
-    public Page<BookResponseDto> getAllBooks(Pageable pageable) {
+    public Page<BookResponseDto> findAllBooks(Pageable pageable) {
         QBook book = QBook.book;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
         JPAQuery<BookResponseDto> query = queryFactory
                 .from(book)
-                .orderBy(book.bookIsbn.asc())
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
-                        book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
-                        book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
+                        book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
+                        book.bookFixedPrice, book.bookSalePrice, book.bookIsPacking, book.bookViews,
+                        book.bookStatus, book.bookQuantity, book.bookImage, book.tags, book.categories, book.author, book.likes
+                        ))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
@@ -58,7 +58,7 @@ public class BookRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return new PageImpl<>(query.fetch(),pageable, count);
     }
     @Override
-    public Page<BookResponseDto> getBooksByBookTitle(Pageable pageable, String bookTitle){
+    public Page<BookResponseDto> findBooksByBookTitle(Pageable pageable, String bookTitle){
         QBook book = QBook.book;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
@@ -86,7 +86,7 @@ public class BookRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public Page<BookResponseDto> getBooksByBookDesc(Pageable pageable, String desc){
+    public Page<BookResponseDto> findBooksByBookDesc(Pageable pageable, String desc){
         QBook book = QBook.book;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
@@ -115,7 +115,7 @@ public class BookRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public Page<BookResponseDto> getBooksByAuthor(Pageable pageable, Long authorId){
+    public Page<BookResponseDto> findBooksByAuthor(Pageable pageable, Long authorId){
         QBook book = QBook.book;
         QAuthor author = QAuthor.author;
 
