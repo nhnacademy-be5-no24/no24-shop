@@ -8,11 +8,11 @@ import com.nhnacademy.shop.author.exception.NotFoundAuthorException;
 import com.nhnacademy.shop.author.repository.AuthorRepository;
 import com.nhnacademy.shop.author.service.AuthorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,14 +24,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AuthorResponseDto> getAuthorsByAuthorName(String authorName) {
-         List<Author> authors = authorRepository.findAuthorsByAuthorName(authorName);
-         List<AuthorResponseDto> dtos = new ArrayList<>();
-         for(Author author : authors){
-             AuthorResponseDto dto = new AuthorResponseDto(author.getAuthorId(), author.getAuthorName());
-             dtos.add(dto);
-         }
-         return dtos;
+    public Page<AuthorResponseDto> getAuthorsByAuthorName(String authorName, int page, int size) {
+        Page<Author> authors = authorRepository.findAuthorsByAuthorName(authorName, PageRequest.of(page, size));
+        return authors.map(author -> new AuthorResponseDto(author.getAuthorId(), author.getAuthorName()));
     }
     @Override
     @Transactional(readOnly = true)
