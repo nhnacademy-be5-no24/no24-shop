@@ -12,7 +12,7 @@ public class MemberDto {
     private CustomerDto customerDto;
     private String memberId;
     private LocalDateTime lastLoginAt;
-    private Integer gradeId;
+    private Long gradeId;
     private Integer memberStateId;
-    private Integer role;
+    private String role;
 }
