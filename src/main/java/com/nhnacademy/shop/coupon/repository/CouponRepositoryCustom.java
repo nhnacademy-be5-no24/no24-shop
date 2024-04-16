@@ -3,6 +3,7 @@ package com.nhnacademy.shop.coupon.repository;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.Optional;
 

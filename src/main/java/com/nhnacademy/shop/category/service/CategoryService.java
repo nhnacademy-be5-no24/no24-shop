@@ -17,6 +17,7 @@ import java.util.List;
 * @author : 강병구
 * @date : 2024-03-29
  */
+@Service
 public interface CategoryService {
 
     /**

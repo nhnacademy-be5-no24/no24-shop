@@ -27,4 +27,7 @@ public class Member implements Serializable {
 
     @Column(name = "grade_id", nullable = false)
     private Long gradeId;
+
+    @Column(name = "role")
+    private String role;
 }
