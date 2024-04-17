@@ -6,18 +6,18 @@ import com.nhnacademy.shop.author.dto.AuthorResponseDto;
 import com.nhnacademy.shop.author.dto.ModifyAuthorRequestDto;
 import com.nhnacademy.shop.author.exception.NotFoundAuthorException;
 import com.nhnacademy.shop.author.repository.AuthorRepository;
-
 import com.nhnacademy.shop.author.service.AuthorService;
 import com.nhnacademy.shop.author.service.impl.AuthorServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +42,9 @@ class AuthorServiceTest {
         authorService = new AuthorServiceImpl(authorRepository);
     }
 
+
     @Test
-    void testGetAuthorsByAuthorName(){
+    void testGetAuthorsByAuthorName() {
         String authorName = "박동희";
         List<Author> authors = new ArrayList<>();
         Author author1 = new Author(1L, "박동희");
@@ -51,9 +52,11 @@ class AuthorServiceTest {
         authors.add(author1);
         authors.add(author2);
 
-        when(authorRepository.findAuthorsByAuthorName(authorName)).thenReturn(authors);
+        Page<Author> authorPage = new PageImpl<>(authors);
+        when(authorRepository.findAuthorsByAuthorName(authorName, PageRequest.of(0, 10))).thenReturn(authorPage);
 
-        List<AuthorResponseDto> result = authorService.getAuthorsByAuthorName(authorName);
+        Page<AuthorResponseDto> resultPage = authorService.getAuthorsByAuthorName(authorName, 0, 10);
+        List<AuthorResponseDto> result = resultPage.getContent();
 
         assertEquals(2, result.size());
         assertEquals(1L, result.get(0).getAuthorId());
@@ -61,7 +64,10 @@ class AuthorServiceTest {
         assertEquals(2L, result.get(1).getAuthorId());
         assertEquals("박동희", result.get(1).getAuthorName());
 
-        verify(authorRepository).findAuthorsByAuthorName(authorName);
+        assertEquals(0, resultPage.getNumber());
+        assertEquals(2, resultPage.getSize());
+        assertEquals(1, resultPage.getTotalPages());
+        assertEquals(2, resultPage.getTotalElements());
     }
 
     @Test

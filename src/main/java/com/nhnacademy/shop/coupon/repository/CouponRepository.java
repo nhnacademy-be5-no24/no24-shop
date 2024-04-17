@@ -8,12 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 /**
- * 설명
+ * 쿠폰(Coupon) 테이블 레포지토리 입니다.
  *
- * @Author : 박병휘
- * @Date : 2024/03/29
+ * @author : 박병휘
+ * @date : 2024/03/29
  */
-public interface CouponRepository extends JpaRepository<Coupon, Long> {
-    @Query("select c from Coupon c where c.couponName like %:couponName%")
-    List<Coupon> findCouponsByContainingCouponName(@Param("couponName") String couponName);
+public interface CouponRepository extends JpaRepository<Coupon, Long>, CouponRepositoryCustom {
 }

@@ -6,10 +6,10 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
- * 설명
+ * 금액 할인 쿠폰 테이블 입니다.
  *
- * @Author : 박병휘
- * @Date : 2024/03/29
+ * @author : 박병휘
+ * @date : 2024/03/29
  */
 
 @Entity
