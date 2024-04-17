@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------------
+Test set: com.nhnacademy.shop.point.repository.PointRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.115 s <<< FAILURE! - in com.nhnacademy.shop.point.repository.PointRepositoryTest
+testFindPoints  Time elapsed: 0.076 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPoints(PointRepositoryTest.java:79)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPoints(PointRepositoryTest.java:79)
+
+testFindPointsByCustomerNo  Time elapsed: 0.014 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPointsByCustomerNo(PointRepositoryTest.java:101)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPointsByCustomerNo(PointRepositoryTest.java:101)
+
+testFindPointsByCustomerNoAndCreatedAt  Time elapsed: 0.014 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPointsByCustomerNoAndCreatedAt(PointRepositoryTest.java:123)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.point.repository.PointRepositoryTest.testFindPointsByCustomerNoAndCreatedAt(PointRepositoryTest.java:123)
+

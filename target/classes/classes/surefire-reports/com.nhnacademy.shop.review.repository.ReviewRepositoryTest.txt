@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: com.nhnacademy.shop.review.repository.ReviewRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.014 s <<< FAILURE! - in com.nhnacademy.shop.review.repository.ReviewRepositoryTest
+testFindReviewsByReviewId  Time elapsed: 0.001 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByReviewId(ReviewRepositoryTest.java:164)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByReviewId(ReviewRepositoryTest.java:164)
+
+testFindReviewsByMember_CustomerNo  Time elapsed: 0.005 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByMember_CustomerNo(ReviewRepositoryTest.java:114)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByMember_CustomerNo(ReviewRepositoryTest.java:114)
+
+testFindReviewsByBook_BookIsbn  Time elapsed: 0.003 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByBook_BookIsbn(ReviewRepositoryTest.java:89)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviewsByBook_BookIsbn(ReviewRepositoryTest.java:89)
+
+testFindReviews  Time elapsed: 0.003 s  <<< ERROR!
+org.springframework.orm.jpa.JpaObjectRetrievalFailureException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1; nested exception is javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviews(ReviewRepositoryTest.java:139)
+Caused by: javax.persistence.EntityNotFoundException: Unable to find com.nhnacademy.shop.grade.domain.Grade with id 1
+	at com.nhnacademy.shop.review.repository.ReviewRepositoryTest.testFindReviews(ReviewRepositoryTest.java:139)
+
