@@ -1,9 +1,9 @@
 package com.nhnacademy.shop.book.repository;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * 도서관리 repository
@@ -11,14 +11,8 @@ import java.util.List;
  * @author : 이재원
  * @date : 2024-03-27
  */
-public interface BookRepository extends JpaRepository<Book, String> {
+public interface BookRepository extends JpaRepository<Book, String>, BookRepositoryCustom{
 
-    List<Book> getAllBooks();
-
-    List<Book> findByName(String bookName);
-
-    Book findByBookIsbn(String bookIsbn);
-
-    List<Book> findByBookDesc(String bookDesc);
+    Optional<Book> findByBookIsbn(String bookIsbn);
 
 }

@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.review.domain;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

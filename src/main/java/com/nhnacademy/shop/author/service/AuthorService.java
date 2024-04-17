@@ -4,8 +4,8 @@ import com.nhnacademy.shop.author.domain.Author;
 import com.nhnacademy.shop.author.dto.AuthorRequestDto;
 import com.nhnacademy.shop.author.dto.AuthorResponseDto;
 import com.nhnacademy.shop.author.dto.ModifyAuthorRequestDto;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 /**
  * 저자(Author) service
@@ -18,10 +18,13 @@ public interface AuthorService {
     /**
      * 저자 이름으로 동명이인을 포함한 List 조회를 위한 method.
      *
-     * @param authorName 조회할 저자 아이디 입니다.
-     * @return List<AuthorResponseDto> 저자 정보 리스트가 반환됩니다.
+     * @param authorName 조회할 저자 이름 입니다.
+     * @param page       페이지 번호 입니다.
+     * @param size       페이지 크기 입니다.
+     * @return Page<AuthorResponseDto> 페이징된 저자 정보가 반환됩니다.
      */
-    List<AuthorResponseDto> getAuthorsByAuthorName(String authorName);
+    Page<AuthorResponseDto> getAuthorsByAuthorName(String authorName, int page, int size);
+
 
     /**
      * 저자 id로 단건 조회를 위한 method.

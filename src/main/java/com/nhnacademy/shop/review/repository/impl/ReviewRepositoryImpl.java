@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.review.repository.impl;
 
-import com.nhnacademy.shop.book.domain.QBook;
+import com.nhnacademy.shop.book.entity.QBook;
 import com.nhnacademy.shop.member.domain.QMember;
 import com.nhnacademy.shop.review.domain.QReview;
 import com.nhnacademy.shop.review.domain.Review;

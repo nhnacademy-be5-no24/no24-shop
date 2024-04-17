@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.book_tag.domain;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.tag.domain.Tag;
 import lombok.*;
 

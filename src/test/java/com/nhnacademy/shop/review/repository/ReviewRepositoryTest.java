@@ -1,7 +1,8 @@
 package com.nhnacademy.shop.review.repository;
 
-import com.nhnacademy.shop.book.domain.Book;
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.review.domain.Review;
@@ -48,15 +49,21 @@ class ReviewRepositoryTest {
     private Member member;
     private Book book;
     private Review review;
+    private Grade grade;
 
     @BeforeEach
     void setUp() {
+        grade = Grade.builder()
+                .gradeId(1L)
+                .gradeName("NORMAL")
+                .accumulateRate(5L)
+                .build();
+
         member = Member.builder()
                 .memberId("123")
                 .customerNo(1L)
                 .lastLoginAt(null)
-                .gradeId(1L)
-                .build();
+                .grade(grade).build();
 
         book = Book.builder()
                 .bookIsbn("1AB")

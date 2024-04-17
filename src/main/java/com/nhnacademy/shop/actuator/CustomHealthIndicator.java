@@ -17,8 +17,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 /**
- * @Author : marco@nhnacademy.com
- * @Date : 27/06/2023
+ * @author : marco@nhnacademy.com
+ * @date : 27/06/2023
  */
 @Component
 public class CustomHealthIndicator implements HealthIndicator {

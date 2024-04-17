@@ -1,12 +1,15 @@
 package com.nhnacademy.shop.coupon.service.impl;
 
-import com.nhnacademy.shop.coupon.dto.*;
+import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
+import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
 import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.repository.*;
 import com.nhnacademy.shop.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +21,8 @@ import java.util.stream.Collectors;
 /**
  * Coupon Service 구현체
  *
- * @Author : 박병휘
- * @Date : 2024/03/29
+ * @author : 박병휘, 강병구
+ * @date : 2024/03/29
  */
 @Service
 @RequiredArgsConstructor
@@ -31,55 +34,57 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository couponRepository;
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
-    public List<CouponDto> getAllCoupons() {
-        return couponRepository.findAll().stream()
-                .map(this::convertCouponToCouponDto)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CouponResponseDto> getAllCoupons(Integer pageSize, Integer offset) {
+        return couponRepository.findAllCoupons(PageRequest.of(pageSize, offset));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
-    public List<CouponDto> getBookCoupons(String bookIsbn) {
-        return bookCouponRepository.findAll().stream()
-                .filter(coupon -> Objects.equals(coupon.getBookIsbn(), bookIsbn))
-                .map(coupon -> convertCouponToCouponDto(coupon.getCoupon()))
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CouponResponseDto> getBookCoupons(String bookIsbn, Integer pageSize, Integer offset) {
+        return couponRepository.findBookCoupons(bookIsbn, PageRequest.of(pageSize, offset));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
-    public List<CouponDto> getCategoryCoupons(Long categoryId) {
-        return categoryCouponRepository.findAll().stream()
-                .filter(coupon -> Objects.equals(coupon.getCategoryId(), categoryId))
-                .map(coupon -> convertCouponToCouponDto(coupon.getCoupon()))
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CouponResponseDto> getCategoryCoupons(Long categoryId, Integer pageSize, Integer offset) {
+        return couponRepository.findCategoryCoupons(categoryId, PageRequest.of(pageSize, offset));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
-    public CouponDto getCouponById(Long couponId) {
-        Optional<Coupon> coupon = couponRepository.findById(couponId);
-        if(coupon.isEmpty()) {
-            throw new NotFoundCouponException(couponId);
-        }
-
-        return convertCouponToCouponDto(coupon.get());
+    @Transactional(readOnly = true)
+    public CouponResponseDto getCouponById(Long couponId) {
+        return couponRepository.findCouponById(couponId).orElseThrow(() -> new NotFoundCouponException(couponId));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
-    public List<CouponDto> getCouponsByContainingName(String couponName) {
-        return couponRepository.findCouponsByContainingCouponName(couponName)
-                .stream()
-                .map(this::convertCouponToCouponDto)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CouponResponseDto> getCouponsByContainingName(String couponName, Integer pageSize, Integer offset) {
+        return couponRepository.findCouponsByContainingName(couponName, PageRequest.of(pageSize, offset));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public CouponDto saveCoupon(CouponDto couponDto) {
+    public CouponResponseDto saveCoupon(CouponRequestDto couponDto) {
         Coupon.CouponTarget target = couponDto.getCouponTarget();
         Coupon.CouponType type = couponDto.getCouponType();
 
@@ -91,7 +96,15 @@ public class CouponServiceImpl implements CouponService {
                 .couponTarget(couponDto.getCouponTarget())
                 .build();
 
-        couponRepository.save(coupon);
+        Coupon savedCoupon = couponRepository.save(coupon);
+
+        CouponResponseDto dto = CouponResponseDto.builder()
+                .couponName(savedCoupon.getCouponName())
+                .deadline(savedCoupon.getDeadline())
+                .couponStatus(savedCoupon.getCouponStatus())
+                .couponType(savedCoupon.getCouponType())
+                .couponTarget(savedCoupon.getCouponTarget())
+                .build();
 
         if(target == Coupon.CouponTarget.BOOK){
             if(couponDto.getBookIsbn() == null) {
@@ -144,9 +157,12 @@ public class CouponServiceImpl implements CouponService {
             percentageCouponRepository.save(percentageCoupon);
         }
 
-        return couponDto;
+        return dto;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteCoupon(Long couponId) {
@@ -179,11 +195,11 @@ public class CouponServiceImpl implements CouponService {
     /**
      * Convert coupon to couponDto method
      *
-     * @param coupon
+     * @param coupon coupon information
      * @return (ResponseCouponDto) convertedResponseCouponDto
      */
-    public CouponDto convertCouponToCouponDto(Coupon coupon) {
-        CouponDto couponDto = new CouponDto();
+    public CouponResponseDto convertCouponToCouponDto(Coupon coupon) {
+        CouponResponseDto couponDto = new CouponResponseDto();
 
         couponDto.setCouponId(coupon.getCouponId());
         couponDto.setCouponStatus(coupon.getCouponStatus());

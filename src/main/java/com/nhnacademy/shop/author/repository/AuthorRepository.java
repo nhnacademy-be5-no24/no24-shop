@@ -1,9 +1,9 @@
 package com.nhnacademy.shop.author.repository;
 
 import com.nhnacademy.shop.author.domain.Author;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 /**
  * 저자(Author) repository.
@@ -13,5 +13,6 @@ import java.util.List;
  *
  **/
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-    List<Author> findAuthorsByAuthorName(String authorName);
+    Page<Author> findAuthorsByAuthorName(String authorName, Pageable pageable);
+    Author findByAuthorId(Long authorId);
 }

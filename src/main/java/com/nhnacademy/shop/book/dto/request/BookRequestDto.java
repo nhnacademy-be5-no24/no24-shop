@@ -2,8 +2,9 @@ package com.nhnacademy.shop.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.shop.author.domain.Author;
-import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.tag.domain.Tag;
+import com.nhnacademy.shop.book_author.domain.BookAuthor;
+import com.nhnacademy.shop.book_tag.domain.BookTag;
+import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,11 +59,11 @@ public class BookRequestDto {
     @JsonProperty("book_image")
     private String bookImage;
 
-    private List<Tag> tags;
+    private List<BookTag> tags;
 
-    private List<Author> authors;
+    private List<BookAuthor> author;
 
-    private List<Category> categories;
+    private List<BookCategory> categories;
 
     private Long likes;
 

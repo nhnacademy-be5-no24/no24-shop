@@ -1,13 +1,14 @@
 package com.nhnacademy.shop.book_tag.repository;
 
+import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
+import com.nhnacademy.shop.tag.domain.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
-import java.util.List;
 
 
 public interface BookTagRespository extends JpaRepository<BookTag, BookTag.Pk> {
-    Optional<Object> findById(String bookIsbn);
-    List<BookTag> findByTagId (Long tagId);
+    Page<Book> findByTag(Pageable pageable, Tag tag);
+
 }
