@@ -7,6 +7,7 @@ import com.nhnacademy.shop.author.dto.AuthorResponseDto;
 import com.nhnacademy.shop.author.dto.ModifyAuthorRequestDto;
 import com.nhnacademy.shop.author.exception.NotFoundAuthorException;
 import com.nhnacademy.shop.author.service.AuthorService;
+import com.nhnacademy.shop.category.controller.CategoryController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthorController.class)
 class AuthorControllerTest {
-
-    @Autowired
     MockMvc mockMvc;
 
     @MockBean
@@ -45,6 +45,7 @@ class AuthorControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new AuthorController(authorService)).build();
         authorRequestDto = new AuthorRequestDto();
         authorRequestDto.setAuthorName("test authorName");
         authorResponseDto = new AuthorResponseDto();
