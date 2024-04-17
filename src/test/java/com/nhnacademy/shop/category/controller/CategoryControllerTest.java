@@ -25,6 +25,8 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date : 2024-03-29
  **/
 @WebMvcTest(CategoryController.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@AutoConfigureRestDocs(outputDir = "target/snippets")
 public class CategoryControllerTest {
-    @Autowired
     private MockMvc mockMvc;
     @MockBean
     private CategoryService categoryService;
@@ -60,6 +59,7 @@ public class CategoryControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new CategoryController(categoryService)).build();
         createCategoryRequestDto = new CreateCategoryRequestDto("로맨스", null);
         modifyCategoryRequestDto = new ModifyCategoryRequestDto(1L, "판타지", null);
         category = new Category(1L, "판타지", null);

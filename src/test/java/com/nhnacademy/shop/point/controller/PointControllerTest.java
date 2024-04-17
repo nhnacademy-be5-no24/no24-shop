@@ -3,6 +3,7 @@ package com.nhnacademy.shop.point.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nhnacademy.shop.category.controller.CategoryController;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,10 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date : 2024-04-07
  */
 @WebMvcTest(value = PointLogController.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@AutoConfigureRestDocs(outputDir = "target/snippets")
 class PointControllerTest {
-    @Autowired
     private MockMvc mockMvc;
     @MockBean
     private PointLogService pointLogService;
@@ -65,6 +64,7 @@ class PointControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new PointLogController(pointLogService)).build();
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         grade = Grade.builder()
