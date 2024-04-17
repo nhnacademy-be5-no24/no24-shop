@@ -2,7 +2,7 @@ package com.nhnacademy.shop.address;
 
 import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.grade.repository.GradeRespository;
@@ -74,8 +74,7 @@ class AddressRepositoryTest {
                 .lastLoginAt(LocalDateTime.of(2024, 4, 4, 10, 42))
                 .grade(grade)
                 .role("ROLE_MEMBER")
-                .isActive(true)
-                .isLeave(false)
+                .memberState(Member.MemberState.ACTIVE)
                 .build();
     }
 

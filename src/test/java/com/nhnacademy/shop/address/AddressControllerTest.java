@@ -8,7 +8,7 @@ import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,8 +84,7 @@ class AddressControllerTest {
                 .lastLoginAt(LocalDateTime.of(2024, 4, 4, 10, 42))
                 .grade(grade)
                 .role("ROLE_MEMBER")
-                .isActive(true)
-                .isLeave(false)
+                .memberState(Member.MemberState.ACTIVE)
                 .build();
 
         address = Address.builder()

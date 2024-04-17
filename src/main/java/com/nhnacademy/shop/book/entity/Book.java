@@ -41,8 +41,8 @@ public class Book {
     @Column(name = "book_publisher", nullable = false)
     private String bookPublisher;
 
-    @Column(name = "book_publisher_at", nullable = false)
-    private LocalDate bookPublisherAt;
+    @Column(name = "book_published_at", nullable = false)
+    private LocalDate bookPublishedAt;
 
     @Column(name = "book_fixed_price", nullable = false)
     private int bookFixedPrice;

@@ -9,6 +9,7 @@ import com.nhnacademy.shop.book.exception.BookIsDeletedException;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.book.service.BookService;
+import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -51,15 +53,17 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponseDto createBook(BookCreateRequestDto request){
-        if(Objects.nonNull(bookRepository.findByBookIsbn(request.getBookIsbn()))){
+        Optional<Book> optionalBook = bookRepository.findByBookIsbn(request.getBookIsbn());
+        if(optionalBook.isPresent()){
             throw new BookAlreadyExistsException();
         }
+
         Book book = Book.builder()
                 .bookIsbn(request.getBookIsbn())
                 .bookTitle(request.getBookTitle())
                 .bookDesc(request.getBookDescription())
                 .bookPublisher(request.getBookPublisher())
-                .bookPublisherAt(request.getPublishedAt())
+                .bookPublishedAt(request.getPublishedAt())
                 .bookFixedPrice(request.getBookFixedPrice())
                 .bookSalePrice(request.getBookSalePrice())
                 .bookIsPacking(request.isBookIsPacking())
@@ -72,16 +76,17 @@ public class BookServiceImpl implements BookService {
                 .author(request.getAuthor())
                 .likes(0L).build();
 
-        bookCategoryRepository.saveAll(book.getCategories());
-        bookTagRespository.saveAll(book.getTags());
+        if(book.getCategories() != null)
+            bookCategoryRepository.saveAll(book.getCategories());
 
-        bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
-                book.getCategories(), book.getTags(), book.getAuthor() ,book.getLikes()));
+        if(book.getTags() != null)
+            bookTagRespository.saveAll(book.getTags());
+
+        bookRepository.save(book);
 
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
+                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
                 book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
 
@@ -99,10 +104,10 @@ public class BookServiceImpl implements BookService {
         }
 
         bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), 3, book.getBookQuantity(), book.getBookImage(),
+                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), 3, book.getBookQuantity(), book.getBookImage(),
                 book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-        return  new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublisherAt(),
+        return  new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),book.getTags(),book.getAuthor(),book.getCategories() ,book.getLikes());
     }
@@ -145,7 +150,7 @@ public class BookServiceImpl implements BookService {
 
     private BookResponseDto findBookByCategories(Book book){
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublisherAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
@@ -170,7 +175,7 @@ public class BookServiceImpl implements BookService {
 
     private BookResponseDto findBookByTags(Book book){
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
@@ -214,7 +219,7 @@ public class BookServiceImpl implements BookService {
             throw new BookIsDeletedException();
         }
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
@@ -241,10 +246,10 @@ public class BookServiceImpl implements BookService {
         bookTagRespository.saveAll(book.getTags());
 
         bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
+                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
                 , book.getBookStatus(), book.getBookQuantity(), book.getBookImage(), book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
     }
@@ -259,11 +264,11 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
         bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublisherAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(), book.getBookImage(),
+                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(), book.getBookImage(),
                 book.getCategories(),book.getTags(), book.getAuthor(), book.getLikes()));
 
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublisherAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(),
                 book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
     }
