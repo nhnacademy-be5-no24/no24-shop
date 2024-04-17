@@ -29,7 +29,7 @@
         <java.version>11</java.version>
         <spring-cloud.version>2021.0.8</spring-cloud.version>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-        <jacoco.version>0.8.8</jacoco.version>
+        <jacoco.version>0.8.9</jacoco.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
