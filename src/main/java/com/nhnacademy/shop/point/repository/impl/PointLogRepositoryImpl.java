@@ -43,8 +43,8 @@ public class PointLogRepositoryImpl extends QuerydslRepositorySupport implements
                         pointLog.member.customerNo,
                         pointLog.orderId,
                         pointLog.pointDescription,
-                        pointLog.usage,
-                        pointLog.type,
+                        pointLog.pointUsage,
+                        pointLog.pointType,
                         pointLog.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -73,8 +73,8 @@ public class PointLogRepositoryImpl extends QuerydslRepositorySupport implements
                         pointLog.member.customerNo,
                         pointLog.orderId,
                         pointLog.pointDescription,
-                        pointLog.usage,
-                        pointLog.type,
+                        pointLog.pointUsage,
+                        pointLog.pointType,
                         pointLog.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -105,8 +105,8 @@ public class PointLogRepositoryImpl extends QuerydslRepositorySupport implements
                         pointLog.member.customerNo,
                         pointLog.orderId,
                         pointLog.pointDescription,
-                        pointLog.usage,
-                        pointLog.type,
+                        pointLog.pointUsage,
+                        pointLog.pointType,
                         pointLog.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

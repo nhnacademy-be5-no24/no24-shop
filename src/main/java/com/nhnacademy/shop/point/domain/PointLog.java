@@ -38,11 +38,11 @@ public class PointLog {
     @Column(name = "point_description", nullable = false)
     private String pointDescription;
 
-    @Column(name = "usage", nullable = false)
-    private Integer usage;
+    @Column(name = "point_usage", nullable = false)
+    private Integer pointUsage;
 
-    @Column(name = "type", nullable = false)
-    private Boolean type;
+    @Column(name = "point_type", nullable = false)
+    private Boolean pointType;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

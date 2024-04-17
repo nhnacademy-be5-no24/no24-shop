@@ -1,5 +1,9 @@
 package com.nhnacademy.shop.point.repository;
 
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
+import com.nhnacademy.shop.grade.domain.Grade;
+import com.nhnacademy.shop.grade.repository.GradeRespository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.point.domain.PointLog;
@@ -19,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,10 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @date : 2024-04-05
  */
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles(value = "dev")
-@Transactional
 @WebAppConfiguration
 public class PointRepositoryTest {
     @Autowired
@@ -42,25 +45,55 @@ public class PointRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
+    private GradeRespository gradeRespository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private EntityManager entityManager;
+    private Customer customer;
+    private Grade grade;
     private Member member;
     private PointLog pointLog;
 
     @BeforeEach
     void setUp() {
+        grade = Grade.builder()
+                .gradeId(1L)
+                .gradeName("NORMAL")
+                .accumulateRate(5L)
+                .build();
+
+        grade = gradeRespository.save(grade);
+
+        customer = Customer.builder()
+                .customerNo(1L)
+                .customerId("123")
+                .customerPassword("password")
+                .customerName("name")
+                .customerPhoneNumber("010-1234-2345")
+                .customerEmail("name@naver.com")
+                .customerBirthday(LocalDate.of(2000, 11, 30))
+                .customerRole("GUEST")
+                .build();
+
+        customer = customerRepository.save(customer);
+
         member = Member.builder()
                 .memberId("123")
-                .customerNo(1L)
-                .lastLoginAt(null)
-                .gradeId(1L).build();
+                .customer(customer)
+                .lastLoginAt(LocalDateTime.now())
+                .grade(grade)
+                .role("ROLE_ADMIN")
+                .memberState(Member.MemberState.ACTIVE)
+                .build();
 
         pointLog = PointLog.builder()
                 .pointId(1L)
                 .member(member)
                 .orderId(1L)
                 .pointDescription("리뷰 작성")
-                .usage(500)
-                .type(false)
+                .pointUsage(500)
+                .pointType(false)
                 .createdAt(LocalDateTime.parse("2024-04-05T00:00:00")).build();
     }
 
@@ -81,8 +114,8 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getCustomerNo()).isEqualTo(pointLog.getMember().getCustomerNo());
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
-        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
+        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -103,8 +136,8 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getCustomerNo()).isEqualTo(pointLog.getMember().getCustomerNo());
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
-        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
+        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -128,8 +161,8 @@ public class PointRepositoryTest {
         assertThat(pointList.get(0).getCustomerNo()).isEqualTo(pointLog.getMember().getCustomerNo());
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
-        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getType());
+        assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
+        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 

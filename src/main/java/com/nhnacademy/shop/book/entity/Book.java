@@ -2,6 +2,7 @@ package com.nhnacademy.shop.book.entity;
 
 
 import com.nhnacademy.shop.author.domain.Author;
+import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import lombok.*;
@@ -45,10 +46,10 @@ public class Book {
     private LocalDate bookPublishedAt;
 
     @Column(name = "book_fixed_price", nullable = false)
-    private int bookFixedPrice;
+    private long bookFixedPrice;
 
     @Column(name = "book_sale_price", nullable = false)
-    private int bookSalePrice;
+    private long bookSalePrice;
 
     @Column(name = "book_is_packing", nullable = false)
     private boolean bookIsPacking;
@@ -78,9 +79,8 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookTag> tags;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<BookAuthor> author;
 
     private Long likes;
 

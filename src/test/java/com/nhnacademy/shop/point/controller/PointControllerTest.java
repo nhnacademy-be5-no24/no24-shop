@@ -3,6 +3,7 @@ package com.nhnacademy.shop.point.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.point.domain.PointLog;
@@ -50,6 +51,7 @@ class PointControllerTest {
     @MockBean
     private PointLogService pointLogService;
     private ObjectMapper objectMapper;
+    Grade grade;
     PointLog pointLog;
     Member member;
     Pageable pageable;
@@ -64,7 +66,19 @@ class PointControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        member = new Member(1L, "abc111", null, 1L);
+
+        grade = Grade.builder()
+                .gradeId(1L)
+                .gradeName("NORMAL")
+                .accumulateRate(5L)
+                .build();
+
+        member = Member.builder()
+                .memberId("abc111")
+                .customerNo(1L)
+                .lastLoginAt(null)
+                .grade(grade).build();
+
         pointLog = new PointLog(1L, member, 1L, "리뷰 작성", 500, false,
                 LocalDateTime.of(2024, 4, 5, 0, 0, 0));
         pageSize = 0;

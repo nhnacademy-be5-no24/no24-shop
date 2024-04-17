@@ -22,6 +22,7 @@ public class Member {
     private Long customerNo;
 
     @OneToOne(cascade = CascadeType.MERGE)
+    @MapsId
     @JoinColumn(name = "customer_no")
     private Customer customer;
 

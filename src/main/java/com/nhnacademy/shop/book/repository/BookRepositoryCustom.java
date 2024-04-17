@@ -19,7 +19,4 @@ public interface BookRepositoryCustom{
 
     Page<BookResponseDto> findBooksByBookDesc(Pageable pageable, String desc);
 
-    Page<BookResponseDto> findBooksByAuthor(Pageable pageable, Long authorId);
-
-
 }

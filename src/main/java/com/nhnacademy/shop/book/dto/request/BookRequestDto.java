@@ -2,6 +2,7 @@ package com.nhnacademy.shop.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.shop.author.domain.Author;
+import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import lombok.AllArgsConstructor;
@@ -60,7 +61,7 @@ public class BookRequestDto {
 
     private List<BookTag> tags;
 
-    private Author author;
+    private List<BookAuthor> author;
 
     private List<BookCategory> categories;
 

@@ -2,6 +2,7 @@ package com.nhnacademy.shop.book.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.shop.author.domain.Author;
+import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.category.domain.Category;
@@ -42,10 +43,10 @@ public class BookResponseDto {
     private LocalDate publishedAt;
 
     @JsonProperty("book_fixed_price")
-    private int bookFixedPrice;
+    private long bookFixedPrice;
 
     @JsonProperty("book_sale_price")
-    private int bookSalePrice;
+    private long bookSalePrice;
 
     @JsonProperty("book_is_packing")
     private boolean bookIsPacking;
@@ -64,7 +65,7 @@ public class BookResponseDto {
 
     private List<BookTag> tags;
 
-    private Author author;
+    private List<BookAuthor> author;
 
     private List<BookCategory> categories;
 

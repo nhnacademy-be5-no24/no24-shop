@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.book.repository.impl;
 
-import com.nhnacademy.shop.author.domain.QAuthor;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.entity.QBook;
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
@@ -42,10 +41,10 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         JPAQuery<BookResponseDto> query = queryFactory
                 .from(book)
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
+                        book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
                         book.bookFixedPrice, book.bookSalePrice, book.bookIsPacking, book.bookViews,
                         book.bookStatus, book.bookQuantity, book.bookImage, book.tags, book.categories, book.author, book.likes
-                        ))
+                ))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
@@ -65,7 +64,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         JPAQuery<BookResponseDto> query = queryFactory.from(book)
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
+                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
                         book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
                         book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
                 .where(book.bookTitle.like(bookTitle))
@@ -93,7 +92,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         JPAQuery<BookResponseDto> query = queryFactory.from(book)
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
+                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
                         book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
                         book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
                 .where(book.bookDesc.like(desc))
@@ -114,37 +113,5 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         return new PageImpl<>(query.fetch(), pageable, count);
     }
 
-    @Override
-    public Page<BookResponseDto> findBooksByAuthor(Pageable pageable, Long authorId){
-        QBook book = QBook.book;
-        QAuthor author = QAuthor.author;
-
-        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-
-        JPAQuery<BookResponseDto> query = queryFactory.from(book)
-                .innerJoin(author)
-                .on(book.author.authorId.eq(author.authorId))
-                .where(book.author.authorId.eq(authorId))
-                .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublisherAt,
-                        book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
-                        book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
-                .orderBy(book.bookIsbn.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
-
-        Long count = queryFactory.from(book)
-                .select(book.count())
-                .innerJoin(author)
-                .on(book.author.authorId.eq(author.authorId))
-                .where(book.author.authorId.eq(authorId))
-                .fetchOne();
-
-        if(Objects.isNull(count)){
-            throw new BookNotFoundException();
-        }
-
-        return new PageImpl<>(query.fetch(), pageable, count);
-    }
 
 }

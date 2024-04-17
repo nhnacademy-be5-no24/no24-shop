@@ -3,6 +3,7 @@ package com.nhnacademy.shop.review.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
+import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.review.domain.Review;
@@ -57,6 +58,7 @@ public class ReviewControllerTest {
     ReviewResponseDto reviewResponseDto;
     Book book;
     Member member;
+    Grade grade;
     Pageable pageable;
     Integer pageSize;
     Integer offset;
@@ -66,8 +68,33 @@ public class ReviewControllerTest {
         pageable = PageRequest.of(0, 10);
         pageSize = 0;
         offset = 10;
-        book = new Book("ABC123", "The Little Prince", "hi", LocalDate.now(), 10000L, 10000L, true, 203L, 1, 15L, "image");
-        member = new Member(1L, "abc111", null, 1L);
+
+        grade = Grade.builder()
+                .gradeId(1L)
+                .gradeName("NORMAL")
+                .accumulateRate(5L)
+                .build();
+
+        book = Book.builder()
+                .bookIsbn("ABC123")
+                .bookTitle("The Little Prince")
+                .bookDesc("hi")
+                .bookPublishedAt(LocalDate.now())
+                .bookFixedPrice(10000L)
+                .bookSalePrice(10000L)
+                .bookIsPacking(true)
+                .bookViews(203L)
+                .bookStatus(1)
+                .bookQuantity(15)
+                .bookImage("img.png")
+                .build();
+
+        member = Member.builder()
+                .memberId("abc111")
+                .customerNo(1L)
+                .lastLoginAt(null)
+                .grade(grade).build();
+
         review = new Review(1L, "nice", "abc", 5, book, member);
         createReviewRequestDto = new CreateReviewRequestDto("good", 3, "abc", "ABC123", 1L);
         modifyReviewRequestDto = new ModifyReviewRequestDto(1L, "bad", 2, "abc", "ABC123", 1L);

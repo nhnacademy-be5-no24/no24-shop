@@ -1,5 +1,7 @@
 package com.nhnacademy.shop.book.service.impl;
 
+import com.nhnacademy.shop.author.domain.Author;
+import com.nhnacademy.shop.author.repository.AuthorRepository;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.dto.request.BookCreateRequestDto;
 import com.nhnacademy.shop.book.dto.request.BookRequestDto;
@@ -9,7 +11,7 @@ import com.nhnacademy.shop.book.exception.BookIsDeletedException;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.book.service.BookService;
-import com.nhnacademy.shop.book_author.domain.BookAuthor;
+import com.nhnacademy.shop.book_author.repository.BookAuthorRepository;
 import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
@@ -24,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,8 @@ public class BookServiceImpl implements BookService {
     private final TagRepository tagRepository;
     private final BookCategoryRepository bookCategoryRepository;
     private final BookTagRespository bookTagRespository;
+    private final AuthorRepository authorRepository;
+    private final BookAuthorRepository bookAuthorRepository;
 
 
     /*
@@ -81,6 +84,9 @@ public class BookServiceImpl implements BookService {
 
         if(book.getTags() != null)
             bookTagRespository.saveAll(book.getTags());
+
+        if(book.getAuthor() != null)
+            bookAuthorRepository.saveAll(book.getAuthor());
 
         bookRepository.save(book);
 
@@ -196,13 +202,22 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public Page<BookResponseDto> findByAuthor(Pageable pageable, Long authorId) {
-        Page<BookResponseDto> response = bookRepository.findBooksByAuthor(pageable, authorId);
+        Author author = authorRepository.findById(authorId).get();
 
-        if(response.getContent().isEmpty() || response.getTotalElements() == 0){
-            throw new BookNotFoundException();
-        }
+        Page<Book> bookList = bookAuthorRepository.findByAuthor(pageable, author);
 
-        return response;
+        List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
+                .map(this::findBookByAuthors)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
+    }
+
+    private BookResponseDto findBookByAuthors(Book book){
+
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
+                book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
+                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
     }
 
     /*
@@ -244,6 +259,7 @@ public class BookServiceImpl implements BookService {
 
         bookCategoryRepository.saveAll(book.getCategories());
         bookTagRespository.saveAll(book.getTags());
+        bookAuthorRepository.saveAll(book.getAuthor());
 
         bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
