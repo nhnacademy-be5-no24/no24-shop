@@ -1,5 +1,11 @@
 package com.nhnacademy.shop.coupon.service.impl;
 
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.exception.BookNotFoundException;
+import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.category.domain.Category;
+import com.nhnacademy.shop.category.exception.CategoryNotFoundException;
+import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
@@ -32,6 +38,8 @@ public class CouponServiceImpl implements CouponService {
     private final CategoryCouponRepository categoryCouponRepository;
     private final PercentageCouponRepository percentageCouponRepository;
     private final CouponRepository couponRepository;
+    private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
 
 
     /**
@@ -111,9 +119,15 @@ public class CouponServiceImpl implements CouponService {
                 throw new IllegalFormCouponRequestException();
             }
 
+            Optional<Book> book = bookRepository.findByBookIsbn(couponDto.getBookIsbn());
+
+            if(book.isEmpty()) {
+                throw new BookNotFoundException();
+            }
+
             BookCoupon bookCoupon = BookCoupon.builder()
                     .coupon(coupon)
-                    .bookIsbn(couponDto.getBookIsbn())
+                    .book(book.get())
                     .build();
 
             bookCouponRepository.save(bookCoupon);
@@ -123,9 +137,15 @@ public class CouponServiceImpl implements CouponService {
                 throw new IllegalFormCouponRequestException();
             }
 
+            Optional<Category> category = categoryRepository.findById(couponDto.getCategoryId());
+
+            if(category.isEmpty()) {
+                throw new CategoryNotFoundException();
+            }
+
             CategoryCoupon categoryCoupon = CategoryCoupon.builder()
                     .coupon(coupon)
-                    .categoryId(couponDto.getCategoryId())
+                    .category(category.get())
                     .build();
 
             categoryCouponRepository.save(categoryCoupon);
@@ -190,66 +210,5 @@ public class CouponServiceImpl implements CouponService {
         }
 
         couponRepository.deleteById(couponId);
-    }
-
-    /**
-     * Convert coupon to couponDto method
-     *
-     * @param coupon coupon information
-     * @return (ResponseCouponDto) convertedResponseCouponDto
-     */
-    public CouponResponseDto convertCouponToCouponDto(Coupon coupon) {
-        CouponResponseDto couponDto = new CouponResponseDto();
-
-        couponDto.setCouponId(coupon.getCouponId());
-        couponDto.setCouponStatus(coupon.getCouponStatus());
-        couponDto.setCouponName(coupon.getCouponName());
-        couponDto.setCouponTarget(coupon.getCouponTarget());
-        couponDto.setCouponType(coupon.getCouponType());
-        couponDto.setDeadline(coupon.getDeadline());
-
-        Coupon.CouponTarget target = coupon.getCouponTarget();
-        Coupon.CouponType type = coupon.getCouponType();
-
-        if(target == Coupon.CouponTarget.BOOK){
-            Optional<BookCoupon> optionalBookCoupon = bookCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalBookCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setBookIsbn(optionalBookCoupon.get().getBookIsbn());
-        }
-        else if(target == Coupon.CouponTarget.CATEGORY){
-            Optional<CategoryCoupon> optionalCategoryCoupon = categoryCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalCategoryCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setCategoryId(optionalCategoryCoupon.get().getCategoryId());
-        }
-
-        if(type == Coupon.CouponType.AMOUNT) {
-            Optional<AmountCoupon> optionalAmountCoupon = amountCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalAmountCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setDiscountPrice(optionalAmountCoupon.get().getDiscountPrice());
-        }
-        else if(type == Coupon.CouponType.PERCENTAGE) {
-            Optional<PercentageCoupon> optionalPercentageCoupon = percentageCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalPercentageCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setMaxDiscountPrice(optionalPercentageCoupon.get().getMaxDiscountPrice());
-            couponDto.setDiscountRate(optionalPercentageCoupon.get().getDiscountRate());
-        }
-
-        return couponDto;
     }
 }
