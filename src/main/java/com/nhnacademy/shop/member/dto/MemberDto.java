@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.member.dto;
 
 import com.nhnacademy.shop.customer.dto.CustomerDto;
+import com.nhnacademy.shop.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,6 +14,6 @@ public class MemberDto {
     private String memberId;
     private LocalDateTime lastLoginAt;
     private Long gradeId;
-    private Integer memberStateId;
+    private Member.MemberState memberStateId;
     private String role;
 }
