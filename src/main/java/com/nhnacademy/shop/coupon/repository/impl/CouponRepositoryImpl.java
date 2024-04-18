@@ -62,14 +62,13 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .innerJoin(bookCoupon)
                 .select(bookCoupon.count())
                 .where(coupon.couponId.eq(bookCoupon.couponId)
-                        .and(bookCoupon.bookIsbn.eq(bookIsbn)));
+                        .and(bookCoupon.book.bookIsbn.eq(bookIsbn)));
 
         List<CouponResponseDto> content = from(coupon)
-                .innerJoin(bookCoupon)
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
-                .where(coupon.couponId.eq(bookCoupon.couponId)
-                        .and(bookCoupon.bookIsbn.eq(bookIsbn)))
+                .where(bookCoupon.book.bookIsbn.eq(bookIsbn))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
@@ -77,7 +76,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
-                        bookCoupon.bookIsbn,
+                        bookCoupon.book.bookIsbn,
                         amountCoupon.discountPrice.coalesce(0L).as("DiscountPrice"),
                         percentageCoupon.discountRate.coalesce(0L).as("DiscountRate"),
                         percentageCoupon.maxDiscountPrice.coalesce(0L).as("MaxDiscountPrice")))
@@ -97,14 +96,14 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .innerJoin(categoryCoupon)
                 .select(categoryCoupon.count())
                 .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.categoryId.eq(categoryId)));
+                        .and(categoryCoupon.category.categoryId.eq(categoryId)));
 
         List<CouponResponseDto> content = from(coupon)
-                .innerJoin(categoryCoupon)
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.categoryId.eq(categoryId)))
+                        .and(categoryCoupon.category.categoryId.eq(categoryId)))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
@@ -112,7 +111,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
-                        categoryCoupon.categoryId,
+                        categoryCoupon.category.categoryId,
                         amountCoupon.discountPrice.coalesce(0L).as("DiscountPrice"),
                         percentageCoupon.discountRate.coalesce(0L).as("DiscountRate"),
                         percentageCoupon.maxDiscountPrice.coalesce(0L).as("MaxDiscountPrice")))
