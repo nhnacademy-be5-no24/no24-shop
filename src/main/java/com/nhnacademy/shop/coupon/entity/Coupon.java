@@ -45,6 +45,9 @@ public class Coupon {
     @Column(name = "issue_limit", nullable = false)
     private int issueLimit;
 
+    @Column(name = "expiration_period", nullable = false)
+    private int expirationPeriod;
+
     @Column(name = "coupon_status", nullable = false)
     private Status couponStatus;
 
