@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.nhnacademy.shop.author.AuthorControllerTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.262 s - in com.nhnacademy.shop.author.AuthorControllerTest
