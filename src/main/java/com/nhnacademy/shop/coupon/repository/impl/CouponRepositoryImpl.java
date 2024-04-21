@@ -43,6 +43,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget))
@@ -73,6 +74,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
@@ -108,6 +110,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
@@ -133,6 +136,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget))
@@ -156,6 +160,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget))
