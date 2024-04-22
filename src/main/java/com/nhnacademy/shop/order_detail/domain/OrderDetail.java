@@ -1,9 +1,10 @@
-package com.nhnacademy.delivery.order_detail.domain;
+package com.nhnacademy.shop.order_detail.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.nhnacademy.delivery.book.domain.Book;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.wrap.domain.Wrap;
+
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.wrap.domain.Wrap;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class OrderDetail {
     private Long orderDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "order_id", nullable = false)
     private Orders order;
 

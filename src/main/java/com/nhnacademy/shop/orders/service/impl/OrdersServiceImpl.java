@@ -1,23 +1,36 @@
-package com.nhnacademy.delivery.orders.service.impl;
+package com.nhnacademy.shop.orders.service.impl;
 
 
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.delivery.orders.exception.NotFoundOrderException;
-import com.nhnacademy.delivery.orders.exception.OrderStatusFailedException;
-import com.nhnacademy.delivery.orders.exception.SaveOrderFailed;
-import com.nhnacademy.delivery.orders.repository.OrdersRepository;
-import com.nhnacademy.delivery.orders.service.OrdersService;
+import com.nhnacademy.shop.address.domain.Address;
+import com.nhnacademy.shop.address.repository.AddressRepository;
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.coupon.repository.CouponRepository;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
+import com.nhnacademy.shop.member.exception.MemberNotFoundException;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
+import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
+import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
+import com.nhnacademy.shop.orders.repository.OrdersRepository;
+import com.nhnacademy.shop.orders.service.OrdersService;
+import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +44,11 @@ import java.util.Optional;
 public class OrdersServiceImpl implements OrdersService {
 
     private final OrdersRepository ordersRepository;
+    private final CustomerRepository customerRepository;
+    private final AddressRepository addressRepository;
+    private final CouponRepository couponRepository;
+    private final WrapRepository wrapRepository;
+    private final BookRepository bookRepository;
 
 
     // 주문리스트 전체 가져오기(admin)
@@ -108,13 +126,59 @@ public class OrdersServiceImpl implements OrdersService {
 
 
     }
-//    //주문결제페이지 정보 만들기
-//    @Override
-//    public CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto) {
-//        // todo : customer req(customerNo), response(customerNo, name, phoneNumber) 이어주기
-//        // todo 2 : 받는 사람 정보 가져오기 ... 이건 default로 주소지에서 가져와야할 것 같은데 -> 병주한테 물어봐야함 주소-회원 연결했는지.
-//
-//    }
+    //주문결제페이지 정보 만들기
+    @Override
+    public CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto) {
+
+        Optional<Customer> optionalCustomer = customerRepository.findById(cartPaymentRequestDto.getCustomerNo());
+        if (optionalCustomer.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        List<Address> addressList = addressRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo());
+        Address defaultAddress;
+        for(Address address : addressList){
+            if(address.getIsDefault()){
+                defaultAddress = address;
+            }
+        }
+
+        List<CartPaymentResponseDto.BookInfo> list = new ArrayList<>();
+        for (CartPaymentRequestDto.BookInfo requestBookInfo : cartPaymentRequestDto.getBookInfos()){
+            String bookIsbn = requestBookInfo.getBookIsbn();
+            Optional<Book> optionalBook = bookRepository.findByBookIsbn(bookIsbn);
+            String bookTitle = optionalBook.get().getBookTitle();
+            //여기에다가 유저가 사용할 수 있는 쿠폰 들고 오기
+            List<Wrap> wraps = wrapRepository.findAll();
+
+            CartPaymentResponseDto.BookInfo responseBookInfo = CartPaymentResponseDto.BookInfo.builder()
+                    .bookIsbn(bookIsbn)
+                    .bookTitle(bookTitle)
+                    .bookSalePrice(requestBookInfo.getBookSalePrice())
+                    .quantity(requestBookInfo.getQuantity())
+                    .wraps(wraps);
+            //여기다가 쿠폰에들 builder 추가해줘야함.
+            list.add(responseBookInfo);
+        }
+
+
+
+
+        // todo 6 : responseDto에 넣어주기
+        CartPaymentResponseDto cartPaymentResponseDto = CartPaymentResponseDto.builder()
+                .customerNo(optionalCustomer.get().getCustomerNo())
+                .customerName(optionalCustomer.get().getCustomerName())
+                .customerPhoneNumber(optionalCustomer.get().getCustomerPhoneNumber())
+                .receiverName(defaultAddress.getReceiverName())
+                .receiverPhoneNumber(defaultAddress.getReceiverPhoneNumber())
+                .zipcode(defaultAddress.getZipcode())
+                .address(defaultAddress.getAddress())
+                .addressDetail(defaultAddress.getAddressDetail())
+                .req("요청사항 입력")
+                .bookInfos(list);
+
+        return cartPaymentResponseDto;
+    }
 
 
 }

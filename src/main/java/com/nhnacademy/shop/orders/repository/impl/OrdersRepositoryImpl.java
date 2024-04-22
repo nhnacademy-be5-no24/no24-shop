@@ -1,21 +1,20 @@
-package com.nhnacademy.delivery.orders.repository.impl;
+package com.nhnacademy.shop.orders.repository.impl;
 
-import com.nhnacademy.delivery.book.domain.QBook;
-import com.nhnacademy.delivery.customer.domain.QCustomer;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.domain.QOrders;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.delivery.orders.repository.OrdersRepositoryCustom;
-import com.nhnacademy.delivery.order_detail.domain.QOrderDetail;
-import com.nhnacademy.delivery.wrap.domain.QWrap;
+import com.nhnacademy.shop.book.entity.QBook;
+import com.nhnacademy.shop.customer.entity.QCustomer;
+import com.nhnacademy.shop.order_detail.domain.QOrderDetail;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.domain.QOrders;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.repository.OrdersRepositoryCustom;
+import com.nhnacademy.shop.wrap.domain.QWrap;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
-
 
 import java.util.List;
 import java.util.Optional;

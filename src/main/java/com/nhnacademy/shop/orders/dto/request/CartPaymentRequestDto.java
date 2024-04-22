@@ -1,4 +1,4 @@
-package com.nhnacademy.delivery.orders.dto.request;
+package com.nhnacademy.shop.orders.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +11,7 @@ public class CartPaymentRequestDto {
     private List<BookInfo> bookInfos;
     private Long customerNo;
 
+    @Getter
     public static class BookInfo{
         private String bookIsbn;
         private Long bookSalePrice;

@@ -1,6 +1,6 @@
-package com.nhnacademy.delivery.orders.dto.request;
+package com.nhnacademy.shop.orders.dto.request;
 
-import com.nhnacademy.delivery.orders.domain.Orders;
+import com.nhnacademy.shop.orders.domain.Orders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

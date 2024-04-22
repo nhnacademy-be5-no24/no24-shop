@@ -1,12 +1,11 @@
-package com.nhnacademy.delivery.orders.dto.response;
+package com.nhnacademy.shop.orders.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.nhnacademy.delivery.orders.domain.Orders;
+import com.nhnacademy.shop.orders.domain.Orders;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
 import java.time.LocalDate;
 
 @Getter

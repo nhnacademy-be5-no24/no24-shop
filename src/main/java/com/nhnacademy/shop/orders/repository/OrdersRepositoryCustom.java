@@ -1,7 +1,7 @@
-package com.nhnacademy.delivery.orders.repository;
+package com.nhnacademy.shop.orders.repository;
 
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;

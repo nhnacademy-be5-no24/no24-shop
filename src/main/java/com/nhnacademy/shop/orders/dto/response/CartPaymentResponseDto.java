@@ -1,5 +1,7 @@
-package com.nhnacademy.delivery.orders.dto.response;
+package com.nhnacademy.shop.orders.dto.response;
 
+import com.nhnacademy.shop.coupon.entity.Coupon;
+import com.nhnacademy.shop.wrap.domain.Wrap;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,14 +24,15 @@ public class CartPaymentResponseDto {
     private String addressDetail;
     private String req;
 
+    @Getter
+    @Builder
     public static class BookInfo{
         private String bookIsbn;
         private String bookTitle;
         private Long bookSalePrice;
         private Long quantity;
-        private String couponMemberId;
-        private Long wrapId;
-        private Long wrapCost;
+        private List<Coupon> coupons;
+        private List<Wrap> wraps;
 
     }
 }

@@ -1,6 +1,7 @@
-package com.nhnacademy.delivery.orders.repository;
+package com.nhnacademy.shop.orders.repository;
 
-import com.nhnacademy.delivery.orders.domain.Orders;
+
+import com.nhnacademy.shop.orders.domain.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

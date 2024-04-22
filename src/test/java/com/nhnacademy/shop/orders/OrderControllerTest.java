@@ -1,32 +1,33 @@
-package com.nhnacademy.delivery.orders;
+package com.nhnacademy.shop.orders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nhnacademy.delivery.book.domain.Book;
-import com.nhnacademy.delivery.customer.domain.Customer;
-import com.nhnacademy.delivery.order_detail.domain.OrderDetail;
-import com.nhnacademy.delivery.orders.controller.OrderController;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.delivery.orders.service.OrdersService;
-import com.nhnacademy.delivery.payment.domain.Payment;
-import com.nhnacademy.delivery.wrap.domain.Wrap;
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.orders.controller.OrderController;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.service.OrdersService;
+import com.nhnacademy.shop.payment.domain.Payment;
+import com.nhnacademy.shop.wrap.domain.Wrap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -35,18 +36,15 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(OrderController.class)
 class OrderControllerTest {
-    @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @MockBean
-    OrdersService ordersService;
+    private OrdersService ordersService;
     @MockBean
     EntityManager entityManager;
 
@@ -66,6 +64,7 @@ class OrderControllerTest {
 
     @BeforeEach
     void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new OrderController(ordersService)).build();
         MockitoAnnotations.openMocks(this);
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -93,13 +92,13 @@ class OrderControllerTest {
                 .bookTitle("Title")
                 .bookDesc("desc")
                 .bookPublisher("publisher")
-                .bookPublishAt(LocalDate.of(2024, 4, 15))
+                .bookPublishedAt(LocalDate.of(2024, 4, 15))
                 .bookFixedPrice(1L)
                 .bookSalePrice(1L)
                 .bookIsPacking(true)
                 .bookViews(1L)
                 .bookStatus(0)
-                .bookQuantity(1L)
+                .bookQuantity(1)
                 .bookImage("image")
                 .build();
 
@@ -214,16 +213,18 @@ class OrderControllerTest {
     void testGetOrders() throws Exception {
 
         List<OrdersListForAdminResponseDto> ordersList = Arrays.asList(adminResponseDto, adminResponseDto2);
-        Page<OrdersListForAdminResponseDto> mockedPage = new PageImpl<>(ordersList);
+        Page<OrdersListForAdminResponseDto> mockedPage = new PageImpl<>(ordersList, PageRequest.of(0,10), 2);
 
         when(ordersService.getOrders(any())).thenReturn(mockedPage);
+
         mockMvc.perform(MockMvcRequestBuilders.get("/orders/admin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content[0].orderId", is("orderId")))
                 .andExpect(jsonPath("$.content[0].customerName", is("customerName")))
                 .andExpect(jsonPath("$.content[1].orderId", is("orderId2")))
-                .andExpect(jsonPath("$.content[1].customerName", is("customerName2")));}
+                .andExpect(jsonPath("$.content[1].customerName", is("customerName2")));
+    }
     @Test
     @DisplayName("고객 번호로 고객의 모든 주문 반환 test")
     void testGetOrdersByCustomer() throws Exception {

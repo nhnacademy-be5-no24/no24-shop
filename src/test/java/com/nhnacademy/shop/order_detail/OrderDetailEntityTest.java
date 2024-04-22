@@ -1,10 +1,11 @@
-package com.nhnacademy.delivery.order_detail;
+package com.nhnacademy.shop.order_detail;
 
 
-import com.nhnacademy.delivery.book.domain.Book;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.order_detail.domain.OrderDetail;
-import com.nhnacademy.delivery.wrap.domain.Wrap;
+
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.wrap.domain.Wrap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AutoConfigureMockMvc
-class OrderDetailEntityTest{
+class OrderDetailEntityTest {
 
     @Test
     void testOrderDetail() {
@@ -22,13 +23,13 @@ class OrderDetailEntityTest{
                 .bookTitle("Test Book")
                 .bookDesc("This is a test book")
                 .bookPublisher("Test Publisher")
-                .bookPublishAt(LocalDate.now())
+                .bookPublishedAt(LocalDate.now())
                 .bookFixedPrice(1000L)
                 .bookSalePrice(800L)
                 .bookIsPacking(false)
                 .bookViews(0L)
                 .bookStatus(1)
-                .bookQuantity(10L)
+                .bookQuantity(10)
                 .bookImage("book.jpg")
                 .build();
 

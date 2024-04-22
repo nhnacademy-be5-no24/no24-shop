@@ -1,13 +1,15 @@
-package com.nhnacademy.delivery.orders.controller;
+package com.nhnacademy.shop.orders.controller;
 
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.delivery.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.delivery.orders.dto.response.*;
-import com.nhnacademy.delivery.orders.exception.OrderStatusFailedException;
-import com.nhnacademy.delivery.orders.exception.SaveOrderFailed;
 
-import com.nhnacademy.delivery.orders.service.OrdersService;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
+import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
+import com.nhnacademy.shop.orders.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,15 +77,15 @@ public class OrderController {
      * @param cartPaymentRequestDto 장바구니 정보.
      * @return 200 Ok. 포장지, 쿠폰, 책, 유저 정보 반환
      */
-//    @GetMapping
-//    public ResponseEntity<CartPaymentResponseDto> getCartPaymentInfo(
-//            @RequestBody CartPaymentRequestDto cartPaymentRequestDto
-//    ){
-//        CartPaymentResponseDto responseDto = orderService.getCartPaymentInfo(cartPaymentRequestDto);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(responseDto);
-//    }
+    @GetMapping("/cart")
+    public ResponseEntity<CartPaymentResponseDto> getCartPaymentInfo(
+            @RequestBody CartPaymentRequestDto cartPaymentRequestDto
+    ){
+        CartPaymentResponseDto responseDto = orderService.getCartPaymentInfo(cartPaymentRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseDto);
+    }
 
     /**
      *
@@ -104,6 +106,14 @@ public class OrderController {
         }catch(OrderStatusFailedException | SaveOrderFailed e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @PostMapping("/cart")
+    public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
+            CartPaymentPostRequestDto cartPaymentPostRequestDto
+    ){
+        //쿠폰, 포장 애들 선택하고  (포장지 수량 down) 총가격줘야하는듯..?
+        //transaction 생각해야할듯하오.
     }
 
 

@@ -1,6 +1,6 @@
-package com.nhnacademy.delivery.payment.repository;
+package com.nhnacademy.shop.payment.repository;
 
-import com.nhnacademy.delivery.payment.domain.Payment;
+import com.nhnacademy.shop.payment.domain.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

@@ -1,14 +1,12 @@
-package com.nhnacademy.delivery.orders.service;
+package com.nhnacademy.shop.orders.service;
 
 
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.delivery.orders.dto.request.OrdersCreateRequestDto;
-
-import com.nhnacademy.delivery.orders.dto.response.CartPaymentResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -68,6 +66,6 @@ public interface OrdersService {
      * @param cartPaymentRequestDto 장바구니 정보.
      * @return CartPaymentResponseDto  포장지, 쿠폰, 책, 유저 정보 반환
      */
-//    CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto);
+    CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto);
 
 }

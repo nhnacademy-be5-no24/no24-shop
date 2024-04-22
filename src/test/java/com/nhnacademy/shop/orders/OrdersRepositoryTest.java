@@ -1,18 +1,20 @@
-package com.nhnacademy.delivery.orders;
-import com.nhnacademy.delivery.book.domain.Book;
-import com.nhnacademy.delivery.book.repository.BookRepository;
-import com.nhnacademy.delivery.customer.domain.Customer;
-import com.nhnacademy.delivery.customer.repository.CustomerRepository;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.delivery.orders.repository.OrdersRepository;
-import com.nhnacademy.delivery.order_detail.domain.OrderDetail;
-import com.nhnacademy.delivery.order_detail.repository.OrderDetailRepository;
-import com.nhnacademy.delivery.payment.domain.Payment;
-import com.nhnacademy.delivery.payment.repository.PaymentRepository;
-import com.nhnacademy.delivery.wrap.domain.Wrap;
-import com.nhnacademy.delivery.wrap.repository.WrapRepository;
+package com.nhnacademy.shop.orders;
+
+
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.order_detail.repository.OrderDetailRepository;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.repository.OrdersRepository;
+import com.nhnacademy.shop.payment.domain.Payment;
+import com.nhnacademy.shop.payment.repository.PaymentRepository;
+import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -76,13 +78,13 @@ class OrdersRepositoryTest {
                 .bookTitle("title")
                 .bookDesc("desc")
                 .bookPublisher("publisher")
-                .bookPublishAt(LocalDate.of(2024, 4, 14))
+                .bookPublishedAt(LocalDate.of(2024, 4, 14))
                 .bookFixedPrice(1L)
                 .bookSalePrice(1L)
                 .bookIsPacking(true)
                 .bookViews(1L)
                 .bookStatus(0)
-                .bookQuantity(1L)
+                .bookQuantity(1)
                 .bookImage("image")
                 .build();
 

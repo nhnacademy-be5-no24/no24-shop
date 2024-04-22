@@ -1,4 +1,4 @@
-package com.nhnacademy.delivery.orders.exception;
+package com.nhnacademy.shop.orders.exception;
 
 public class SaveOrderFailed extends RuntimeException {
     public SaveOrderFailed(String orderId) {

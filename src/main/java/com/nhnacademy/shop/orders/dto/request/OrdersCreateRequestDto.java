@@ -1,14 +1,12 @@
-package com.nhnacademy.delivery.orders.dto.request;
+package com.nhnacademy.shop.orders.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.nhnacademy.delivery.customer.domain.Customer;
-
-import com.nhnacademy.delivery.order_detail.domain.OrderDetail;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.payment.domain.Payment;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.payment.domain.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 

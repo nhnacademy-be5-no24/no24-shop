@@ -1,8 +1,8 @@
-package com.nhnacademy.delivery.orders;
+package com.nhnacademy.shop.orders;
 
-import com.nhnacademy.delivery.customer.domain.Customer;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.payment.domain.Payment;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.payment.domain.Payment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

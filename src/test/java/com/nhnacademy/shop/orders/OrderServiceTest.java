@@ -1,20 +1,21 @@
-package com.nhnacademy.delivery.orders;
+package com.nhnacademy.shop.orders;
 
-import com.nhnacademy.delivery.book.domain.Book;
-import com.nhnacademy.delivery.customer.domain.Customer;
-import com.nhnacademy.delivery.order_detail.domain.OrderDetail;
-import com.nhnacademy.delivery.orders.domain.Orders;
-import com.nhnacademy.delivery.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.delivery.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.delivery.orders.exception.NotFoundOrderException;
-import com.nhnacademy.delivery.orders.exception.OrderStatusFailedException;
-import com.nhnacademy.delivery.orders.exception.SaveOrderFailed;
-import com.nhnacademy.delivery.orders.repository.OrdersRepository;
-import com.nhnacademy.delivery.orders.service.OrdersService;
-import com.nhnacademy.delivery.orders.service.impl.OrdersServiceImpl;
-import com.nhnacademy.delivery.payment.domain.Payment;
-import com.nhnacademy.delivery.wrap.domain.Wrap;
+
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
+import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
+import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
+import com.nhnacademy.shop.orders.repository.OrdersRepository;
+import com.nhnacademy.shop.orders.service.OrdersService;
+import com.nhnacademy.shop.orders.service.impl.OrdersServiceImpl;
+import com.nhnacademy.shop.payment.domain.Payment;
+import com.nhnacademy.shop.wrap.domain.Wrap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,13 +88,13 @@ class OrderServiceTest {
                 .bookTitle("Title")
                 .bookDesc("desc")
                 .bookPublisher("publisher")
-                .bookPublishAt(LocalDate.of(2024, 4, 15))
+                .bookPublishedAt(LocalDate.of(2024, 4, 15))
                 .bookFixedPrice(1L)
                 .bookSalePrice(1L)
                 .bookIsPacking(true)
                 .bookViews(1L)
                 .bookStatus(0)
-                .bookQuantity(1L)
+                .bookQuantity(1)
                 .bookImage("image")
                 .build();
 

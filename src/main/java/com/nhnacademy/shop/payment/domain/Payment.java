@@ -1,4 +1,4 @@
-package com.nhnacademy.delivery.payment.domain;
+package com.nhnacademy.shop.payment.domain;
 
 import lombok.*;
 

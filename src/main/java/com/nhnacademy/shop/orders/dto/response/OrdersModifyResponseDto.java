@@ -1,4 +1,4 @@
-package com.nhnacademy.delivery.orders.dto.response;
+package com.nhnacademy.shop.orders.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
