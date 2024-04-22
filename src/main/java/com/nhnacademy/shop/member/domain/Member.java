@@ -1,11 +1,13 @@
 package com.nhnacademy.shop.member.domain;
 
+import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.customer.domain.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,4 +43,7 @@ public class Member {
 
     @Column(name = "is_leave")
     private Boolean isLeave;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
 }
