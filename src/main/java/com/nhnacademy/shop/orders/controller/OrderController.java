@@ -101,7 +101,6 @@ public class OrderController {
             @RequestBody OrdersCreateRequestDto ordersCreateRequestDto
             ){
         try{
-
             return ResponseEntity.status(HttpStatus.CREATED)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(orderService.createOrder(ordersCreateRequestDto));
@@ -110,10 +109,21 @@ public class OrderController {
         }
     }
 
+    /**
+     * 결제전 페이지에서 쿠폰, 포장지 선택한거 저장하는 method
+     * @param cartPaymentPostRequestDto
+     * @return
+     */
     @PostMapping("/cart")
     public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
             @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
     ){
+
+        CartPaymentResponseDto dto = orderService.createCartPamentInfo(cartPaymentPostRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto);
+
         //쿠폰, 포장 애들 선택하고  (포장지 수량 down) 총가격줘야하는듯..?
         //transaction 생각해야할듯하오.
     }

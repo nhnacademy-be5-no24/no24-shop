@@ -11,8 +11,10 @@ import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
@@ -147,13 +149,14 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         List<CartPaymentResponseDto.BookInfo> list = new ArrayList<>();
+        Long totalPrice = 0L;
         for (CartPaymentRequestDto.BookInfo requestBookInfo : cartPaymentRequestDto.getBookInfos()){
             String bookIsbn = requestBookInfo.getBookIsbn();
             Optional<Book> optionalBook = bookRepository.findByBookIsbn(bookIsbn);
             String bookTitle = optionalBook.get().getBookTitle();
             Page<CouponResponseDto> couponResponseDtos = couponMemberRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo(), PageRequest.of(0,10));
             List<Wrap> wraps = wrapRepository.findAll();
-
+            totalPrice += requestBookInfo.getBookSalePrice();
             CartPaymentResponseDto.BookInfo responseBookInfo = CartPaymentResponseDto.BookInfo.builder()
                     .bookIsbn(bookIsbn)
                     .bookTitle(bookTitle)
@@ -177,9 +180,15 @@ public class OrdersServiceImpl implements OrdersService {
                 .addressDetail(defaultAddress.getAddressDetail())
                 .req("요청사항 입력")
                 .bookInfos(list)
+                .totalPrice(totalPrice)
                 .build();
 
         return cartPaymentResponseDto;
+    }
+
+    @Override
+    public CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto) {
+        return null;
     }
 
 
