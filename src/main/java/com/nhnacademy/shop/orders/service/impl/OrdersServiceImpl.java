@@ -4,6 +4,7 @@ package com.nhnacademy.shop.orders.service.impl;
 import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
@@ -140,20 +141,25 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         List<Address> addressList = addressRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo());
-        Address defaultAddress = new Address();
-        for(Address address : addressList){
-            boolean addressIsDefault = address.getIsDefault();
-            if(addressIsDefault){
-                defaultAddress = address;
-            }
-        }
+        Optional<Address> defaultAddressOptional = addressList.stream()
+                .filter(Address::getIsDefault)
+                .findFirst();
+        Address defaultAddress = defaultAddressOptional.orElse(new Address());
 
         List<CartPaymentResponseDto.BookInfo> list = new ArrayList<>();
         Long totalPrice = 0L;
+
         for (CartPaymentRequestDto.BookInfo requestBookInfo : cartPaymentRequestDto.getBookInfos()){
             String bookIsbn = requestBookInfo.getBookIsbn();
             Optional<Book> optionalBook = bookRepository.findByBookIsbn(bookIsbn);
-            String bookTitle = optionalBook.get().getBookTitle();
+
+            String bookTitle;
+            if (optionalBook.isPresent()) {
+                bookTitle = optionalBook.get().getBookTitle();
+            } else {
+                throw new BookNotFoundException();
+            }
+
             Page<CouponResponseDto> couponResponseDtos = couponMemberRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo(), PageRequest.of(0,10));
             List<Wrap> wraps = wrapRepository.findAll();
             totalPrice += requestBookInfo.getBookSalePrice();
@@ -169,7 +175,7 @@ public class OrdersServiceImpl implements OrdersService {
             list.add(responseBookInfo);
         }
 
-        CartPaymentResponseDto cartPaymentResponseDto = CartPaymentResponseDto.builder()
+        return CartPaymentResponseDto.builder()
                 .customerNo(optionalCustomer.get().getCustomerNo())
                 .customerName(optionalCustomer.get().getCustomerName())
                 .customerPhoneNumber(optionalCustomer.get().getCustomerPhoneNumber())
@@ -180,10 +186,8 @@ public class OrdersServiceImpl implements OrdersService {
                 .addressDetail(defaultAddress.getAddressDetail())
                 .req("요청사항 입력")
                 .bookInfos(list)
-                .totalPrice(totalPrice)
+                .totalPrice(totalPrice < 30000 ? totalPrice + 3000 : totalPrice)
                 .build();
-
-        return cartPaymentResponseDto;
     }
 
     @Override
