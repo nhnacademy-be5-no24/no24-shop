@@ -8,7 +8,8 @@ import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.category.controller.CategoryController;
+import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(AddressController.class)
 class AddressControllerTest {
-    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -59,6 +60,7 @@ class AddressControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new AddressController(addressService)).build();
         objectMapper.registerModule(new JavaTimeModule());
         customer = Customer.builder()
                 .customerNo(1L)
@@ -84,8 +86,7 @@ class AddressControllerTest {
                 .lastLoginAt(LocalDateTime.of(2024, 4, 4, 10, 42))
                 .grade(grade)
                 .role("ROLE_MEMBER")
-                .isActive(true)
-                .isLeave(false)
+                .memberState(Member.MemberState.ACTIVE)
                 .build();
 
         address = Address.builder()

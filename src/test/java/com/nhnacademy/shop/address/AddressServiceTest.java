@@ -6,7 +6,7 @@ import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.impl.AddressServiceImpl;
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
@@ -80,8 +80,7 @@ class AddressServiceTest {
                 .lastLoginAt(LocalDateTime.of(2024, 4, 4, 10, 42))
                 .grade(grade)
                 .role("ROLE_MEMBER")
-                .isActive(true)
-                .isLeave(false)
+                .memberState(Member.MemberState.ACTIVE)
                 .build();
 
         address = Address.builder()
