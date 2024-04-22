@@ -188,6 +188,7 @@ public class OrdersServiceImpl implements OrdersService {
                 .bookInfos(list)
                 .totalPrice(totalPrice < 30000 ? totalPrice + 3000 : totalPrice)
                 .build();
+
     }
 
     @Override
