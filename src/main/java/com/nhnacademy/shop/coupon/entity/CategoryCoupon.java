@@ -1,5 +1,7 @@
 package com.nhnacademy.shop.coupon.entity;
 
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import lombok.*;
 
@@ -24,8 +26,9 @@ public class CategoryCoupon {
     @Column(name = "coupon_id")
     private Long couponId;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

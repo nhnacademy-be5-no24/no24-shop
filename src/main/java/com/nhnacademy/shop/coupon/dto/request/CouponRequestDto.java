@@ -26,6 +26,8 @@ public class CouponRequestDto {
     private String couponName;
     @NotNull(message = "쿠폰 만료일을 입력해주세요.")
     private Date deadline;
+    @NotNull(message = "쿠폰 발급 제한 수량을 입력해주세요.")
+    private int issueLimit;
     @NotNull(message = "쿠폰 상태를 입력해주세요.")
     private Coupon.Status couponStatus;
     @NotNull(message = "쿠폰 타입을 입력해주세요.")

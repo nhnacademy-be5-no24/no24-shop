@@ -1,8 +1,11 @@
-package com.nhnacademy.shop.coupon.repository.impl;
+package com.nhnacademy.shop.coupon_member.repository.impl;
 
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
-import com.nhnacademy.shop.coupon.repository.CouponRepositoryCustom;
+import com.nhnacademy.shop.coupon_member.domain.CouponMember;
+import com.nhnacademy.shop.coupon_member.domain.QCouponMember;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepositoryCustom;
+import com.nhnacademy.shop.member.domain.QMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -10,76 +13,54 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * 쿠폰 레포지토리 구현체 입니다.
+ * 설명
  *
- * @author : 강병구
- * @date : 2024-04-11
+ * @Author : 박병휘
+ * @Date : 2024/04/21
  */
-public class CouponRepositoryImpl extends QuerydslRepositorySupport implements CouponRepositoryCustom {
-    public CouponRepositoryImpl() {
-        super(Coupon.class);
+public class CouponMemberRepositoryImpl extends QuerydslRepositorySupport implements CouponMemberRepositoryCustom {
+    public CouponMemberRepositoryImpl() {
+        super(CouponMember.class);
     }
 
     QCoupon coupon = QCoupon.coupon;
+    QMember member = QMember.member;
     QAmountCoupon amountCoupon = QAmountCoupon.amountCoupon;
     QBookCoupon bookCoupon = QBookCoupon.bookCoupon;
     QCategoryCoupon categoryCoupon = QCategoryCoupon.categoryCoupon;
     QPercentageCoupon percentageCoupon = QPercentageCoupon.percentageCoupon;
+    QCouponMember couponMember = QCouponMember.couponMember;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Page<CouponResponseDto> findAllCoupons(Pageable pageable) {
-        JPQLQuery<Long> count = from(coupon)
-                .select(coupon.count());
+    public Page<CouponResponseDto> findByMemberCustomerNo(Long customerNo, Pageable pageable) {
+        JPQLQuery<Long> count = from(couponMember)
+                .select(couponMember.count());
 
-        List<CouponResponseDto> content = from(coupon)
-                .select(Projections.fields(CouponResponseDto.class,
-                        coupon.couponId,
-                        coupon.couponName,
-                        coupon.deadline,
-                        coupon.issueLimit,
-                        coupon.expirationPeriod,
-                        coupon.couponStatus,
-                        coupon.couponType,
-                        coupon.couponTarget))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<CouponResponseDto> findBookCoupons(String bookIsbn, Pageable pageable) {
-        JPQLQuery<Long> count = from(coupon)
-                .innerJoin(bookCoupon)
-                .select(bookCoupon.count())
-                .where(coupon.couponId.eq(bookCoupon.couponId)
-                        .and(bookCoupon.book.bookIsbn.eq(bookIsbn)));
-
-        List<CouponResponseDto> content = from(coupon)
-                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
+        List<CouponResponseDto> content = from(couponMember)
+                .leftJoin(coupon).on(couponMember.coupon.eq(coupon))
+                .leftJoin(member).on(couponMember.member.eq(member))
+                .where(member.customerNo.eq(customerNo))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
-                .where(bookCoupon.book.bookIsbn.eq(bookIsbn))
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
                         coupon.issueLimit,
-                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
+                        categoryCoupon.category.categoryId,
                         bookCoupon.book.bookIsbn,
                         amountCoupon.discountPrice,
                         percentageCoupon.discountRate,
@@ -95,29 +76,29 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
      * {@inheritDoc}
      */
     @Override
-    public Page<CouponResponseDto> findCategoryCoupons(Long categoryId, Pageable pageable) {
-        JPQLQuery<Long> count = from(coupon)
-                .innerJoin(categoryCoupon)
-                .select(categoryCoupon.count())
-                .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.category.categoryId.eq(categoryId)));
+    public Page<CouponResponseDto> findUnusedCouponByMemberCustomerNo(Long customerNo, Pageable pageable) {
+        JPQLQuery<Long> count = from(couponMember)
+                .select(couponMember.count());
 
-        List<CouponResponseDto> content = from(coupon)
-                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
+        List<CouponResponseDto> content = from(couponMember)
+                .leftJoin(coupon).on(couponMember.coupon.eq(coupon))
+                .leftJoin(member).on(couponMember.member.eq(member))
+                .where(member.customerNo.eq(customerNo))
+                .where(couponMember.used.eq(Boolean.FALSE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
-                .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.category.categoryId.eq(categoryId)))
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
                         coupon.issueLimit,
-                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
                         categoryCoupon.category.categoryId,
+                        bookCoupon.book.bookIsbn,
                         amountCoupon.discountPrice,
                         percentageCoupon.discountRate,
                         percentageCoupon.maxDiscountPrice))
@@ -132,52 +113,63 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
      * {@inheritDoc}
      */
     @Override
-    public Optional<CouponResponseDto> findCouponById(Long couponId) {
-        CouponResponseDto dto = from(coupon)
+    public Page<CouponResponseDto> findUnusedBookCouponByMemberCustomerNo(Long customerNo, String bookIsbn, Pageable pageable) {
+        JPQLQuery<Long> count = from(couponMember)
+                .select(couponMember.count());
+
+        List<CouponResponseDto> content = from(couponMember)
+                .leftJoin(coupon).on(couponMember.coupon.eq(coupon))
+                .leftJoin(member).on(couponMember.member.eq(member))
+                .where(member.customerNo.eq(customerNo))
+                .where(couponMember.used.eq(Boolean.FALSE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
                 .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
-                .where(coupon.couponId.eq(couponId))
+                .where(bookCoupon.book.bookIsbn.eq(bookIsbn))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
                         coupon.issueLimit,
-                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
                         categoryCoupon.category.categoryId,
+                        bookCoupon.book.bookIsbn,
                         amountCoupon.discountPrice,
                         percentageCoupon.discountRate,
                         percentageCoupon.maxDiscountPrice))
-                .fetchOne();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        return Optional.of(dto);
+        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Page<CouponResponseDto> findCouponsByContainingName(String couponName, Pageable pageable) {
-        JPQLQuery<Long> count = from(coupon)
-                .select(coupon.count())
-                .where(coupon.couponName.like("%" + couponName + "%"));
+    public Page<CouponResponseDto> findUnusedCategoryCouponByMemberCustomerNoAndCategoryId(Long customerNo, Long categoryId, Pageable pageable) {
+        JPQLQuery<Long> count = from(couponMember)
+                .select(couponMember.count());
 
-        List<CouponResponseDto> content = from(coupon)
+        List<CouponResponseDto> content = from(couponMember)
+                .leftJoin(coupon).on(couponMember.coupon.eq(coupon))
+                .leftJoin(member).on(couponMember.member.eq(member))
+                .where(member.customerNo.eq(customerNo))
+                .where(couponMember.used.eq(Boolean.FALSE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
                 .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
-                .where(coupon.couponName.like("%" + couponName + "%"))
+                .where(categoryCoupon.category.categoryId.eq(categoryId))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
                         coupon.issueLimit,
-                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
