@@ -5,7 +5,8 @@ import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
-import com.nhnacademy.shop.coupon.repository.CouponRepository;
+import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
@@ -24,6 +25,7 @@ import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +48,7 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrdersRepository ordersRepository;
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
-    private final CouponRepository couponRepository;
+    private final CouponMemberRepository couponMemberRepository;
     private final WrapRepository wrapRepository;
     private final BookRepository bookRepository;
 
@@ -136,9 +138,10 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         List<Address> addressList = addressRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo());
-        Address defaultAddress;
+        Address defaultAddress = new Address();
         for(Address address : addressList){
-            if(address.getIsDefault()){
+            boolean addressIsDefault = address.getIsDefault();
+            if(addressIsDefault){
                 defaultAddress = address;
             }
         }
@@ -148,7 +151,7 @@ public class OrdersServiceImpl implements OrdersService {
             String bookIsbn = requestBookInfo.getBookIsbn();
             Optional<Book> optionalBook = bookRepository.findByBookIsbn(bookIsbn);
             String bookTitle = optionalBook.get().getBookTitle();
-            //여기에다가 유저가 사용할 수 있는 쿠폰 들고 오기
+            Page<CouponResponseDto> couponResponseDtos = couponMemberRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo(), PageRequest.of(0,10));
             List<Wrap> wraps = wrapRepository.findAll();
 
             CartPaymentResponseDto.BookInfo responseBookInfo = CartPaymentResponseDto.BookInfo.builder()
@@ -156,15 +159,13 @@ public class OrdersServiceImpl implements OrdersService {
                     .bookTitle(bookTitle)
                     .bookSalePrice(requestBookInfo.getBookSalePrice())
                     .quantity(requestBookInfo.getQuantity())
-                    .wraps(wraps);
-            //여기다가 쿠폰에들 builder 추가해줘야함.
+                    .coupons(couponResponseDtos.getContent())
+                    .wraps(wraps)
+                    .build();
+
             list.add(responseBookInfo);
         }
 
-
-
-
-        // todo 6 : responseDto에 넣어주기
         CartPaymentResponseDto cartPaymentResponseDto = CartPaymentResponseDto.builder()
                 .customerNo(optionalCustomer.get().getCustomerNo())
                 .customerName(optionalCustomer.get().getCustomerName())
@@ -175,7 +176,8 @@ public class OrdersServiceImpl implements OrdersService {
                 .address(defaultAddress.getAddress())
                 .addressDetail(defaultAddress.getAddressDetail())
                 .req("요청사항 입력")
-                .bookInfos(list);
+                .bookInfos(list)
+                .build();
 
         return cartPaymentResponseDto;
     }

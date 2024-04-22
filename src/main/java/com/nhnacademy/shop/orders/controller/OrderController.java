@@ -2,8 +2,10 @@ package com.nhnacademy.shop.orders.controller;
 
 
 import com.nhnacademy.shop.orders.domain.Orders;
+import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
@@ -96,7 +98,7 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<OrdersResponseDto> createOrder(
-            OrdersCreateRequestDto ordersCreateRequestDto
+            @RequestBody OrdersCreateRequestDto ordersCreateRequestDto
             ){
         try{
 
@@ -110,7 +112,7 @@ public class OrderController {
 
     @PostMapping("/cart")
     public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
-            CartPaymentPostRequestDto cartPaymentPostRequestDto
+            @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
     ){
         //쿠폰, 포장 애들 선택하고  (포장지 수량 down) 총가격줘야하는듯..?
         //transaction 생각해야할듯하오.

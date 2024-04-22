@@ -1,8 +1,12 @@
 package com.nhnacademy.shop.orders;
 
 
+import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
@@ -16,6 +20,7 @@ import com.nhnacademy.shop.orders.service.OrdersService;
 import com.nhnacademy.shop.orders.service.impl.OrdersServiceImpl;
 import com.nhnacademy.shop.payment.domain.Payment;
 import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +52,11 @@ class OrderServiceTest {
     @Mock
     private final OrdersRepository ordersRepository = mock(OrdersRepository.class);
     private OrdersService ordersService;
-
+    private CustomerRepository customerRepository;
+    private AddressRepository addressRepository;
+    private CouponMemberRepository couponMemberRepository;
+    private WrapRepository wrapRepository;
+    private BookRepository bookRepository;
     private Customer customer;
     private Book book;
     private Wrap wrap;
@@ -63,7 +72,7 @@ class OrderServiceTest {
 
     @BeforeEach
     void setup() {
-        ordersService = new OrdersServiceImpl(ordersRepository);
+        ordersService = new OrdersServiceImpl(ordersRepository, customerRepository,addressRepository, couponMemberRepository, wrapRepository, bookRepository);
         initializeEntities();
         initializeAdminResponseDto();
     }
