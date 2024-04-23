@@ -1,7 +1,7 @@
 package com.nhnacademy.shop.member.domain;
 
 import com.nhnacademy.shop.address.domain.Address;
-import com.nhnacademy.shop.customer.domain.Customer;
+import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import lombok.*;
 
