@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.cart.domain.Cart;
+import com.nhnacademy.shop.cart.dto.request.CartRequestDto;
 import com.nhnacademy.shop.cart.dto.response.CartResponseDto;
 import com.nhnacademy.shop.cart.exception.CartNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class CartController {
     private final BookRepository bookRepository;
 
     /**
-     *  [GET /shop/cart/{customerId}
+     *  [GET /shop/cart/{customerNo}
      *  장바구니를 조회하는 Get 메서드
      */
     @GetMapping("/{customerNo}")
@@ -73,5 +74,45 @@ public class CartController {
         Page<CartResponseDto> carts = new PageImpl<>(cartResponseDtoList.subList(start, end), pageRequest, cartResponseDtoList.size());
 
         return ResponseEntity.status(HttpStatus.OK).body(carts);
+    }
+
+    /**
+     * [POST /shop/cart/create]
+     * 장바구니에 상품을 추가하는 Post 메소드
+     */
+    // todo: 비회원 시, redis 유효시간 3시간 설정 추가
+    @PostMapping("/create")
+    public ResponseEntity<String> addToCart(@RequestHeader("customerNo") Long customerNo, @RequestBody CartRequestDto cartRequestDto) {
+        HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
+        Cart cart = hashOperations.get("cart", customerNo);
+
+        // 고객의 장바구니가 존재하는지 확인
+        if (cart == null) {
+            cart = new Cart();
+            cart.setCustomerNo(customerNo);
+        }
+
+        // 장바구니에 동일한 상품이 있는지 체크
+        boolean isExistingItem = false;
+
+        for (Cart.Book existingBook : cart.getBooks()) {
+            if (existingBook.getIsbn().equals(cartRequestDto.getBookIsbn())) {
+                existingBook.setQuantity(existingBook.getQuantity() + cartRequestDto.getBookQuantity());
+                isExistingItem = true;
+                break;
+            }
+        }
+
+        if (!isExistingItem) {
+            Cart.Book newBook = Cart.Book.builder()
+                    .isbn(cartRequestDto.getBookIsbn())
+                    .quantity(cartRequestDto.getBookQuantity())
+                    .build();
+            cart.getBooks().add(newBook);
+        }
+
+        hashOperations.put("cart", String.valueOf(customerNo), cart);
+
+        return ResponseEntity.ok(customerNo + "의 장바구니에 " + cartRequestDto.getBookIsbn() + "이/가 " + cartRequestDto.getBookQuantity() + "개 추가되었습니다.");
     }
 }
