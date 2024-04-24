@@ -1,7 +1,5 @@
 package com.nhnacademy.shop.cartOrder.domain;
 
-`package com.nhnacademy.shop.cartOrder.domain;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
