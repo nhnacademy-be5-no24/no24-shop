@@ -13,10 +13,12 @@ import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.book.service.BookService;
 import com.nhnacademy.shop.book_author.repository.BookAuthorRepository;
 import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
+import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.tag.domain.Tag;
+import com.nhnacademy.shop.tag.dto.TagResponseDto;
 import com.nhnacademy.shop.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -70,7 +72,7 @@ public class BookServiceImpl implements BookService {
                 .bookFixedPrice(request.getBookFixedPrice())
                 .bookSalePrice(request.getBookSalePrice())
                 .bookIsPacking(request.isBookIsPacking())
-                .bookViews(request.getBookViews())
+                .bookViews(0L)
                 .bookStatus(request.getBookStatus())
                 .bookQuantity(request.getBookQuantity())
                 .bookImage(request.getBookImage())
@@ -85,15 +87,16 @@ public class BookServiceImpl implements BookService {
         if(book.getTags() != null)
             bookTagRespository.saveAll(book.getTags());
 
-        if(book.getAuthor() != null)
-            bookAuthorRepository.saveAll(book.getAuthor());
-
         bookRepository.save(book);
 
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
-                book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -113,9 +116,14 @@ public class BookServiceImpl implements BookService {
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), 3, book.getBookQuantity(), book.getBookImage(),
                 book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-        return  new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(),book.getTags(),book.getAuthor(),book.getCategories() ,book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                    .map(booktag -> booktag.getTag())
+                    .map(tag -> new TagResponseDto(tag))
+                    .collect(Collectors.toList()),
+                book.getAuthor(),book.getLikes());
     }
 
     /*
@@ -145,10 +153,32 @@ public class BookServiceImpl implements BookService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: "));
 
-        Page<Book> bookList = bookCategoryRepository.findByCategory(pageable, category);
+        Page<BookCategory> bookList = bookCategoryRepository.findByCategory(pageable, category);
 
         List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
-                .map(this::findBookByCategories)
+                .map(bookCategory -> bookCategory.getBook())
+                .map(book -> {
+                    BookResponseDto bookResponseDto = BookResponseDto.builder()
+                            .bookIsbn(book.getBookIsbn())
+                            .bookTitle(book.getBookTitle())
+                            .bookDescription(book.getBookDesc())
+                            .bookPublisher(book.getBookPublisher())
+                            .publishedAt(book.getBookPublishedAt())
+                            .bookFixedPrice(book.getBookFixedPrice())
+                            .bookSalePrice(book.getBookSalePrice())
+                            .bookIsPacking(book.isBookIsPacking())
+                            .bookStatus(book.getBookStatus())
+                            .bookQuantity(book.getBookQuantity())
+                            .bookImage(book.getBookImage())
+                            .tags(book.getTags().stream()
+                                    .map(booktag -> booktag.getTag())
+                                    .map(tag -> new TagResponseDto(tag))
+                                    .collect(Collectors.toList()))
+                            .author(book.getAuthor())
+                            .build();
+
+                    return bookResponseDto;
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
@@ -158,7 +188,12 @@ public class BookServiceImpl implements BookService {
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                    .map(booktag -> booktag.getTag())
+                    .map(tag -> new TagResponseDto(tag))
+                    .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -181,9 +216,14 @@ public class BookServiceImpl implements BookService {
 
     private BookResponseDto findBookByTags(Book book){
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
     /*
      * book name에 일치하는 book list 탐색
@@ -215,9 +255,14 @@ public class BookServiceImpl implements BookService {
 
     private BookResponseDto findBookByAuthors(Book book){
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -234,9 +279,14 @@ public class BookServiceImpl implements BookService {
             throw new BookIsDeletedException();
         }
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(), book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
     /*
      * book description에 일치하는 book list 탐색
@@ -259,15 +309,19 @@ public class BookServiceImpl implements BookService {
 
         bookCategoryRepository.saveAll(book.getCategories());
         bookTagRespository.saveAll(book.getTags());
-        bookAuthorRepository.saveAll(book.getAuthor());
 
         bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
                 , book.getBookStatus(), book.getBookQuantity(), book.getBookImage(), book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
+                book.getBookImage(),
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -284,8 +338,13 @@ public class BookServiceImpl implements BookService {
                 book.getCategories(),book.getTags(), book.getAuthor(), book.getLikes()));
 
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher() ,book.getBookPublishedAt(),
-                book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(),
-                book.getBookImage(), book.getTags(), book.getAuthor(), book.getCategories(),book.getLikes());
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
+                book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
+                book.getBookImage(),
+                book.getTags().stream()
+                        .map(booktag -> booktag.getTag())
+                        .map(tag -> new TagResponseDto(tag))
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 }

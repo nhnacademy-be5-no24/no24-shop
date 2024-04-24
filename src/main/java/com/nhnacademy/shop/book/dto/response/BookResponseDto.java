@@ -7,6 +7,7 @@ import com.nhnacademy.shop.book_tag.domain.BookTag;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.tag.domain.Tag;
+import com.nhnacademy.shop.tag.dto.TagResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -63,11 +64,9 @@ public class BookResponseDto {
     @JsonProperty("book_image")
     private String bookImage;
 
-    private List<BookTag> tags;
+    private List<TagResponseDto> tags;
 
-    private List<BookAuthor> author;
-
-    private List<BookCategory> categories;
+    private String author;
 
     private Long likes;
 
