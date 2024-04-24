@@ -38,7 +38,6 @@ class CouponEntityTest {
         // setup coupon1
         couponId = 1L;
         couponName = "Test Coupon";
-        deadline = new Date();
         status = Coupon.Status.ACTIVE;
         type = Coupon.CouponType.PERCENTAGE;
         target = Coupon.CouponTarget.NORMAL;

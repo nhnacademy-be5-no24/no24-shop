@@ -20,6 +20,7 @@ public class CouponResponseDto {
     private Long couponId;
     private String couponName;
     private Date deadline;
+    private int issueLimit;
     private Coupon.Status couponStatus;
     private Coupon.CouponType couponType;
     private Coupon.CouponTarget couponTarget;

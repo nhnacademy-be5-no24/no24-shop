@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.nhnacademy.shop.category.controller.CategoryControllerTest
--------------------------------------------------------------------------------
-Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.836 s - in com.nhnacademy.shop.category.controller.CategoryControllerTest

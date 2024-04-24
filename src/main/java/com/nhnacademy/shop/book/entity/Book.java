@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.book.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nhnacademy.shop.author.domain.Author;
 import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
@@ -74,13 +75,15 @@ public class Book {
     private String bookImage;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<BookCategory> categories;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<BookTag> tags;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<BookAuthor> author;
+    @Column(name = "author")
+    private String author;
 
     private Long likes;
 
