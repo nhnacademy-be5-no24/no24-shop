@@ -145,6 +145,24 @@ public class CartController {
     }
 
     /**
+     * [DELETE /shop/cart/deleteOne/{customerNo}]
+     * 사용자의 action으로 장바구니 내 '하나'의 상품 삭제
+     */
+    @DeleteMapping("/deleteOne/{customerNo}")
+    public ResponseEntity<String> deleteCartBook(@PathVariable Long customerNo, @RequestParam String bookIsbn) {
+        HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
+
+        if (hashOperations.hasKey("cart", customerNo)) {
+            Cart cart = hashOperations.get("cart", customerNo);
+            cart.getBooks().removeIf(book -> book.getIsbn().equals(bookIsbn));
+            hashOperations.put("cart", String.valueOf(customerNo), cart);
+            return ResponseEntity.ok(bookIsbn + "이 장바구니에서 삭제되었습니다.");
+        } else {
+            throw new CartNotFoundException(customerNo);
+        }
+    }
+
+    /**
      * [PUT /shop/cart/{customerNo}]
      * 결제 완료 후, 장바구니에서 구매한 상품 제거
      */
