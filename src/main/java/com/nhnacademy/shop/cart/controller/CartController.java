@@ -64,7 +64,7 @@ public class CartController {
                 cartResponseDtoList.add(cartResponseDto);
             }
         } else {
-            throw new CartNotFoundException(customerNo + "의 장바구니를 찾을 수 없습니다.");
+            throw new CartNotFoundException(customerNo);
         }
 
         PageRequest pageRequest = PageRequest.of(page, size);
