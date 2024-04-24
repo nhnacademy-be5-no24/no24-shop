@@ -38,12 +38,12 @@ public class CartController {
      *  [GET /shop/cart/{customerId}
      *  장바구니를 조회하는 Get 메서드
      */
-    @GetMapping("/{customerId}")
-    public ResponseEntity<Page<CartResponseDto>> getCarts(@PathVariable String customerId,
+    @GetMapping("/{customerNo}")
+    public ResponseEntity<Page<CartResponseDto>> getCarts(@PathVariable Long customerNo,
                                                           @RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size) {
         HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
-        Cart cart = hashOperations.get("cart", customerId);
+        Cart cart = hashOperations.get("cart", customerNo);
 
         List<CartResponseDto> cartResponseDtoList = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class CartController {
                 cartResponseDtoList.add(cartResponseDto);
             }
         } else {
-            throw new CartNotFoundException(customerId + "의 장바구니를 찾을 수 없습니다.");
+            throw new CartNotFoundException(customerNo + "의 장바구니를 찾을 수 없습니다.");
         }
 
         PageRequest pageRequest = PageRequest.of(page, size);

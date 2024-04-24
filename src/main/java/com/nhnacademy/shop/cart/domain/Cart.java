@@ -17,7 +17,7 @@ import java.util.List;
 @RedisHash(value = "cart")
 public class Cart implements Serializable {
     @Id
-    private String customerId;
+    private Long customerNo;
 
     private List<Book> books = new ArrayList<>();
 
