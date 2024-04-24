@@ -207,4 +207,21 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update cart value for customerId: " + customerNo);
         }
     }
+
+    // 이건 {customerNo} 장바구니 자체가 삭제되는 코드 => 사용자가 전체 삭제 눌렀을 때 쓰면 될 듯!
+    /**
+     * [DELETE /shop/cart/deleteAll/{customerNo}]
+     * customerId의 장바구니를 삭제하는 DELETE 메서드
+     */
+    @DeleteMapping("/shop/deleteAll/{customerNo}")
+    public ResponseEntity<String> deleteCart(@PathVariable Long customerNo) {
+        HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
+
+        if (hashOperations.hasKey("cart", customerNo)) {
+            hashOperations.delete("cart", customerNo);
+            return ResponseEntity.ok(customerNo + "의 장바구니가 삭제되었습니다.");
+        } else {
+            throw new CartNotFoundException(customerNo);
+        }
+    }
 }
