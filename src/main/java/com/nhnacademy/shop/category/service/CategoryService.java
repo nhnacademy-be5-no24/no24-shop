@@ -14,7 +14,7 @@ import java.util.List;
 /**
 * 카테고리 서비스입니다.
 *
-* @author : 강병구
+* @author : 강병구, 박병휘
 * @date : 2024-03-29
  */
 @Service
@@ -95,4 +95,11 @@ public interface CategoryService {
      * @return ParentCategoryResponseDto
      */
     ParentCategoryResponseDto getParentWithChildCategoryByParentCategoryId(Long categoryId);
+
+    /**
+     * 상위 카테고리를 모두 조회하기 위한 메소드입니다.
+     * @param categoryId
+     * @return List<CategoryInfoResponseDto>
+     */
+    List<CategoryInfoResponseDto> getAllParentCategories(Long categoryId);
 }

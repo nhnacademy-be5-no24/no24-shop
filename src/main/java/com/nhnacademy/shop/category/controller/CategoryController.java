@@ -2,6 +2,7 @@ package com.nhnacademy.shop.category.controller;
 
 import com.nhnacademy.shop.category.dto.request.CreateCategoryRequestDto;
 import com.nhnacademy.shop.category.dto.request.ModifyCategoryRequestDto;
+import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseList;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
@@ -20,7 +21,7 @@ import java.util.Objects;
 /**
  * 카테고리(Category) RestController 입니다.
  *
- * @author : 강병구
+ * @author : 강병구, 박병휘
  * @date : 2024-03-29
  **/
 @RestController
@@ -101,6 +102,22 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(categoryResponseDtoList);
+    }
+
+    @GetMapping("/categories/all-parents/{categoryId}")
+    public ResponseEntity<CategoryInfoResponseList> getAllParentWithChildCategories(@PathVariable Long categoryId) {
+        List<CategoryInfoResponseDto> categoryInfoResponseDtoList = categoryService.getAllParentCategories(categoryId);
+
+        if (Objects.isNull(categoryInfoResponseDtoList)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categories Not Found");
+        }
+
+        CategoryInfoResponseList categoryInfoResponseList = new CategoryInfoResponseList();
+        categoryInfoResponseList.setContent(categoryInfoResponseDtoList);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryInfoResponseList);
     }
 
     /**
