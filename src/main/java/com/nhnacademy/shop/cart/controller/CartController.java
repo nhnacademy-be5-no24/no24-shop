@@ -115,4 +115,31 @@ public class CartController {
 
         return ResponseEntity.ok(customerNo + "의 장바구니에 " + cartRequestDto.getBookIsbn() + "이/가 " + cartRequestDto.getBookQuantity() + "개 추가되었습니다.");
     }
+
+    /**
+     * [PUT /cart/update]
+     * 사용자의 action으로 장바구니 상품 수량이 변경되는 경우
+     */
+    @PutMapping("/update")
+    public ResponseEntity<String> updateCart(@RequestHeader Long customerNo, @RequestBody CartRequestDto cartRequestDto) {
+        String bookIsbn = cartRequestDto.getBookIsbn();
+        int newQuantity = cartRequestDto.getBookQuantity();
+
+        HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
+        Cart cart = hashOperations.get("cart", customerNo);
+
+        if (cart != null) {
+            for (Cart.Book book : cart.getBooks()) {
+                if (book.getIsbn().equals(bookIsbn)) {
+                    book.setQuantity(newQuantity);
+                    break;
+                }
+            }
+
+            hashOperations.put("cart", String.valueOf(customerNo), cart);
+            return ResponseEntity.ok("장바구니 상품 수량이 성공적으로 업데이트 되었습니다.");
+        } else {
+            throw new CartNotFoundException(customerNo);
+        }
+    }
 }
