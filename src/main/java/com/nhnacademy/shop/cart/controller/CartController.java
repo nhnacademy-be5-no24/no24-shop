@@ -7,6 +7,7 @@ import com.nhnacademy.shop.cart.domain.Cart;
 import com.nhnacademy.shop.cart.dto.request.CartRequestDto;
 import com.nhnacademy.shop.cart.dto.response.CartResponseDto;
 import com.nhnacademy.shop.cart.exception.CartNotFoundException;
+import com.nhnacademy.shop.cartOrder.domain.CartOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -117,7 +118,7 @@ public class CartController {
     }
 
     /**
-     * [PUT /cart/update]
+     * [PUT /shop/cart/update]
      * 사용자의 action으로 장바구니 상품 수량이 변경되는 경우
      */
     @PutMapping("/update")
@@ -140,6 +141,52 @@ public class CartController {
             return ResponseEntity.ok("장바구니 상품 수량이 성공적으로 업데이트 되었습니다.");
         } else {
             throw new CartNotFoundException(customerNo);
+        }
+    }
+
+    /**
+     * [PUT /shop/cart/{customerNo}]
+     * 결제 완료 후, 장바구니에서 구매한 상품 제거
+     */
+    @PutMapping("/{customerNo}")
+    public ResponseEntity<String> updateCartValue(@PathVariable Long customerNo) {
+        try {
+            HashOperations<String, String, Cart> hashOperations_cart = redisTemplate.opsForHash();
+            Cart cart = hashOperations_cart.get("cart", customerNo);
+
+            HashOperations<String, String, CartOrder> hashOperations_order = redisTemplate.opsForHash();
+            CartOrder order = hashOperations_order.get("order", customerNo);
+
+            List<Cart.Book> updatedBooks = new ArrayList<>();
+            for (Cart.Book cartBook : cart.getBooks()) {
+                boolean found = false;
+                for (CartOrder.Book orderBook : order.getBooks()) {
+                    if (cartBook.getIsbn().equals(orderBook.getIsbn())) {
+                        int newQuantity = cartBook.getQuantity() - orderBook.getQuantity();
+                        if (newQuantity > 0) {
+                            cartBook.setQuantity(newQuantity);
+                            updatedBooks.add(cartBook);
+                            found = true;
+                        } else {
+                            found = true;
+                        }
+                        break;
+                    }
+                }
+                if (!found) {
+                    updatedBooks.add(cartBook);
+                }
+            }
+
+            Cart newCart = new Cart();
+            newCart.setCustomerNo(customerNo);
+            newCart.setBooks(updatedBooks);
+
+            hashOperations_cart.put("cart", String.valueOf(customerNo), newCart);
+
+            return ResponseEntity.ok("Cart value updated successfully for customerId: " + customerNo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update cart value for customerId: " + customerNo);
         }
     }
 }
