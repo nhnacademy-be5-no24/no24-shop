@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/orders")
+@RequestMapping("/shop/orders")
 public class OrderController {
     private final OrdersService orderService;
 
@@ -79,7 +79,7 @@ public class OrderController {
      * @param cartPaymentRequestDto 장바구니 정보.
      * @return 200 Ok. 포장지, 쿠폰, 책, 유저 정보 반환
      */
-    @GetMapping("/cart")
+    @PostMapping("/cart")
     public ResponseEntity<CartPaymentResponseDto> getCartPaymentInfo(
             @RequestBody CartPaymentRequestDto cartPaymentRequestDto
     ){

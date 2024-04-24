@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CartRequestDto {
-    @JsonProperty("book_isbn")
     private String bookIsbn;
-
-    @JsonProperty("book_quantity")
     private int bookQuantity;
 }

@@ -5,6 +5,7 @@ import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.cart.domain.Cart;
 import com.nhnacademy.shop.cart.dto.request.CartRequestDto;
+import com.nhnacademy.shop.cart.dto.response.CartListResponseDto;
 import com.nhnacademy.shop.cart.dto.response.CartResponseDto;
 import com.nhnacademy.shop.cart.exception.CartNotFoundException;
 import com.nhnacademy.shop.cartOrder.domain.CartOrder;
@@ -41,7 +42,7 @@ public class CartController {
      *  장바구니를 조회하는 Get 메서드
      */
     @GetMapping("/{customerNo}")
-    public ResponseEntity<Page<CartResponseDto>> getCarts(@PathVariable Long customerNo,
+    public ResponseEntity<CartListResponseDto> getCarts(@PathVariable String customerNo,
                                                           @RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size) {
         HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
@@ -59,7 +60,7 @@ public class CartController {
                         .bookFixedPrice(foundBookByIsbn.get().getBookFixedPrice())
                         .bookSalePrice(foundBookByIsbn.get().getBookSalePrice())
                         .bookStatus(foundBookByIsbn.get().getBookStatus())
-                        .bookQuantity(foundBookByIsbn.get().getBookQuantity())
+                        .bookQuantity(book.getQuantity())
                         .bookImage(foundBookByIsbn.get().getBookImage())
                         .build();
 
@@ -74,7 +75,9 @@ public class CartController {
         int end = Math.min((start + pageRequest.getPageSize()), cartResponseDtoList.size());
         Page<CartResponseDto> carts = new PageImpl<>(cartResponseDtoList.subList(start, end), pageRequest, cartResponseDtoList.size());
 
-        return ResponseEntity.status(HttpStatus.OK).body(carts);
+        CartListResponseDto cartListResponseDto = new CartListResponseDto(carts.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(cartListResponseDto);
     }
 
     /**
@@ -82,8 +85,8 @@ public class CartController {
      * 장바구니에 상품을 추가하는 Post 메소드
      */
     // todo: 비회원 시, redis 유효시간 3시간 설정 추가
-    @PostMapping("/create")
-    public ResponseEntity<String> addToCart(@RequestHeader("customerNo") Long customerNo, @RequestBody CartRequestDto cartRequestDto) {
+    @PostMapping("/create/{customerNo}")
+    public ResponseEntity<String> addToCart(@PathVariable("customerNo") String customerNo, @RequestBody CartRequestDto cartRequestDto) {
         HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
         Cart cart = hashOperations.get("cart", customerNo);
 
@@ -121,8 +124,8 @@ public class CartController {
      * [PUT /shop/cart/update]
      * 사용자의 action으로 장바구니 상품 수량이 변경되는 경우
      */
-    @PutMapping("/update")
-    public ResponseEntity<String> updateCart(@RequestHeader Long customerNo, @RequestBody CartRequestDto cartRequestDto) {
+    @PutMapping("/update/{customerNo}")
+    public ResponseEntity<String> updateCart(@PathVariable String customerNo, @RequestBody CartRequestDto cartRequestDto) {
         String bookIsbn = cartRequestDto.getBookIsbn();
         int newQuantity = cartRequestDto.getBookQuantity();
 
@@ -149,7 +152,7 @@ public class CartController {
      * 사용자의 action으로 장바구니 내 '하나'의 상품 삭제
      */
     @DeleteMapping("/deleteOne/{customerNo}")
-    public ResponseEntity<String> deleteCartBook(@PathVariable Long customerNo, @RequestParam String bookIsbn) {
+    public ResponseEntity<String> deleteCartBook(@PathVariable String customerNo, @RequestParam String bookIsbn) {
         HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
 
         if (hashOperations.hasKey("cart", customerNo)) {
@@ -167,7 +170,7 @@ public class CartController {
      * 결제 완료 후, 장바구니에서 구매한 상품 제거
      */
     @PutMapping("/{customerNo}")
-    public ResponseEntity<String> updateCartValue(@PathVariable Long customerNo) {
+    public ResponseEntity<String> updateCartValue(@PathVariable String customerNo) {
         try {
             HashOperations<String, String, Cart> hashOperations_cart = redisTemplate.opsForHash();
             Cart cart = hashOperations_cart.get("cart", customerNo);
@@ -214,7 +217,7 @@ public class CartController {
      * customerId의 장바구니를 삭제하는 DELETE 메서드
      */
     @DeleteMapping("/shop/deleteAll/{customerNo}")
-    public ResponseEntity<String> deleteCart(@PathVariable Long customerNo) {
+    public ResponseEntity<String> deleteCart(@PathVariable String customerNo) {
         HashOperations<String, String, Cart> hashOperations = redisTemplate.opsForHash();
 
         if (hashOperations.hasKey("cart", customerNo)) {
