@@ -2,10 +2,8 @@ package com.nhnacademy.shop.orders.controller;
 
 
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
@@ -96,19 +94,19 @@ public class OrderController {
 
     /**
      *
-     * @param ordersCreateRequestDto 주문 등록을 위한 dto.
+     * @param ordersCreateRequestResponseDto 주문 등록을 위한 dto.
      * @throws OrderStatusFailedException not found.
      * @throws SaveOrderFailed not found.
      * @return 201 created.
      */
     @PostMapping
-    public ResponseEntity<OrdersResponseDto> createOrder(
-            @RequestBody OrdersCreateRequestDto ordersCreateRequestDto
+    public ResponseEntity<OrdersCreateRequestResponseDto> createOrder(
+            @RequestBody OrdersCreateRequestResponseDto ordersCreateRequestResponseDto
             ){
         try{
             return ResponseEntity.status(HttpStatus.CREATED)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(orderService.createOrder(ordersCreateRequestDto));
+                    .body(orderService.createOrder(ordersCreateRequestResponseDto));
         }catch(OrderStatusFailedException | SaveOrderFailed e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -9,12 +9,16 @@ import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.customer.exception.CustomerNotFoundException;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
+import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
+import com.nhnacademy.shop.order_detail.repository.OrderDetailRepository;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
@@ -24,7 +28,14 @@ import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
 import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
 import com.nhnacademy.shop.orders.repository.OrdersRepository;
 import com.nhnacademy.shop.orders.service.OrdersService;
+import com.nhnacademy.shop.payment.domain.Payment;
+import com.nhnacademy.shop.payment.exception.PaymentNotFoundException;
+import com.nhnacademy.shop.payment.repository.PaymentRepository;
 import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.domain.WrapInfo;
+import com.nhnacademy.shop.wrap.exception.NotFoundWrapException;
+import com.nhnacademy.shop.wrap.exception.TooManyWrapForAmountException;
+import com.nhnacademy.shop.wrap.repository.WrapInfoRepository;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +66,9 @@ public class OrdersServiceImpl implements OrdersService {
     private final CouponMemberRepository couponMemberRepository;
     private final WrapRepository wrapRepository;
     private final BookRepository bookRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final WrapInfoRepository wrapInfoRepository;
 
 
     // 주문리스트 전체 가져오기(admin)
@@ -86,34 +101,99 @@ public class OrdersServiceImpl implements OrdersService {
     // 결제 완료되면 주문 저장하기
     @Override
     @Transactional
-    public OrdersResponseDto createOrder(OrdersCreateRequestDto ordersCreateRequestDto) {
-        Orders.OrderState orderState = ordersCreateRequestDto.getOrderState();
+    public OrdersCreateRequestResponseDto createOrder(OrdersCreateRequestResponseDto ordersCreateRequestResponseDto) {
+        Orders.OrderState orderState = ordersCreateRequestResponseDto.getOrderState();
         if (orderState != Orders.OrderState.COMPLETE_PAYMENT) {
             throw new OrderStatusFailedException("Invalid order state: " + orderState);
         }
+
+        // Payment get
+        Optional<Payment> optionalPayment = paymentRepository.findById(ordersCreateRequestResponseDto.getPaymentId());
+
+        if(optionalPayment.isEmpty()) {
+            throw new PaymentNotFoundException();
+        }
+
+        // Customer get
+        Optional<Customer> optionalCustomer = customerRepository.findById(ordersCreateRequestResponseDto.getCustomerNo());
+
+        if(optionalCustomer.isEmpty()) {
+            throw new CustomerNotFoundException();
+        }
+
         Orders orders = Orders.builder()
-                .orderDate(LocalDate.now())
+                .orderId(ordersCreateRequestResponseDto.getOrderId())
+                .orderDate(LocalDateTime.now())
                 .orderState(Orders.OrderState.valueOf("WAITING"))
-                .deliveryFee(ordersCreateRequestDto.getDeliveryFee())
-                .payment(ordersCreateRequestDto.getPayment())
-                .customer(ordersCreateRequestDto.getCustomer())
-                .receiverName(ordersCreateRequestDto.getReceiverName())
-                .receiverPhoneNumber(ordersCreateRequestDto.getReceiverPhoneNumber())
-                .zipcode(ordersCreateRequestDto.getZipcode())
-                .address(ordersCreateRequestDto.getAddress())
-                .addressDetail(ordersCreateRequestDto.getAddressDetail())
-                .req(ordersCreateRequestDto.getReq())
-                .orderDetails(ordersCreateRequestDto.getOrderDetailList())
+                .deliveryFee(ordersCreateRequestResponseDto.getDeliveryFee())
+                .payment(optionalPayment.get())
+                .customer(optionalCustomer.get())
+                .receiverName(ordersCreateRequestResponseDto.getReceiverName())
+                .receiverPhoneNumber(ordersCreateRequestResponseDto.getReceiverPhoneNumber())
+                .zipcode(ordersCreateRequestResponseDto.getZipcode())
+                .address(ordersCreateRequestResponseDto.getAddress())
+                .addressDetail(ordersCreateRequestResponseDto.getAddressDetail())
+                .req(ordersCreateRequestResponseDto.getReq())
+                .orderDetails(null)
                 .build();
 
-        Orders createdOrders = ordersRepository.save(orders);
-        Optional<OrdersResponseDto> ordersResponseDto = ordersRepository.getOrderByOrderId(createdOrders.getOrderId());
+        orders = ordersRepository.save(orders);
 
-        if(ordersResponseDto.isPresent()){
-            return ordersResponseDto.get();
-        }else{
-            throw new SaveOrderFailed(ordersResponseDto.get().getOrderId());
+        // todo: orderDetailDtos 저장 추가 필요.
+        List<OrderDetailDto> orderDetailDtoList = ordersCreateRequestResponseDto.getOrderDetailDtoList();
+        List<OrderDetail> orderDetails = new ArrayList<>();
+
+        for(OrderDetailDto orderDetailDto : orderDetailDtoList){
+            Optional<Book> optionalBook = bookRepository.findByBookIsbn(orderDetailDto.getBookIsbn());
+
+            if(optionalBook.isEmpty()) {
+                throw new BookNotFoundException();
+            }
+
+            // order detail 선 저장.
+            OrderDetail orderDetail = OrderDetail.builder()
+                    .orderDetailId(null)
+                    .order(orders)
+                    .book(optionalBook.get())
+                    .amount(orderDetailDto.getQuantity())
+                    .build();
+
+            orderDetail = orderDetailRepository.save(orderDetail);
+
+            // wrap 정보 저장
+            // wrap 저장 시, 책보다 더 많은 경우 throw Exception
+            long wrapAmount = 0L;
+            List<OrderDetailDto.WrapInfoDto> wrapInfoDtoList = orderDetailDto.getWraps();
+
+
+            for(OrderDetailDto.WrapInfoDto wrapInfoDto : wrapInfoDtoList) {
+                Optional<Wrap> optionalWrap = wrapRepository.findById(wrapInfoDto.getWrapId());
+
+                if(optionalWrap.isEmpty()) {
+                    throw new NotFoundWrapException(wrapInfoDto.getWrapId());
+                }
+
+                WrapInfo wrapInfo = WrapInfo.builder()
+                        .wrap(optionalWrap.get())
+                        .orderDetail(orderDetail)
+                        .amount(wrapInfoDto.getQuantity())
+                        .build();
+
+                wrapAmount += wrapInfoDto.getQuantity();
+                wrapInfoRepository.save(wrapInfo);
+            }
+
+            if(wrapAmount > orderDetail.getAmount()) {
+                throw new TooManyWrapForAmountException();
+            }
+
+            orderDetails.add(orderDetail);
         }
+
+        // orderdetails를 넣은 후 다시 재저장.
+        ordersRepository.save(orders.setOrderDetails(orderDetails));
+
+        return ordersCreateRequestResponseDto;
     }
     // 주문 상태 변경
     @Override
