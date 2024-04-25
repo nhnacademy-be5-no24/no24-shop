@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 주문 상세(OrderDetail) 테이블.
@@ -37,8 +39,6 @@ public class OrderDetail {
     @JoinColumn(name = "book_isbn")
     private Book book;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "wrap_id")
-    private Wrap wrap;
+    @Column(name="amount")
+    private Long amount;
 }

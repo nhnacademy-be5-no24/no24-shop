@@ -48,14 +48,11 @@ public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements O
                         orders.orderState.as("주문상태"),
                         orders.address.as("주소"),
                         orders.addressDetail.as("주소상세"),
-                        orderDetail.wrap.wrapName.as("포장지이름"),
-                        orderDetail.wrap.wrapCost.as("포장지가격"),
                         orderDetail.book.bookTitle.as("도서이름"),
                         orderDetail.book.bookSalePrice.as("도서가격")
                 ))
                 .innerJoin(orders.customer, customer)
                 .innerJoin(orders.orderDetails, orderDetail)
-                .innerJoin(orderDetail.wrap, wrap)
                 .innerJoin(orderDetail.book, book)
                 .orderBy(orders.orderDate.desc())
                 .limit(pageable.getPageSize())
@@ -75,8 +72,6 @@ public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements O
                         orders.orderId.as("주문번호"),
                         orderDetail.book.bookTitle.as("도서"),
                         orderDetail.book.bookSalePrice.as("도서판매가격"),
-                        orderDetail.wrap.wrapName.as("포장지이름"),
-                        orderDetail.wrap.wrapCost.as("포장가격"),
                         orders.orderDate.as("주문날짜"),
                         orders.receiverName.as("수취인"),
                         orders.receiverPhoneNumber.as("수취인전화번호"),
@@ -102,8 +97,6 @@ public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements O
                                 orders.orderId.as("주문번호"),
                                 orderDetail.book.bookTitle.as("도서"),
                                 orderDetail.book.bookSalePrice.as("도서판매가격"),
-                                orderDetail.wrap.wrapName.as("포장지이름"),
-                                orderDetail.wrap.wrapCost.as("포장가격"),
                                 orders.orderDate.as("주문날짜"),
                                 orders.receiverName.as("수취인"),
                                 orders.receiverPhoneNumber.as("수취인전화번호"),
