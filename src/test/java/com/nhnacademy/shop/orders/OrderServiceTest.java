@@ -9,7 +9,7 @@ import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
@@ -67,8 +67,8 @@ class OrderServiceTest {
     private OrdersListForAdminResponseDto adminResponseDto2;
     private OrdersResponseDto ordersResponseDto;
     private OrdersResponseDto ordersResponseDto2;
-    private OrdersCreateRequestDto createRequestDto;
-    private OrdersCreateRequestDto createRequestDtoNoState;
+    private OrdersCreateRequestResponseDto createRequestDto;
+    private OrdersCreateRequestResponseDto createRequestDtoNoState;
 
     @BeforeEach
     void setup() {
@@ -135,7 +135,7 @@ class OrderServiceTest {
                 .build();
     }
     private void initializeAdminResponseDto() {
-        createRequestDto = new OrdersCreateRequestDto(
+        createRequestDto = new OrdersCreateRequestResponseDto(
                 LocalDate.of(2024, 4, 15),
                 Orders.OrderState.COMPLETE_PAYMENT,
                 1L,
@@ -149,7 +149,7 @@ class OrderServiceTest {
                 "req",
                 Collections.singletonList(orderDetail)
         );
-        createRequestDtoNoState = new OrdersCreateRequestDto(
+        createRequestDtoNoState = new OrdersCreateRequestResponseDto(
                 LocalDate.of(2024, 4, 15),
                 Orders.OrderState.WAITING,
                 1L,

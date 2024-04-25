@@ -4,7 +4,7 @@ package com.nhnacademy.shop.orders.service;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
@@ -52,7 +52,7 @@ public interface OrdersService {
      * @param ordersCreateRequestDto 주문 등록을 위한 정보 입니다.
      * @return OrdersResponseDto 주문 정보가 반환.
      */
-    OrdersResponseDto createOrder(OrdersCreateRequestDto ordersCreateRequestDto);
+    OrdersCreateRequestResponseDto createOrder(OrdersCreateRequestResponseDto ordersCreateRequestDto);
 
 
     /**

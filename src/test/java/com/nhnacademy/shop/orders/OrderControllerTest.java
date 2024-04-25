@@ -8,7 +8,7 @@ import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.controller.OrderController;
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.service.OrdersService;
@@ -23,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -59,8 +58,8 @@ class OrderControllerTest {
     private OrdersListForAdminResponseDto adminResponseDto2;
     private OrdersResponseDto ordersResponseDto;
     private OrdersResponseDto ordersResponseDto2;
-    private OrdersCreateRequestDto createRequestDto;
-    private OrdersCreateRequestDto createRequestDtoNoState;
+    private OrdersCreateRequestResponseDto createRequestDto;
+    private OrdersCreateRequestResponseDto createRequestDtoNoState;
 
     @BeforeEach
     void setup() {
@@ -131,7 +130,7 @@ class OrderControllerTest {
 
     }
     private void initializeAdminResponseDto() {
-        createRequestDto = new OrdersCreateRequestDto(
+        createRequestDto = new OrdersCreateRequestResponseDto(
                 LocalDate.of(2024, 4, 15),
                 Orders.OrderState.COMPLETE_PAYMENT,
                 1L,
@@ -145,7 +144,7 @@ class OrderControllerTest {
                 "req",
                 Collections.singletonList(orderDetail)
         );
-        createRequestDtoNoState = new OrdersCreateRequestDto(
+        createRequestDtoNoState = new OrdersCreateRequestResponseDto(
                 LocalDate.of(2024, 4, 15),
                 Orders.OrderState.SHIPPING,
                 1L,
