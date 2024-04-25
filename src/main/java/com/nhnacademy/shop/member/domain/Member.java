@@ -40,7 +40,4 @@ public class Member {
 
     @Column(name = "member_state")
     private MemberState memberState;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
 }

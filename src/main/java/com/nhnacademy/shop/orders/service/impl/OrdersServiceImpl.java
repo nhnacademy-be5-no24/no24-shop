@@ -179,6 +179,7 @@ public class OrdersServiceImpl implements OrdersService {
                 .customerNo(optionalCustomer.get().getCustomerNo())
                 .customerName(optionalCustomer.get().getCustomerName())
                 .customerPhoneNumber(optionalCustomer.get().getCustomerPhoneNumber())
+                .customerEmail(optionalCustomer.get().getCustomerEmail())
                 .receiverName(defaultAddress.getReceiverName())
                 .receiverPhoneNumber(defaultAddress.getReceiverPhoneNumber())
                 .zipcode(defaultAddress.getZipcode())
