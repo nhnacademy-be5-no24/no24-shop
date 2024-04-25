@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookCategoryRepository extends JpaRepository<BookCategory, BookCategory.Pk> {
-    Page<Book> findByCategory(Pageable pageable, Category category);
+    Page<BookCategory> findByCategory(Pageable pageable, Category category);
 }
