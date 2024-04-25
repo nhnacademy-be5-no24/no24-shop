@@ -26,6 +26,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,7 +97,7 @@ class OrdersRepositoryTest {
 
         order = Orders.builder()
                 .orderId("orderId")
-                .orderDate(LocalDate.of(2024, 4, 14))
+                .orderDate(LocalDateTime.of(2024, 4, 14, 20, 10, 29))
                 .deliveryFee(1L)
                 .orderState(Orders.OrderState.WAITING)
                 .payment(payment)
@@ -111,7 +112,6 @@ class OrdersRepositoryTest {
         orderDetail = OrderDetail.builder()
                 .orderDetailId(1L)
                 .book(book)
-                .wrap(wrap)
                 .order(order)
                 .build();
     }
