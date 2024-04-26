@@ -4,7 +4,7 @@ package com.nhnacademy.shop.orders.service;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
@@ -52,7 +52,7 @@ public interface OrdersService {
      * @param ordersCreateRequestDto 주문 등록을 위한 정보 입니다.
      * @return OrdersResponseDto 주문 정보가 반환.
      */
-    OrdersResponseDto createOrder(OrdersCreateRequestDto ordersCreateRequestDto);
+    OrdersCreateRequestResponseDto createOrder(OrdersCreateRequestResponseDto ordersCreateRequestDto);
 
 
     /**
@@ -70,14 +70,12 @@ public interface OrdersService {
      */
     CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto);
 
-    /**
-     * 주문 결제 페이지에서 쿠폰, 포장지 선택 후 가격 업데이트하는 메소드
-     * @param cartPaymentPostRequestDto 기존 주문 결제 페이지에서 쿠폰, 포장지 설정한것
-     * @return CartPaymentResponseDto 가격 업데이트 주문 결제 dto
-     */
-    CartPaymentPostResponseDto createCartPamentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto);
-
-    CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto);
+//    /**
+//     * 주문 결제 페이지에서 쿠폰, 포장지 선택 후 가격 업데이트하는 메소드
+//     * @param cartPaymentPostRequestDto 기존 주문 결제 페이지에서 쿠폰, 포장지 설정한것
+//     * @return CartPaymentResponseDto 가격 업데이트 주문 결제 dto
+//     */
+//    CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto);
 
 
 }

@@ -1,11 +1,13 @@
 package com.nhnacademy.shop.member.domain;
 
+import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -38,5 +40,4 @@ public class Member {
 
     @Column(name = "member_state")
     private MemberState memberState;
-
 }

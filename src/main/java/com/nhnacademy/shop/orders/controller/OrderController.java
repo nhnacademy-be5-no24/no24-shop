@@ -2,10 +2,11 @@ package com.nhnacademy.shop.orders.controller;
 
 
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
-import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.shop.orders.dto.response.*;
+import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
+import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
 import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
 import com.nhnacademy.shop.orders.service.OrdersService;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/orders")
+@RequestMapping("/shop/orders")
 public class OrderController {
     private final OrdersService orderService;
 
@@ -76,7 +77,7 @@ public class OrderController {
      * @param cartPaymentRequestDto 장바구니 정보.
      * @return 200 Ok. 포장지, 쿠폰, 책, 유저 정보 반환
      */
-    @GetMapping("/cart")
+    @PostMapping("/cart")
     public ResponseEntity<CartPaymentResponseDto> getCartPaymentInfo(
             @RequestBody CartPaymentRequestDto cartPaymentRequestDto
     ){
@@ -107,42 +108,42 @@ public class OrderController {
 
     /**
      *
-     * @param ordersCreateRequestDto 주문 등록을 위한 dto.
+     * @param ordersCreateRequestResponseDto 주문 등록을 위한 dto.
      * @throws OrderStatusFailedException not found.
      * @throws SaveOrderFailed not found.
      * @return 201 created.
      */
     @PostMapping
-    public ResponseEntity<OrdersResponseDto> createOrder(
-            @RequestBody OrdersCreateRequestDto ordersCreateRequestDto
+    public ResponseEntity<OrdersCreateRequestResponseDto> createOrder(
+            @RequestBody OrdersCreateRequestResponseDto ordersCreateRequestResponseDto
             ){
         try{
             return ResponseEntity.status(HttpStatus.CREATED)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(orderService.createOrder(ordersCreateRequestDto));
+                    .body(orderService.createOrder(ordersCreateRequestResponseDto));
         }catch(OrderStatusFailedException | SaveOrderFailed e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    /**
-     * (부가기능) 결제전 페이지에서 쿠폰, 포장지 선택한거 저장하는 method
-     * @param cartPaymentPostRequestDto
-     * @return
-     */
-    @PostMapping("/cart")
-    public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
-            @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
-    ){
-        try{
-            CartPaymentPostResponseDto dto = orderService.createCartPamentInfo(cartPaymentPostRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(dto);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
+//    /**
+//     * (부가기능) 결제전 페이지에서 쿠폰, 포장지 선택한거 저장하는 method
+//     * @param cartPaymentPostRequestDto
+//     * @return
+//     */
+//    @PostMapping("/cart")
+//    public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
+//            @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
+//    ){
+//        try{
+//            CartPaymentPostResponseDto dto = orderService.createCartPamentInfo(cartPaymentPostRequestDto);
+//            return ResponseEntity.status(HttpStatus.CREATED)
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .body(dto);
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
 
 
     /**

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,15 +34,10 @@ class OrderDetailEntityTest {
                 .bookImage("book.jpg")
                 .build();
 
-        Wrap wrap = Wrap.builder()
-                .wrapId(1L)
-                .wrapName("Test Wrap")
-                .wrapCost(200L)
-                .build();
-
         Orders order = Orders.builder()
                 .orderId("orderId")
-                .orderDate(LocalDate.now())
+                .orderDate(LocalDateTime.now())
+                .shippingDate(LocalDateTime.now())
                 .orderState(Orders.OrderState.WAITING)
                 .deliveryFee(500L)
                 .receiverName("John Doe")
@@ -56,12 +52,12 @@ class OrderDetailEntityTest {
                 .orderDetailId(1L)
                 .order(order)
                 .book(book)
-                .wrap(wrap)
+                .amount(1L)
                 .build();
 
         assertEquals(1L, orderDetail.getOrderDetailId());
         assertEquals("orderId", orderDetail.getOrder().getOrderId());
         assertEquals("1234567890", orderDetail.getBook().getBookIsbn());
-        assertEquals(1L, orderDetail.getWrap().getWrapId());
+        assertEquals(1L, orderDetail.getAmount());
     }
 }

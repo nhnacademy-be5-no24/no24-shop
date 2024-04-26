@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @AutoConfigureMockMvc
@@ -16,7 +17,8 @@ class OrderEntityTest {
     @Test
     void testOrder(){
         Orders order = Orders.builder()
-                .orderDate(LocalDate.now())
+                .orderDate(LocalDateTime.now())
+                .shippingDate(LocalDateTime.now())
                 .orderState(Orders.OrderState.WAITING)
                 .deliveryFee(1000L)
                 .payment(new Payment())
