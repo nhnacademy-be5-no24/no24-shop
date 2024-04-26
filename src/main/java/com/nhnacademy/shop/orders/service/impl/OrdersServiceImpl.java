@@ -192,6 +192,17 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
+    public CartPaymentPostResponseDto createCartPamentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto) {
+        //쿠폰, 포장 애들 선택하고  총 가격 업데이트, 각 책 가격 업데이트해서 줘야할듯하오.
+
+        // todo 1  : 각 북 정보들고 오면서 쿠폰, 포장지 정보 가격 들고와서 가격 업데이트
+
+        // todo 2 : 그리고 totalPrice 다시 계산하기
+
+        // todo 3 : responseDto 반환
+    }
+
+    @Override
     public CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto) {
         return null;
     }

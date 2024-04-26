@@ -5,10 +5,7 @@ import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
-import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.dto.response.*;
 import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
 import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
 import com.nhnacademy.shop.orders.service.OrdersService;
@@ -93,6 +90,20 @@ public class OrderController {
         }
     }
 
+//    @GetMapping("/payment")
+//    public ResponseEntity<PaymentResponseDto> getPaymentInfo(
+//            @RequestBody PaymentRequestDto paymentRequestDto
+//    ){
+//        try{
+//            PaymentResponseDto responseDto = orderService.getPaymentInfo(paymentRequestDto);
+//            return ResponseEntity.status(HttpStatus.OK)
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .body(responseDto);
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
+
 
     /**
      *
@@ -114,24 +125,24 @@ public class OrderController {
         }
     }
 
-//    /**
-//     * (부가기능) 결제전 페이지에서 쿠폰, 포장지 선택한거 저장하는 method
-//     * @param cartPaymentPostRequestDto
-//     * @return
-//     */
-//    @PostMapping("/cart")
-//    public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
-//            @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
-//    ){
-//
-//        CartPaymentResponseDto dto = orderService.createCartPamentInfo(cartPaymentPostRequestDto);
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(dto);
-//
-//        //쿠폰, 포장 애들 선택하고  (포장지 수량 down) 총가격줘야하는듯..?
-//        //transaction 생각해야할듯하오.
-//    }
+    /**
+     * (부가기능) 결제전 페이지에서 쿠폰, 포장지 선택한거 저장하는 method
+     * @param cartPaymentPostRequestDto
+     * @return
+     */
+    @PostMapping("/cart")
+    public ResponseEntity<CartPaymentPostResponseDto> createOrderCart(
+            @RequestBody CartPaymentPostRequestDto cartPaymentPostRequestDto
+    ){
+        try{
+            CartPaymentPostResponseDto dto = orderService.createCartPamentInfo(cartPaymentPostRequestDto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(dto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 
     /**
