@@ -98,7 +98,7 @@ class OrdersRepositoryTest {
         order = Orders.builder()
                 .orderId("orderId")
                 .orderDate(LocalDateTime.of(2024, 4, 14, 20, 10, 29))
-                .deliveryFee(1L)
+                .deliveryFee(3000)
                 .orderState(Orders.OrderState.WAITING)
                 .payment(payment)
                 .customer(customer)

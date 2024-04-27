@@ -44,7 +44,7 @@ class OrderDetailEntityTest {
                 .orderId("orderId")
                 .orderDate(LocalDateTime.now())
                 .orderState(Orders.OrderState.WAITING)
-                .deliveryFee(500L)
+                .deliveryFee(3000)
                 .receiverName("John Doe")
                 .receiverPhoneNumber("1234567890")
                 .zipcode("12345")
