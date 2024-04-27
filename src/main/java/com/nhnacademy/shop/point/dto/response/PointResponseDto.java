@@ -22,9 +22,8 @@ import java.time.LocalDateTime;
 public class PointResponseDto {
     private Long pointId;
     private Long customerNo;
-    private Long orderId;
+    private String orderId;
     private String pointDescription;
     private Integer usage;
-    private Boolean type;
     private LocalDateTime createdAt;
 }

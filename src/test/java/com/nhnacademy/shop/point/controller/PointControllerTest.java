@@ -79,15 +79,17 @@ class PointControllerTest {
                 .lastLoginAt(null)
                 .grade(grade).build();
 
-        pointLog = new PointLog(1L, member, 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0, 0, 0));
+        String orderId = "example_order";
+
+        pointLog = new PointLog(1L, member, orderId, "리뷰 작성", 1000,
+                LocalDateTime.parse("2024-04-05T00:00:00"));
         pageSize = 0;
         offset = 10;
         pageable = PageRequest.of(pageSize, offset);
-        pointResponseDto = new PointResponseDto(1L, member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0, 0, 0));
-        pointRequestDto = new PointRequestDto(member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
-                LocalDateTime.of(2024, 4, 5, 0, 0, 0));
+        pointResponseDto = new PointResponseDto(1L, member.getCustomerNo(), orderId, "리뷰 작성", 1000,
+                LocalDateTime.parse("2024-04-05T00:00:00"));
+        pointRequestDto = new PointRequestDto(member.getCustomerNo(), orderId, "리뷰 작성", 1000,
+                LocalDateTime.parse("2024-04-05T00:00:00"));
         pointPage = new PageImpl<>(List.of(pointResponseDto), pageable, 1);
         startDate = "2024-04-03T00:00:00";
         endDate = "2024-04-06T00:00:00";

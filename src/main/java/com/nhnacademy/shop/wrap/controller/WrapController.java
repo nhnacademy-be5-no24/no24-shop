@@ -4,6 +4,7 @@ package com.nhnacademy.shop.wrap.controller;
 import com.nhnacademy.shop.wrap.dto.request.ModifyWrapRequestDto;
 import com.nhnacademy.shop.wrap.dto.request.WrapRequestDto;
 import com.nhnacademy.shop.wrap.dto.response.WrapResponseDto;
+import com.nhnacademy.shop.wrap.dto.response.WrapResponseDtoList;
 import com.nhnacademy.shop.wrap.exception.AlreadyExistWrapException;
 import com.nhnacademy.shop.wrap.exception.NotFoundWrapException;
 import com.nhnacademy.shop.wrap.exception.NotFoundWrapNameException;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/delivery")
+@RequestMapping("/shop")
 public class WrapController {
     private final WrapService wrapService;
 
@@ -35,13 +36,17 @@ public class WrapController {
      * @return 성공했을 때 응답코드 200 OK 반환하고 body에 WrapResponseDto list.
      */
     @GetMapping("/wraps")
-    public ResponseEntity<Page<WrapResponseDto>> getWraps(
+    public ResponseEntity<WrapResponseDtoList> getWraps(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ){
         Pageable pageable = PageRequest.of(page, size);
         Page<WrapResponseDto> wrapPage = wrapService.getWraps(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(wrapPage);
+        WrapResponseDtoList wrapResponseDtoList = WrapResponseDtoList.builder()
+                .wrapResponseDtoList(wrapPage.getContent())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(wrapResponseDtoList);
     }
 
 

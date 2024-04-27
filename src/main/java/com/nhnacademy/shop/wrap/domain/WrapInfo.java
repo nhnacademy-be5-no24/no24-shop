@@ -45,7 +45,7 @@ public class WrapInfo {
     @Embeddable
     public static class Pk implements Serializable {
         @Column(name = "wrap_id")
-        private String wrapId;
+        private Long wrapId;
         @Column(name = "order_detail_id")
         private Long orderDetailId;
 

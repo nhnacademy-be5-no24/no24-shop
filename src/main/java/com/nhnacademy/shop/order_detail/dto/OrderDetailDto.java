@@ -19,11 +19,13 @@ public class OrderDetailDto {
     String bookIsbn;
     Long quantity;
     Long price;
-    List<WrapInfoDto> wraps;
+    Long couponId;
+    List<WrapDto> wraps;
 
-    @Getter
     @Data
-    public class WrapInfoDto {
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WrapDto {
         Long wrapId;
         Long quantity;
     }

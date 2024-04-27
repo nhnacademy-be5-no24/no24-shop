@@ -21,6 +21,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class CouponMember {
+    public enum Status {
+        ACTIVE, USED, DESTROYED
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_member_id")
@@ -45,4 +48,23 @@ public class CouponMember {
 
     @Column(name = "used_at")
     private LocalDateTime usedAt;
+
+    @Column(name = "status")
+    private Status status;
+
+    public CouponMember setDestroyedAtToNow() {
+        this.destroyedAt = LocalDateTime.now();
+        return this;
+    }
+
+    public CouponMember setUsedAtToNow() {
+        this.usedAt = LocalDateTime.now();
+        this.used = true;
+        return this;
+    }
+
+    public CouponMember setStatus(Status status) {
+        this.status = status;
+        return this;
+    }
 }

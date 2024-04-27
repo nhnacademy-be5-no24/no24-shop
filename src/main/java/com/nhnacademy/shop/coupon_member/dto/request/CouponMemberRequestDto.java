@@ -1,11 +1,8 @@
-package com.nhnacademy.shop.coupon_member.dto;
+package com.nhnacademy.shop.coupon_member.dto.request;
 
-import com.nhnacademy.shop.coupon.repository.CouponRepository;
-import com.nhnacademy.shop.coupon_member.domain.CouponMember;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 

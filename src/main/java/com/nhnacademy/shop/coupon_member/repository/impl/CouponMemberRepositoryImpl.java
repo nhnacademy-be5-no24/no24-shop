@@ -2,8 +2,14 @@ package com.nhnacademy.shop.coupon_member.repository.impl;
 
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
+import com.nhnacademy.shop.coupon.entity.QAmountCoupon;
+import com.nhnacademy.shop.coupon.entity.QBookCoupon;
+import com.nhnacademy.shop.coupon.entity.QCategoryCoupon;
+import com.nhnacademy.shop.coupon.entity.QCoupon;
+import com.nhnacademy.shop.coupon.entity.QPercentageCoupon;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
 import com.nhnacademy.shop.coupon_member.domain.QCouponMember;
+import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepositoryCustom;
 import com.nhnacademy.shop.member.domain.QMember;
 import com.querydsl.core.types.Projections;
@@ -48,6 +54,7 @@ public class CouponMemberRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(coupon).on(couponMember.coupon.eq(coupon))
                 .leftJoin(member).on(couponMember.member.eq(member))
                 .where(member.customerNo.eq(customerNo))
+                .where(couponMember.status.eq(CouponMember.Status.ACTIVE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
@@ -85,6 +92,7 @@ public class CouponMemberRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(member).on(couponMember.member.eq(member))
                 .where(member.customerNo.eq(customerNo))
                 .where(couponMember.used.eq(Boolean.FALSE))
+                .where(couponMember.status.eq(CouponMember.Status.ACTIVE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
@@ -122,6 +130,7 @@ public class CouponMemberRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(member).on(couponMember.member.eq(member))
                 .where(member.customerNo.eq(customerNo))
                 .where(couponMember.used.eq(Boolean.FALSE))
+                .where(couponMember.status.eq(CouponMember.Status.ACTIVE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
@@ -160,6 +169,7 @@ public class CouponMemberRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(member).on(couponMember.member.eq(member))
                 .where(member.customerNo.eq(customerNo))
                 .where(couponMember.used.eq(Boolean.FALSE))
+                .where(couponMember.status.eq(CouponMember.Status.ACTIVE))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
