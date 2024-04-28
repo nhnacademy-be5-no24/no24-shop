@@ -16,9 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class WrapResponseDtoList {
-    List<WrapResponseDto> wrapResponseDtoList;
+    List<WrapResponseDto> wrapResponseDtos;
 
-    public WrapResponseDtoList(List<WrapResponseDto> wrapResponseDtoList) {
-        this.wrapResponseDtoList = wrapResponseDtoList;
+    public WrapResponseDtoList(List<WrapResponseDto> wrapResponseDtos) {
+        this.wrapResponseDtos = wrapResponseDtos;
     }
 }
