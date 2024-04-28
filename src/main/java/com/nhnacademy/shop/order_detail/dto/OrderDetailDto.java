@@ -23,7 +23,8 @@ public class OrderDetailDto {
 
     @Getter
     @Data
-    public class WrapInfoDto {
+    @Builder
+    public static class WrapInfoDto {
         Long wrapId;
         Long quantity;
     }

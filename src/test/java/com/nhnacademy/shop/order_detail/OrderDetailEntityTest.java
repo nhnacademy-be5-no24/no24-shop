@@ -5,7 +5,6 @@ package com.nhnacademy.shop.order_detail;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.wrap.domain.Wrap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
