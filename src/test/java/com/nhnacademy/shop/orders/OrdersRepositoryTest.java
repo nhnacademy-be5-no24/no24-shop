@@ -3,6 +3,7 @@ package com.nhnacademy.shop.orders;
 
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
@@ -18,6 +19,7 @@ import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles(value = "dev")
 @WebAppConfiguration
+@Import(
+        {RedisConfig.class}
+)
 class OrdersRepositoryTest {
     @Autowired
     private OrdersRepository ordersRepository;
@@ -98,6 +103,7 @@ class OrdersRepositoryTest {
         order = Orders.builder()
                 .orderId("orderId")
                 .orderDate(LocalDateTime.of(2024, 4, 14, 20, 10, 29))
+                .shippingDate(LocalDateTime.now())
                 .deliveryFee(1L)
                 .orderState(Orders.OrderState.WAITING)
                 .payment(payment)

@@ -38,16 +38,19 @@ public class WrapInfo {
     private Long amount;
 
     @NoArgsConstructor
-    @AllArgsConstructor
     @EqualsAndHashCode
     @Getter
     @Setter
     @Embeddable
     public static class Pk implements Serializable {
         @Column(name = "wrap_id")
-        private String wrapId;
+        private Long wrapId;
         @Column(name = "order_detail_id")
         private Long orderDetailId;
 
+        public Pk(Long wrapId, Long orderDetailId) {
+            this.wrapId = wrapId;
+            this.orderDetailId = orderDetailId;
+        }
     }
 }

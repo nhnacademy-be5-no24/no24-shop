@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter @Setter
 @Entity
+@Builder
 @Table(name = "book_category")
 public class BookCategory {
     @Id

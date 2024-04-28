@@ -1,16 +1,23 @@
 package com.nhnacademy.shop.wrap;
 
 
+import com.netflix.discovery.converters.Auto;
 import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.payment.domain.Payment;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -19,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AutoConfigureMockMvc
 class WrapEntityTest {
+
     @Test
     void testWrapEntityGetterTest(){
 
