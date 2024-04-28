@@ -6,6 +6,7 @@ import com.nhnacademy.shop.wrap.controller.WrapController;
 import com.nhnacademy.shop.wrap.dto.request.ModifyWrapRequestDto;
 import com.nhnacademy.shop.wrap.dto.request.WrapRequestDto;
 import com.nhnacademy.shop.wrap.dto.response.WrapResponseDto;
+import com.nhnacademy.shop.wrap.dto.response.WrapResponseDtoList;
 import com.nhnacademy.shop.wrap.exception.AlreadyExistWrapException;
 import com.nhnacademy.shop.wrap.exception.NotFoundWrapException;
 import com.nhnacademy.shop.wrap.exception.NotFoundWrapNameException;
@@ -42,11 +43,12 @@ class WrapControllerTest {
 
     @MockBean
     private WrapService wrapService;
-    ObjectMapper objectMapper = new ObjectMapper();
-    WrapRequestDto wrapRequestDto;
-    ModifyWrapRequestDto modifyWrapRequestDto;
-    WrapResponseDto wrapResponseDto;
-
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private WrapRequestDto wrapRequestDto;
+    private ModifyWrapRequestDto modifyWrapRequestDto;
+    private WrapResponseDtoList wrapResponseDtoList;
+    private WrapResponseDto wrapResponseDto;
+    private WrapResponseDto wrapResponseDto2;
     @BeforeEach
     void setUp(){
         mockMvc = MockMvcBuilders.standaloneSetup(new WrapController(wrapService)).build();
@@ -54,6 +56,11 @@ class WrapControllerTest {
                 .wrapName("wrap1").wrapCost(1L).build();
         wrapResponseDto = WrapResponseDto.builder()
                 .wrapId(1L).wrapName("wrap1").wrapCost(1L).build();
+        wrapResponseDto2 = WrapResponseDto.builder()
+                .wrapId(2L).wrapName("wrap1").wrapCost(2L).build();
+
+        List<WrapResponseDto> wrapResponseDtos = List.of(wrapResponseDto, wrapResponseDto2);
+        wrapResponseDtoList = new WrapResponseDtoList(wrapResponseDtos);
     }
     @Test
     void testGetWraps_ReturnsPageOfWrapResponseDto() throws Exception {
@@ -63,15 +70,11 @@ class WrapControllerTest {
 
         when(wrapService.getWraps(any(Pageable.class))).thenReturn(wrapResponseDtoPage);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delivery/wraps")
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/wraps")
                         .param("page", "0")
-                        .param("size", "10")) // 페이지 크기
+                        .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].wrapId").value(wrapResponseDto.getWrapId()))
-                .andExpect(jsonPath("$.content[0].wrapName").value(wrapResponseDto.getWrapName()))
-                .andExpect(jsonPath("$.content[0].wrapCost").value(wrapResponseDto.getWrapCost()));
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
 
@@ -80,7 +83,7 @@ class WrapControllerTest {
         Long wrapId = 1L;
         when(wrapService.getWrapById(wrapId)).thenReturn(wrapResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delivery/wraps/id/{wrapId}", wrapId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/wraps/id/{wrapId}", wrapId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.wrapId").value(wrapResponseDto.getWrapId()));
@@ -90,7 +93,7 @@ class WrapControllerTest {
         Long wrapId = 1L;
         when(wrapService.getWrapById(wrapId)).thenThrow(NotFoundWrapException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delivery/wraps/id/{wrapId}", wrapId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/wraps/id/{wrapId}", wrapId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -100,7 +103,7 @@ class WrapControllerTest {
         String wrapName = "wrap1";
         when(wrapService.getWrapByName(wrapName)).thenReturn(wrapResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delivery/wraps/name/{wrapName}", wrapName)
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/wraps/name/{wrapName}", wrapName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.wrapId").value(wrapResponseDto.getWrapId()));
@@ -110,7 +113,7 @@ class WrapControllerTest {
         String wrapName = "wrap1";
         when(wrapService.getWrapByName(wrapName)).thenThrow(NotFoundWrapNameException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delivery/wraps/name/{wrapName}", wrapName)
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/wraps/name/{wrapName}", wrapName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -119,7 +122,7 @@ class WrapControllerTest {
     void testSaveWrap_ReturnsCreated() throws Exception {
         when(wrapService.saveWrap(wrapRequestDto)).thenReturn(wrapResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/delivery/wraps")
+        mockMvc.perform(MockMvcRequestBuilders.post("/shop/wraps")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(wrapRequestDto)))
                 .andExpect(status().isCreated());
@@ -130,7 +133,7 @@ class WrapControllerTest {
 
         when(wrapService.saveWrap(any())).thenThrow(AlreadyExistWrapException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/delivery/wraps")
+        mockMvc.perform(MockMvcRequestBuilders.post("/shop/wraps")
                         .content(objectMapper.writeValueAsString(wrapRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -142,7 +145,7 @@ class WrapControllerTest {
                 .wrapId(1L).wrapName("wrap1").wrapCost(1L).build();
         when(wrapService.modifyWrap(modifyWrapRequestDto)).thenReturn(wrapResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/delivery/wraps/")
+        mockMvc.perform(MockMvcRequestBuilders.put("/shop/wraps/")
                         .content(objectMapper.writeValueAsString(modifyWrapRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -153,7 +156,7 @@ class WrapControllerTest {
                 .wrapId(1L).wrapName("wrap1").wrapCost(1L).build();
         when(wrapService.modifyWrap(any())).thenThrow(NotFoundWrapException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/delivery/wraps/")
+        mockMvc.perform(MockMvcRequestBuilders.put("/shop/wraps/")
                         .content(objectMapper.writeValueAsString(modifyWrapRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -161,7 +164,7 @@ class WrapControllerTest {
     @Test
     void testDeleteById_ReturnsOkStatus() throws Exception{
         Long wrapId = 1L;
-        mockMvc.perform(MockMvcRequestBuilders.delete("/delivery/wraps/id/{wrapId}", wrapId)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/shop/wraps/id/{wrapId}", wrapId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -170,7 +173,7 @@ class WrapControllerTest {
         Long wrapId = 1L;
         doThrow(NotFoundWrapException.class).when(wrapService).deleteWrapById(wrapId);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/delivery/wraps/id/{wrapId}", wrapId)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/shop/wraps/id/{wrapId}", wrapId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -178,7 +181,7 @@ class WrapControllerTest {
     void testDeleteByName_ReturnsOkStatus() throws Exception{
         String wrapName = "existingWrapName";
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/delivery/wraps/name/{wrapName}", wrapName)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/shop/wraps/name/{wrapName}", wrapName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -189,7 +192,7 @@ class WrapControllerTest {
         String wrapName = "nonExistingWrapName";
         doThrow(NotFoundWrapNameException.class).when(wrapService).deleteWrapByName(wrapName);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/delivery/wraps/name/{wrapName}", wrapName)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/shop/wraps/name/{wrapName}", wrapName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

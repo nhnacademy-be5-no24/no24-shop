@@ -14,8 +14,8 @@ class OrderDetailDtoTest {
     @Test
     void testDto(){
 
-        List<OrderDetailDto.WrapInfoDto> wrapInfoDtos = new ArrayList<>();
-        OrderDetailDto.WrapInfoDto wrapInfoDto = OrderDetailDto.WrapInfoDto.builder()
+        List<OrderDetailDto.WrapDto> wrapInfoDtos = new ArrayList<>();
+        OrderDetailDto.WrapDto wrapInfoDto = OrderDetailDto.WrapDto.builder()
                 .wrapId(1L)
                 .quantity(1L)
                 .build();

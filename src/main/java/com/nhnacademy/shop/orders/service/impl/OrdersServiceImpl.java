@@ -6,12 +6,25 @@ import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
+import com.nhnacademy.shop.category.repository.CategoryRepository;
+import com.nhnacademy.shop.category.service.CategoryService;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
+import com.nhnacademy.shop.coupon.entity.Coupon;
+import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
+import com.nhnacademy.shop.coupon.repository.BookCouponRepository;
+import com.nhnacademy.shop.coupon.repository.CategoryCouponRepository;
+import com.nhnacademy.shop.coupon.repository.CouponRepository;
+import com.nhnacademy.shop.coupon_member.domain.CouponMember;
+import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.exception.CustomerNotFoundException;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
+import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
+import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
 import com.nhnacademy.shop.order_detail.repository.OrderDetailRepository;
@@ -25,12 +38,14 @@ import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
 import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
-import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
+import com.nhnacademy.shop.orders.exception.TooManyOrderException;
 import com.nhnacademy.shop.orders.repository.OrdersRepository;
 import com.nhnacademy.shop.orders.service.OrdersService;
 import com.nhnacademy.shop.payment.domain.Payment;
 import com.nhnacademy.shop.payment.exception.PaymentNotFoundException;
 import com.nhnacademy.shop.payment.repository.PaymentRepository;
+import com.nhnacademy.shop.point.domain.PointLog;
+import com.nhnacademy.shop.point.repository.PointLogRepository;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import com.nhnacademy.shop.wrap.exception.NotFoundWrapException;
@@ -44,11 +59,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 주문 서비스의 구현체입니다.
@@ -69,6 +84,15 @@ public class OrdersServiceImpl implements OrdersService {
     private final PaymentRepository paymentRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final WrapInfoRepository wrapInfoRepository;
+    private final PointLogRepository pointLogRepository;
+    private final MemberRepository memberRepository;
+    private final GradeRespository gradeRespository;
+    private final CouponRepository couponRepository;
+    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
+    private final BookCategoryRepository bookCategoryRepository;
+    private final CategoryCouponRepository categoryCouponRepository;
+    private final BookCouponRepository bookCouponRepository;
 
 
     // 주문리스트 전체 가져오기(admin)
@@ -125,6 +149,8 @@ public class OrdersServiceImpl implements OrdersService {
                 .orderId(ordersCreateRequestResponseDto.getOrderId())
                 .orderDate(LocalDateTime.now())
                 .orderState(Orders.OrderState.valueOf("WAITING"))
+                .shipDate(ordersCreateRequestResponseDto.getShipDate())
+                .totalFee(ordersCreateRequestResponseDto.getTotalFee())
                 .deliveryFee(ordersCreateRequestResponseDto.getDeliveryFee())
                 .payment(optionalPayment.get())
                 .customer(optionalCustomer.get())
@@ -150,6 +176,11 @@ public class OrdersServiceImpl implements OrdersService {
                 throw new BookNotFoundException();
             }
 
+            // 수량 체크
+            if(optionalBook.get().getBookQuantity() < orderDetailDto.getQuantity()){
+                throw new TooManyOrderException(optionalBook.get().getBookIsbn());
+            }
+
             // order detail 선 저장.
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderDetailId(null)
@@ -163,10 +194,10 @@ public class OrdersServiceImpl implements OrdersService {
             // wrap 정보 저장
             // wrap 저장 시, 책보다 더 많은 경우 throw Exception
             long wrapAmount = 0L;
-            List<OrderDetailDto.WrapInfoDto> wrapInfoDtoList = orderDetailDto.getWraps();
+            List<OrderDetailDto.WrapDto> wrapInfoDtoList = orderDetailDto.getWraps();
 
 
-            for(OrderDetailDto.WrapInfoDto wrapInfoDto : wrapInfoDtoList) {
+            for(OrderDetailDto.WrapDto wrapInfoDto : wrapInfoDtoList) {
                 Optional<Wrap> optionalWrap = wrapRepository.findById(wrapInfoDto.getWrapId());
 
                 if(optionalWrap.isEmpty()) {
@@ -174,6 +205,7 @@ public class OrdersServiceImpl implements OrdersService {
                 }
 
                 WrapInfo wrapInfo = WrapInfo.builder()
+                        .pk(new WrapInfo.Pk(optionalWrap.get().getWrapId(), orderDetail.getOrderDetailId()))
                         .wrap(optionalWrap.get())
                         .orderDetail(orderDetail)
                         .amount(wrapInfoDto.getQuantity())
@@ -187,7 +219,55 @@ public class OrdersServiceImpl implements OrdersService {
                 throw new TooManyWrapForAmountException();
             }
 
+            // 수량 업데이트
+            int bookQuantity = (int) (optionalBook.get().getBookQuantity() - orderDetail.getAmount());
+            Book book = optionalBook.get().setBookQuantity(bookQuantity);
+
+            // 수량이 0이면 상태 변경.
+            if(book.getBookQuantity() == 0) {
+                book = book.setBookStatus(1);
+            }
+
+            bookRepository.save(book);
+
+            // 쿠폰 업데이트
+            if(orderDetailDto.getCouponId() != 0L) {
+                Optional<CouponMember> optionalCouponMember = couponMemberRepository.findById(orderDetailDto.getCouponId());
+
+                if (optionalCouponMember.isEmpty()) {
+                    throw new NotFoundCouponException(orderDetailDto.getCouponId());
+                }
+
+                CouponMember couponMember = optionalCouponMember.get();
+                couponMember.setStatus(CouponMember.Status.USED);
+                couponMember.setUsedAtToNow();
+
+                couponMemberRepository.save(couponMember);
+            }
+
+            // 주문 상세에 추가.
             orderDetails.add(orderDetail);
+        }
+
+        // 회원인 경우, 포인트 이력 추가
+        if(ordersCreateRequestResponseDto.getCustomerNo() != null) {
+            // 회원 가져오기
+            Optional<Member> optionalMember = memberRepository.findById(ordersCreateRequestResponseDto.getCustomerNo());
+
+            if(optionalMember.isEmpty()) {
+                throw new MemberNotFoundException();
+            }
+
+            PointLog pointLog = PointLog.builder()
+                    .pointId(null)
+                    .member(optionalMember.get())
+                    .orderId(orders.getOrderId())
+                    .pointDescription("포인트 적립(상품구매 " + optionalMember.get().getGrade().getGradeName() + " 등급 적립)")
+                    .pointUsage((int) ((orders.getTotalFee() * optionalMember.get().getGrade().getAccumulateRate()) / 100))
+                    .createdAt(orders.getOrderDate())
+                    .build();
+
+            pointLogRepository.save(pointLog);
         }
 
         // orderdetails를 넣은 후 다시 재저장.
@@ -230,25 +310,58 @@ public class OrdersServiceImpl implements OrdersService {
         Long totalPrice = 0L;
 
         for (CartPaymentRequestDto.BookInfo requestBookInfo : cartPaymentRequestDto.getBookInfos()){
+            // bookIsbn 검색
             String bookIsbn = requestBookInfo.getBookIsbn();
             Optional<Book> optionalBook = bookRepository.findByBookIsbn(bookIsbn);
 
             String bookTitle;
+
             if (optionalBook.isPresent()) {
                 bookTitle = optionalBook.get().getBookTitle();
             } else {
                 throw new BookNotFoundException();
             }
 
-            Page<CouponResponseDto> couponResponseDtos = couponMemberRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo(), PageRequest.of(0,10));
-            List<Wrap> wraps = wrapRepository.findAll();
+            Pageable pageable = PageRequest.of(0, 100);
+            Long customerNo = optionalCustomer.get().getCustomerNo();
+            List<Long> categoryIds = bookCategoryRepository.findByBook(optionalBook.get()).stream()
+                    .map(bookCategory -> bookCategory.getCategory().getCategoryId())
+                    .collect(Collectors.toList());
+
+            Page<CouponMember> couponMembers = couponMemberRepository.findCouponMembersByMember_CustomerNo(customerNo, pageable);
+            List<CouponMember> couponMemberDtoList = couponMembers.getContent();
+
+            List<CouponMemberResponseDto> couponMemberResponseDtoList  = couponMemberDtoList.stream()
+                    .filter(couponMember -> couponMember.getStatus() == CouponMember.Status.ACTIVE)
+                    .map(couponMember -> {
+                                Long couponId = couponMember.getCoupon().getCouponId();
+                                Optional<CouponResponseDto> optionalCouponResponseDto = couponRepository.findCouponById(couponId);
+
+                                if(optionalCouponResponseDto.isEmpty()) {
+                                    throw new NotFoundCouponException(couponId);
+                                }
+                                CouponResponseDto couponResponseDto = optionalCouponResponseDto.get();
+
+                                return CouponMemberResponseDto.buildDto(couponMember, couponResponseDto);
+                            }
+                    ).collect(Collectors.toList());
+
+            couponMemberResponseDtoList = couponMemberResponseDtoList.stream()
+                    .filter(couponMemberResponseDto ->
+                                    couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
+                                    categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
+                                    couponMemberResponseDto.getBookIsbn() == bookIsbn)
+                    .collect(Collectors.toList());
+
+            List<Wrap> wraps = optionalBook.get().isBookIsPacking() ? wrapRepository.findAll() : new ArrayList<>();
             totalPrice += requestBookInfo.getBookSalePrice();
+
             CartPaymentResponseDto.BookInfo responseBookInfo = CartPaymentResponseDto.BookInfo.builder()
                     .bookIsbn(bookIsbn)
                     .bookTitle(bookTitle)
                     .bookSalePrice(requestBookInfo.getBookSalePrice())
                     .quantity(requestBookInfo.getQuantity())
-                    .coupons(couponResponseDtos.getContent())
+                    .coupons(couponMemberResponseDtoList)
                     .wraps(wraps)
                     .build();
 

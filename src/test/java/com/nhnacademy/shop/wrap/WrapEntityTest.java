@@ -46,9 +46,9 @@ class WrapEntityTest {
 
         Orders order = Orders.builder()
                 .orderDate(LocalDateTime.now())
-                .shippingDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
-                .deliveryFee(1000L)
+                .deliveryFee(1000)
                 .payment(new Payment())
                 .customer(new Customer())
                 .receiverName("John Doe")

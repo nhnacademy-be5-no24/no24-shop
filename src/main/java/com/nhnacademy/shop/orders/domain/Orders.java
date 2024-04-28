@@ -38,14 +38,18 @@ public class Orders {
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
-    @Column(name = "shipping_date", nullable = false)
-    private LocalDateTime shippingDate;
+
+    @Column(name = "ship_date", nullable = false)
+    private LocalDate shipDate;
 
     @Column(name = "order_state", nullable = false)
     private OrderState orderState;
 
+    @Column
+    private Long totalFee;
+
     @Column(name = "delivery_fee", nullable = false)
-    private Long deliveryFee;
+    private int deliveryFee;
 
     @ManyToOne
     @JoinColumn(name = "payment_id", nullable = false)

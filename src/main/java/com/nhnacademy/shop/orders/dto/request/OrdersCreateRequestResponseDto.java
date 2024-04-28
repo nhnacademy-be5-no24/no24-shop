@@ -1,6 +1,10 @@
 package com.nhnacademy.shop.orders.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
 import com.nhnacademy.shop.orders.domain.Orders;
 import lombok.AllArgsConstructor;
@@ -21,8 +25,14 @@ public class OrdersCreateRequestResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private String orderId;
     private LocalDateTime orderDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate shipDate;
     private Orders.OrderState orderState;
-    private Long deliveryFee;
+    private Long totalFee;
+    private int deliveryFee;
     private Long paymentId;
     private Long customerNo;
     private String jSessionId;

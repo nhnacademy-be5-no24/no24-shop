@@ -2,6 +2,8 @@ package com.nhnacademy.shop.coupon_member.repository;
 
 import com.nhnacademy.shop.coupon.repository.CouponRepositoryCustom;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -11,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @Date : 2024/04/21
  */
 public interface CouponMemberRepository extends JpaRepository<CouponMember, Long>, CouponMemberRepositoryCustom {
+    Page<CouponMember> findCouponMembersByMember_CustomerNo(Long customerNo, Pageable pageable);
 }
