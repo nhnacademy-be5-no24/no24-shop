@@ -37,6 +37,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -168,7 +169,8 @@ class OrderServiceTest {
         adminResponseDto = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId")
                 .customerName("customerName")
-                .orderDate(LocalDate.of(2024,4,15))
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
                 .address("address")
                 .addressDetail("addressDetail")
@@ -179,7 +181,8 @@ class OrderServiceTest {
         adminResponseDto2 = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId2")
                 .customerName("customerName2")
-                .orderDate(LocalDate.of(2024,4,15))
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
                 .address("address")
                 .addressDetail("addressDetail")
@@ -193,7 +196,7 @@ class OrderServiceTest {
                 1L,
                 "wrapName",
                 1L,
-                LocalDate.of(2024, 4, 15),
+                LocalDateTime.now(),
                 "receiverName",
                 "phoneNumber",
                 "address",
@@ -204,7 +207,7 @@ class OrderServiceTest {
                 1L,
                 "wrapName",
                 1L,
-                LocalDate.of(2024, 4, 15),
+                LocalDateTime.now(),
                 "receiverName",
                 "phoneNumber",
                 "address",

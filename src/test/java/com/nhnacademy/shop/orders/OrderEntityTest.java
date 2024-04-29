@@ -34,7 +34,6 @@ class OrderEntityTest {
 
 
         order.modifyState(Orders.OrderState.SHIPPING);
-
         Assertions.assertEquals(Orders.OrderState.SHIPPING, order.getOrderState());
     }
 }

@@ -2,6 +2,7 @@ package com.nhnacademy.shop.order_detail.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.wrap.domain.Wrap;
@@ -9,6 +10,7 @@ import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,4 +43,9 @@ public class OrderDetail {
 
     @Column(name="amount")
     private Long amount;
+
+    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<WrapInfo> wrapInfos = new ArrayList<>();
+
 }

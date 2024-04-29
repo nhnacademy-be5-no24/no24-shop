@@ -38,7 +38,6 @@ public class Orders {
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
-
     @Column(name = "ship_date", nullable = false)
     private LocalDate shipDate;
 

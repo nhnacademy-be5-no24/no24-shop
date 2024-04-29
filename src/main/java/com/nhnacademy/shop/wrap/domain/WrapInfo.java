@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.wrap.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class WrapInfo {
 
     @MapsId(value = "orderDetailId")
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 

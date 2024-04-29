@@ -15,6 +15,8 @@ import com.nhnacademy.shop.orders.repository.OrdersRepository;
 import com.nhnacademy.shop.payment.domain.Payment;
 import com.nhnacademy.shop.payment.repository.PaymentRepository;
 import com.nhnacademy.shop.wrap.domain.Wrap;
+import com.nhnacademy.shop.wrap.domain.WrapInfo;
+import com.nhnacademy.shop.wrap.repository.WrapInfoRepository;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,8 @@ class OrdersRepositoryTest {
     @Autowired
     private PaymentRepository paymentRepository;
     @Autowired
+    private WrapInfoRepository wrapInfoRepository;
+    @Autowired
     private EntityManager entityManager;
     private Customer customer;
     private Book book;
@@ -63,6 +67,7 @@ class OrdersRepositoryTest {
     private Orders order;
     private OrderDetail orderDetail;
     private Payment payment;
+    private WrapInfo wrapInfo;
     @BeforeEach
     void setup() {
         payment = Payment.builder()
@@ -121,6 +126,14 @@ class OrdersRepositoryTest {
                 .book(book)
                 .order(order)
                 .build();
+
+        wrapInfo = WrapInfo.builder()
+                .pk(new WrapInfo.Pk(wrap.getWrapId(), orderDetail.getOrderDetailId()))
+                .wrap(wrap)
+                .orderDetail(orderDetail)
+                .amount(1L)
+                .build();
+
     }
 
     @AfterEach
@@ -128,6 +141,7 @@ class OrdersRepositoryTest {
         this.entityManager.createNativeQuery("ALTER TABLE customer ALTER COLUMN `customer_no` RESTART WITH 1").executeUpdate();
         this.entityManager.createNativeQuery("ALTER TABLE payment ALTER COLUMN `payment_id` RESTART WITH 1").executeUpdate();
         this.entityManager.createNativeQuery("ALTER TABLE wrap ALTER COLUMN `wrap_id` RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE order_detail ALTER COLUMN `order_detail_id` RESTART WITH 1").executeUpdate();
     }
     @Test
     @DisplayName("모든 주문 리스트 반환")
@@ -135,9 +149,10 @@ class OrdersRepositoryTest {
         paymentRepository.save(payment);
         customerRepository.save(customer);
         bookRepository.save(book);
-        wrapRepository.save(wrap);
         ordersRepository.save(order);
         orderDetailRepository.save(orderDetail);
+        wrapRepository.save(wrap);
+        wrapInfoRepository.save(wrapInfo);
 
         Pageable pageable = PageRequest.of(0,10);
         Page<OrdersListForAdminResponseDto> dtoPage = ordersRepository.getOrderList(pageable);
@@ -155,9 +170,10 @@ class OrdersRepositoryTest {
         paymentRepository.save(payment);
         customerRepository.save(customer);
         bookRepository.save(book);
-        wrapRepository.save(wrap);
         ordersRepository.save(order);
         orderDetailRepository.save(orderDetail);
+        wrapRepository.save(wrap);
+        wrapInfoRepository.save(wrapInfo);
 
         Long customerNo = 1L;
 
@@ -176,9 +192,10 @@ class OrdersRepositoryTest {
         paymentRepository.save(payment);
         customerRepository.save(customer);
         bookRepository.save(book);
-        wrapRepository.save(wrap);
         ordersRepository.save(order);
         orderDetailRepository.save(orderDetail);
+        wrapRepository.save(wrap);
+        wrapInfoRepository.save(wrapInfo);
 
         String orderId = "orderId";
 

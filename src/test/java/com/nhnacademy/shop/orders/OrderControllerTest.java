@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.orders.controller.OrderController;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,6 +43,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(OrderController.class)
+@Import(
+        {RedisConfig.class}
+)
 class OrderControllerTest {
     private MockMvc mockMvc;
     @MockBean
@@ -162,7 +168,8 @@ class OrderControllerTest {
         adminResponseDto = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId")
                 .customerName("customerName")
-                .orderDate(LocalDate.of(2024,4,15))
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
                 .address("address")
                 .addressDetail("addressDetail")
@@ -173,7 +180,8 @@ class OrderControllerTest {
         adminResponseDto2 = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId2")
                 .customerName("customerName2")
-                .orderDate(LocalDate.of(2024,4,15))
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
                 .address("address")
                 .addressDetail("addressDetail")
