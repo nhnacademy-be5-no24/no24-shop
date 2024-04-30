@@ -69,6 +69,4 @@ public interface OrdersService {
      * @return CartPaymentResponseDto  포장지, 쿠폰, 책, 유저 정보 반환
      */
     CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto);
-
-    CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto);
 }

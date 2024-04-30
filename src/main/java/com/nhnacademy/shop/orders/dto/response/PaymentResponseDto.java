@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders.dto.response;
 
-
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import lombok.Builder;
@@ -10,9 +9,14 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CartPaymentPostResponseDto {
+public class PaymentResponseDto {
+    //포장, 쿠폰, 북
+    private List<CartPaymentResponseDto.BookInfo> bookInfos;
+    private Long totalPrice;
     //고객
     private Long customerNo;
+    private String customerName;
+    private String customerPhoneNumber;
     //주문
     private String receiverName;
     private String receiverPhoneNumber;
@@ -20,18 +24,16 @@ public class CartPaymentPostResponseDto {
     private String address;
     private String addressDetail;
     private String req;
-    //도서 쿠폰 포장지
-    private List<BookInfo> bookInfos;
-    private Long updateTotalPrice;
 
     @Getter
     @Builder
     public static class BookInfo{
         private String bookIsbn;
-        private String bookTittle;
-        private Long updateBookSalePrice;
-        private CouponResponseDto couponResponseDto;
-        private Wrap wrap;
-    }
+        private String bookTitle;
+        private Long bookSalePrice;
+        private Long quantity;
+        private List<CouponResponseDto> coupons;
+        private List<Wrap> wraps;
 
+    }
 }

@@ -43,7 +43,7 @@ public class WrapController {
         Pageable pageable = PageRequest.of(page, size);
         Page<WrapResponseDto> wrapPage = wrapService.getWraps(pageable);
         WrapResponseDtoList wrapResponseDtoList = WrapResponseDtoList.builder()
-                .wrapResponseDtoList(wrapPage.getContent())
+                .wrapResponseDtos(wrapPage.getContent())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(wrapResponseDtoList);

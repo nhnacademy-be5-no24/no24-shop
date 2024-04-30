@@ -3,6 +3,7 @@ package com.nhnacademy.shop.coupon.repository.impl;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
 import com.nhnacademy.shop.coupon.repository.CouponRepositoryCustom;
+import com.nhnacademy.shop.coupon_member.domain.QCouponMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     QCoupon coupon = QCoupon.coupon;
+    QCouponMember couponMember = QCouponMember.couponMember;
     QAmountCoupon amountCoupon = QAmountCoupon.amountCoupon;
     QBookCoupon bookCoupon = QBookCoupon.bookCoupon;
     QCategoryCoupon categoryCoupon = QCategoryCoupon.categoryCoupon;
@@ -148,6 +150,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
+                        bookCoupon.book.bookIsbn,
                         categoryCoupon.category.categoryId,
                         amountCoupon.discountPrice,
                         percentageCoupon.discountRate,

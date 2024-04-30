@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders.service.impl;
 
-
 import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
@@ -12,7 +11,6 @@ import com.nhnacademy.shop.category.service.CategoryService;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
-import com.nhnacademy.shop.coupon.repository.BookCouponRepository;
 import com.nhnacademy.shop.coupon.repository.CategoryCouponRepository;
 import com.nhnacademy.shop.coupon.repository.CouponRepository;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
@@ -29,10 +27,8 @@ import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
 import com.nhnacademy.shop.order_detail.repository.OrderDetailRepository;
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
@@ -54,6 +50,7 @@ import com.nhnacademy.shop.wrap.repository.WrapInfoRepository;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -92,14 +89,14 @@ public class OrdersServiceImpl implements OrdersService {
     private final CategoryService categoryService;
     private final BookCategoryRepository bookCategoryRepository;
     private final CategoryCouponRepository categoryCouponRepository;
-    private final BookCouponRepository bookCouponRepository;
+
 
 
     // 주문리스트 전체 가져오기(admin)
     @Override
     @Transactional(readOnly = true)
     public Page<OrdersListForAdminResponseDto> getOrders(Pageable pageable) {
-       return ordersRepository.getOrderList(pageable);
+        return ordersRepository.getOrderList(pageable);
     }
 
     // 주문아이디로 상품리스트 가져오기
@@ -118,7 +115,34 @@ public class OrdersServiceImpl implements OrdersService {
     @Transactional(readOnly = true)
     public Page<OrdersResponseDto> getOrderByCustomer(
             Pageable pageable, Long customerNo) {
-        return ordersRepository.getOrderListByCustomer(pageable, customerNo);
+        Customer customer = customerRepository.findById(customerNo).get();
+        List<OrdersResponseDto> orders = ordersRepository.findByCustomer(customer).stream()
+                .map(order -> {
+                            int amount = order.getOrderDetails().stream()
+                                    .mapToInt(o -> Math.toIntExact(o.getAmount()))
+                                    .sum();
+                            String title = amount != 1 ? order.getOrderDetails().get(0).getBook().getBookTitle() + " 외 " + amount + "권"
+                                    : order.getOrderDetails().get(0).getBook().getBookTitle();
+
+                            OrdersResponseDto ordersReponseDto = OrdersResponseDto.builder()
+                                    .orderId(order.getOrderId())
+                                    .bookTitle(title)
+                                    .orderDate(order.getOrderDate())
+                                    .receiverName(order.getReceiverName())
+                                    .receiverPhoneNumber(order.getReceiverPhoneNumber())
+                                    .address(order.getAddress())
+                                    .addressDetail(order.getAddressDetail())
+                                    .orderState(order.getOrderState())
+                                    .totalPrice(order.getTotalFee())
+                                    .build();
+                            return ordersReponseDto;
+                        }
+                ).collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = (int) Math.min(start + pageable.getPageSize(), orders.size());
+
+        return new PageImpl<>(orders.subList(start, end), pageable, orders.size());
     }
 
 
@@ -321,7 +345,6 @@ public class OrdersServiceImpl implements OrdersService {
             } else {
                 throw new BookNotFoundException();
             }
-
             Pageable pageable = PageRequest.of(0, 100);
             Long customerNo = optionalCustomer.get().getCustomerNo();
             List<Long> categoryIds = bookCategoryRepository.findByBook(optionalBook.get()).stream()
@@ -348,9 +371,9 @@ public class OrdersServiceImpl implements OrdersService {
 
             couponMemberResponseDtoList = couponMemberResponseDtoList.stream()
                     .filter(couponMemberResponseDto ->
-                                    couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
-                                    categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
-                                    couponMemberResponseDto.getBookIsbn() == bookIsbn)
+                        couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
+                        categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
+                        (couponMemberResponseDto.getBookIsbn() != null && couponMemberResponseDto.getBookIsbn().equals(bookIsbn))) // text 비교 수정
                     .collect(Collectors.toList());
 
             List<Wrap> wraps = optionalBook.get().isBookIsPacking() ? wrapRepository.findAll() : new ArrayList<>();
@@ -384,11 +407,4 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
     }
-
-    @Override
-    public CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto) {
-        return null;
-    }
-
-
 }

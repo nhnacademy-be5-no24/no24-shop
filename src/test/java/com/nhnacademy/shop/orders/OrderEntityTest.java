@@ -18,6 +18,7 @@ class OrderEntityTest {
     void testOrder(){
         Orders order = Orders.builder()
                 .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
                 .deliveryFee(1000)
                 .payment(new Payment())
@@ -33,7 +34,6 @@ class OrderEntityTest {
 
 
         order.modifyState(Orders.OrderState.SHIPPING);
-
         Assertions.assertEquals(Orders.OrderState.SHIPPING, order.getOrderState());
     }
 }
