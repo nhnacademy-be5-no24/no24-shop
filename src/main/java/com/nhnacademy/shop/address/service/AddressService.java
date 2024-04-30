@@ -16,6 +16,8 @@ public interface AddressService {
     // 주소 조회
     List<AddressResponseDto> getAddresses(Long customerNo);
 
+    AddressResponseDto getAddress(Long addressId);
+
     // 주소 등록
     AddressResponseDto saveAddress(AddressCreateRequestDto addressCreateRequestDto);
 

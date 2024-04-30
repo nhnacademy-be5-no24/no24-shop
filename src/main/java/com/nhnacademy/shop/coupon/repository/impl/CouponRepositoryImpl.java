@@ -3,6 +3,7 @@ package com.nhnacademy.shop.coupon.repository.impl;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
 import com.nhnacademy.shop.coupon.repository.CouponRepositoryCustom;
+import com.nhnacademy.shop.coupon_member.domain.QCouponMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     }
 
     QCoupon coupon = QCoupon.coupon;
+    QCouponMember couponMember = QCouponMember.couponMember;
     QAmountCoupon amountCoupon = QAmountCoupon.amountCoupon;
     QBookCoupon bookCoupon = QBookCoupon.bookCoupon;
     QCategoryCoupon categoryCoupon = QCategoryCoupon.categoryCoupon;
@@ -43,6 +45,8 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
+                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget))
@@ -62,25 +66,26 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .innerJoin(bookCoupon)
                 .select(bookCoupon.count())
                 .where(coupon.couponId.eq(bookCoupon.couponId)
-                        .and(bookCoupon.bookIsbn.eq(bookIsbn)));
+                        .and(bookCoupon.book.bookIsbn.eq(bookIsbn)));
 
         List<CouponResponseDto> content = from(coupon)
-                .innerJoin(bookCoupon)
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
-                .where(coupon.couponId.eq(bookCoupon.couponId)
-                        .and(bookCoupon.bookIsbn.eq(bookIsbn)))
+                .where(bookCoupon.book.bookIsbn.eq(bookIsbn))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
+                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
-                        bookCoupon.bookIsbn,
-                        amountCoupon.discountPrice.coalesce(0L).as("DiscountPrice"),
-                        percentageCoupon.discountRate.coalesce(0L).as("DiscountRate"),
-                        percentageCoupon.maxDiscountPrice.coalesce(0L).as("MaxDiscountPrice")))
+                        bookCoupon.book.bookIsbn,
+                        amountCoupon.discountPrice,
+                        percentageCoupon.discountRate,
+                        percentageCoupon.maxDiscountPrice))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -97,25 +102,27 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .innerJoin(categoryCoupon)
                 .select(categoryCoupon.count())
                 .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.categoryId.eq(categoryId)));
+                        .and(categoryCoupon.category.categoryId.eq(categoryId)));
 
         List<CouponResponseDto> content = from(coupon)
-                .innerJoin(categoryCoupon)
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
                 .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
                 .where(coupon.couponId.eq(categoryCoupon.couponId)
-                        .and(categoryCoupon.categoryId.eq(categoryId)))
+                        .and(categoryCoupon.category.categoryId.eq(categoryId)))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
+                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
                         coupon.couponTarget,
-                        categoryCoupon.categoryId,
-                        amountCoupon.discountPrice.coalesce(0L).as("DiscountPrice"),
-                        percentageCoupon.discountRate.coalesce(0L).as("DiscountRate"),
-                        percentageCoupon.maxDiscountPrice.coalesce(0L).as("MaxDiscountPrice")))
+                        categoryCoupon.category.categoryId,
+                        amountCoupon.discountPrice,
+                        percentageCoupon.discountRate,
+                        percentageCoupon.maxDiscountPrice))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -129,14 +136,25 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
     @Override
     public Optional<CouponResponseDto> findCouponById(Long couponId) {
         CouponResponseDto dto = from(coupon)
+                .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
+                .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .where(coupon.couponId.eq(couponId))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
+                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
-                        coupon.couponTarget))
+                        coupon.couponTarget,
+                        bookCoupon.book.bookIsbn,
+                        categoryCoupon.category.categoryId,
+                        amountCoupon.discountPrice,
+                        percentageCoupon.discountRate,
+                        percentageCoupon.maxDiscountPrice))
                 .fetchOne();
 
         return Optional.of(dto);
@@ -152,14 +170,25 @@ public class CouponRepositoryImpl extends QuerydslRepositorySupport implements C
                 .where(coupon.couponName.like("%" + couponName + "%"));
 
         List<CouponResponseDto> content = from(coupon)
+                .leftJoin(amountCoupon).on(coupon.couponId.eq(amountCoupon.couponId))
+                .leftJoin(percentageCoupon).on(coupon.couponId.eq(percentageCoupon.couponId))
+                .leftJoin(bookCoupon).on(coupon.couponId.eq(bookCoupon.couponId))
+                .leftJoin(categoryCoupon).on(coupon.couponId.eq(categoryCoupon.couponId))
                 .where(coupon.couponName.like("%" + couponName + "%"))
                 .select(Projections.fields(CouponResponseDto.class,
                         coupon.couponId,
                         coupon.couponName,
                         coupon.deadline,
+                        coupon.issueLimit,
+                        coupon.expirationPeriod,
                         coupon.couponStatus,
                         coupon.couponType,
-                        coupon.couponTarget))
+                        coupon.couponTarget,
+                        categoryCoupon.category.categoryId,
+                        bookCoupon.book.bookIsbn,
+                        amountCoupon.discountPrice,
+                        percentageCoupon.discountRate,
+                        percentageCoupon.maxDiscountPrice))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

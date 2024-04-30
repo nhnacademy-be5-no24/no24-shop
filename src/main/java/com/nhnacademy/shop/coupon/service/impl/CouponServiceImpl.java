@@ -1,5 +1,11 @@
 package com.nhnacademy.shop.coupon.service.impl;
 
+import com.nhnacademy.shop.book.entity.Book;
+import com.nhnacademy.shop.book.exception.BookNotFoundException;
+import com.nhnacademy.shop.book.repository.BookRepository;
+import com.nhnacademy.shop.category.domain.Category;
+import com.nhnacademy.shop.category.exception.CategoryNotFoundException;
+import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
@@ -7,15 +13,16 @@ import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.repository.*;
 import com.nhnacademy.shop.coupon.service.CouponService;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,11 +34,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
+    private final CouponMemberRepository couponMemberRepository;
     private final AmountCouponRepository amountCouponRepository;
     private final BookCouponRepository bookCouponRepository;
     private final CategoryCouponRepository categoryCouponRepository;
     private final PercentageCouponRepository percentageCouponRepository;
     private final CouponRepository couponRepository;
+    private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
 
 
     /**
@@ -41,6 +51,68 @@ public class CouponServiceImpl implements CouponService {
     @Transactional(readOnly = true)
     public Page<CouponResponseDto> getAllCoupons(Integer pageSize, Integer offset) {
         return couponRepository.findAllCoupons(PageRequest.of(pageSize, offset));
+    }
+
+    @Override
+    public Page<CouponResponseDto> getAllAvailableCoupons(Long customerNo, Integer pageSize, Integer offset) {
+        List<Long> memberCouponIdList = couponMemberRepository.findCouponMembersByMember_CustomerNo(customerNo).stream()
+                .map(couponMember -> couponMember.getCoupon().getCouponId())
+                .collect(Collectors.toList());
+
+        Map<Long, Integer> couponReceiveMap = new HashMap<>();
+
+        for(Long couponId: memberCouponIdList) {
+            if(couponReceiveMap.containsKey(couponId)) {
+                couponReceiveMap.put(couponId, couponReceiveMap.get(couponId) + 1);
+            }
+            else {
+                couponReceiveMap.put(couponId, 1);
+            }
+        }
+
+        List<Coupon> couponList1 = couponRepository.findAll();
+
+        List<CouponResponseDto> couponList = couponRepository.findAll().stream()
+                .filter(coupon -> !couponReceiveMap.containsKey(coupon.getCouponId()) || couponReceiveMap.get(coupon.getCouponId()) < coupon.getIssueLimit())
+                .map(coupon -> {
+                    CouponResponseDto couponResponseDto = CouponResponseDto.builder()
+                            .couponId(coupon.getCouponId())
+                            .couponName(coupon.getCouponName())
+                            .deadline(coupon.getDeadline())
+                            .issueLimit(coupon.getIssueLimit())
+                            .couponStatus(coupon.getCouponStatus())
+                            .couponType(coupon.getCouponType())
+                            .couponTarget(coupon.getCouponTarget())
+                            .build();
+
+                    // for Type
+                    if(coupon.getCouponType() == Coupon.CouponType.AMOUNT) {
+                        AmountCoupon amountCoupon = amountCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setDiscountPrice(amountCoupon.getDiscountPrice());
+                    }
+                    else {
+                        PercentageCoupon percentageCoupon = percentageCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setDiscountRate(percentageCoupon.getDiscountRate());
+                        couponResponseDto.setMaxDiscountPrice(percentageCoupon.getMaxDiscountPrice());
+                    }
+
+                    // for target
+                    if(coupon.getCouponTarget() == Coupon.CouponTarget.BOOK) {
+                        BookCoupon bookCoupon = bookCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setBookIsbn(bookCoupon.getBook().getBookIsbn());
+                    }
+                    else if(coupon.getCouponTarget() == Coupon.CouponTarget.CATEGORY) {
+                        CategoryCoupon categoryCoupon = categoryCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setCategoryId(categoryCoupon.getCategory().getCategoryId());
+                    }
+
+                    return couponResponseDto;
+                }).collect(Collectors.toList());
+
+        int start = (pageSize - 1) * offset;
+        int end = Math.min(start + offset, couponList.size());
+
+        return new PageImpl<>(couponList.subList(start, end), PageRequest.of(pageSize, offset), couponList.size());
     }
 
     /**
@@ -91,6 +163,7 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = Coupon.builder()
                 .couponName(couponDto.getCouponName())
                 .deadline(couponDto.getDeadline())
+                .issueLimit(couponDto.getIssueLimit())
                 .couponStatus(couponDto.getCouponStatus())
                 .couponType(couponDto.getCouponType())
                 .couponTarget(couponDto.getCouponTarget())
@@ -101,6 +174,7 @@ public class CouponServiceImpl implements CouponService {
         CouponResponseDto dto = CouponResponseDto.builder()
                 .couponName(savedCoupon.getCouponName())
                 .deadline(savedCoupon.getDeadline())
+                .issueLimit(savedCoupon.getIssueLimit())
                 .couponStatus(savedCoupon.getCouponStatus())
                 .couponType(savedCoupon.getCouponType())
                 .couponTarget(savedCoupon.getCouponTarget())
@@ -111,9 +185,15 @@ public class CouponServiceImpl implements CouponService {
                 throw new IllegalFormCouponRequestException();
             }
 
+            Optional<Book> book = bookRepository.findByBookIsbn(couponDto.getBookIsbn());
+
+            if(book.isEmpty()) {
+                throw new BookNotFoundException();
+            }
+
             BookCoupon bookCoupon = BookCoupon.builder()
                     .coupon(coupon)
-                    .bookIsbn(couponDto.getBookIsbn())
+                    .book(book.get())
                     .build();
 
             bookCouponRepository.save(bookCoupon);
@@ -123,9 +203,15 @@ public class CouponServiceImpl implements CouponService {
                 throw new IllegalFormCouponRequestException();
             }
 
+            Optional<Category> category = categoryRepository.findById(couponDto.getCategoryId());
+
+            if(category.isEmpty()) {
+                throw new CategoryNotFoundException();
+            }
+
             CategoryCoupon categoryCoupon = CategoryCoupon.builder()
                     .coupon(coupon)
-                    .categoryId(couponDto.getCategoryId())
+                    .category(category.get())
                     .build();
 
             categoryCouponRepository.save(categoryCoupon);
@@ -190,66 +276,5 @@ public class CouponServiceImpl implements CouponService {
         }
 
         couponRepository.deleteById(couponId);
-    }
-
-    /**
-     * Convert coupon to couponDto method
-     *
-     * @param coupon coupon information
-     * @return (ResponseCouponDto) convertedResponseCouponDto
-     */
-    public CouponResponseDto convertCouponToCouponDto(Coupon coupon) {
-        CouponResponseDto couponDto = new CouponResponseDto();
-
-        couponDto.setCouponId(coupon.getCouponId());
-        couponDto.setCouponStatus(coupon.getCouponStatus());
-        couponDto.setCouponName(coupon.getCouponName());
-        couponDto.setCouponTarget(coupon.getCouponTarget());
-        couponDto.setCouponType(coupon.getCouponType());
-        couponDto.setDeadline(coupon.getDeadline());
-
-        Coupon.CouponTarget target = coupon.getCouponTarget();
-        Coupon.CouponType type = coupon.getCouponType();
-
-        if(target == Coupon.CouponTarget.BOOK){
-            Optional<BookCoupon> optionalBookCoupon = bookCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalBookCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setBookIsbn(optionalBookCoupon.get().getBookIsbn());
-        }
-        else if(target == Coupon.CouponTarget.CATEGORY){
-            Optional<CategoryCoupon> optionalCategoryCoupon = categoryCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalCategoryCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setCategoryId(optionalCategoryCoupon.get().getCategoryId());
-        }
-
-        if(type == Coupon.CouponType.AMOUNT) {
-            Optional<AmountCoupon> optionalAmountCoupon = amountCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalAmountCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setDiscountPrice(optionalAmountCoupon.get().getDiscountPrice());
-        }
-        else if(type == Coupon.CouponType.PERCENTAGE) {
-            Optional<PercentageCoupon> optionalPercentageCoupon = percentageCouponRepository.findById(coupon.getCouponId());
-
-            if(optionalPercentageCoupon.isEmpty()) {
-                throw new NotFoundCouponException(coupon.getCouponId());
-            }
-
-            couponDto.setMaxDiscountPrice(optionalPercentageCoupon.get().getMaxDiscountPrice());
-            couponDto.setDiscountRate(optionalPercentageCoupon.get().getDiscountRate());
-        }
-
-        return couponDto;
     }
 }

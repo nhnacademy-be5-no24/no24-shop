@@ -188,7 +188,7 @@ class ReviewServiceTest {
 
         assertThatThrownBy(() -> reviewService.getReviewsByBookIsbn(anyString(), pageSize, offset))
                 .isInstanceOf(BookNotFoundException.class)
-                .hasMessageContaining("해당 도서를 찾을 수 없습니다.");
+                .hasMessageContaining("This book is not found");
     }
 
     @Test
@@ -273,7 +273,7 @@ class ReviewServiceTest {
 
         assertThatThrownBy(() -> reviewService.createReview(createReviewRequestDto))
                 .isInstanceOf(BookNotFoundException.class)
-                .hasMessageContaining("해당 도서를 찾을 수 없습니다.");
+                .hasMessageContaining("This book is not found");
     }
 
     @Test
@@ -320,7 +320,7 @@ class ReviewServiceTest {
 
         assertThatThrownBy(() -> reviewService.modifyReview(modifyReviewRequestDto))
                 .isInstanceOf(BookNotFoundException.class)
-                .hasMessageContaining("해당 도서를 찾을 수 없습니다.");
+                .hasMessageContaining("This book is not found");
     }
 
     @Test

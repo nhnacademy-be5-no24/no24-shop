@@ -3,6 +3,7 @@ package com.nhnacademy.shop.review.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
+import com.nhnacademy.shop.category.controller.CategoryController;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,10 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date : 2024-04-02
  */
 @WebMvcTest(ReviewController.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@AutoConfigureRestDocs(outputDir = "target/snippets")
 public class ReviewControllerTest {
-    @Autowired
     private MockMvc mockMvc;
     @MockBean
     private ReviewService reviewService;
@@ -65,6 +64,7 @@ public class ReviewControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new ReviewController(reviewService)).build();
         pageable = PageRequest.of(0, 10);
         pageSize = 0;
         offset = 10;

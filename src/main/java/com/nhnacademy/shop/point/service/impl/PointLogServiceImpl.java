@@ -85,7 +85,6 @@ public class PointLogServiceImpl implements PointLogService {
                 .orderId(pointRequestDto.getOrderId())
                 .pointDescription(pointRequestDto.getPointDescription())
                 .pointUsage(pointRequestDto.getUsage())
-                .pointType(pointRequestDto.getType())
                 .createdAt(pointRequestDto.getCreatedAt())
                 .build();
         PointLog savedPointLog = pointLogRepository.save(pointLog);
@@ -96,7 +95,6 @@ public class PointLogServiceImpl implements PointLogService {
                 .orderId(savedPointLog.getOrderId())
                 .pointDescription(savedPointLog.getPointDescription())
                 .usage(savedPointLog.getPointUsage())
-                .type(savedPointLog.getPointType())
                 .createdAt(savedPointLog.getCreatedAt())
                 .build();
     }

@@ -16,8 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 카테고리 서비스 구현체 입니다.
@@ -206,6 +209,38 @@ public class CategoryServiceImpl implements CategoryService {
             return null;
         }
         return categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws CategoryNotFoundException 카테고리가 존재 하지 않을 때 발생하는 Exception 입니다.
+     */
+    @Override
+    public List<CategoryInfoResponseDto> getAllParentCategories(Long categoryId) {
+        List<Category> parentCategories = new ArrayList<>();
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+
+        if(optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException();
+        }
+
+        Long currentCategoryId = optionalCategory.get().getCategoryId();
+
+        while(true) {
+            Category category = categoryRepository.findById(currentCategoryId).get();
+
+            parentCategories.add(category);
+
+            if(category.getParentCategory() == null) {
+                break;
+            }
+
+            currentCategoryId = category.getParentCategory().getCategoryId();
+        }
+
+        return parentCategories.stream()
+                .map(category -> new CategoryInfoResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
     }
 
 }

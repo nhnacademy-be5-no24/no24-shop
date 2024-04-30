@@ -69,14 +69,16 @@ class PointServiceTest {
                 .lastLoginAt(null)
                 .grade(grade).build();
 
-        pointLog = new PointLog(1L, member, 1L, "리뷰 작성", 500, false,
+        String orderId = "example_order";
+
+        pointLog = new PointLog(1L, member, orderId, "리뷰 작성", 1000,
                 LocalDateTime.parse("2024-04-05T00:00:00"));
         pageSize = 0;
         offset = 10;
         pageable = PageRequest.of(pageSize, offset);
-        pointResponseDto = new PointResponseDto(1L, member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
+        pointResponseDto = new PointResponseDto(1L, member.getCustomerNo(), orderId, "리뷰 작성", 1000,
                 LocalDateTime.parse("2024-04-05T00:00:00"));
-        pointRequestDto = new PointRequestDto(member.getCustomerNo(), 1L, "리뷰 작성", 500, false,
+        pointRequestDto = new PointRequestDto(member.getCustomerNo(), orderId, "리뷰 작성", 1000,
                 LocalDateTime.parse("2024-04-05T00:00:00"));
         pointPage = new PageImpl<>(List.of(pointResponseDto), pageable, 1);
         startDate = LocalDateTime.parse("2024-04-03T00:00:00");
@@ -101,7 +103,6 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -125,7 +126,6 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -160,7 +160,6 @@ class PointServiceTest {
         assertThat(pointList.get(0).getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(pointList.get(0).getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(pointList.get(0).getUsage()).isEqualTo(pointLog.getPointUsage());
-        assertThat(pointList.get(0).getType()).isEqualTo(pointLog.getPointType());
         assertThat(pointList.get(0).getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 
@@ -193,7 +192,6 @@ class PointServiceTest {
         assertThat(dto.getOrderId()).isEqualTo(pointLog.getOrderId());
         assertThat(dto.getPointDescription()).isEqualTo(pointLog.getPointDescription());
         assertThat(dto.getUsage()).isEqualTo(pointLog.getPointUsage());
-        assertThat(dto.getType()).isEqualTo(pointLog.getPointType());
         assertThat(dto.getCreatedAt()).isEqualTo(pointLog.getCreatedAt());
     }
 

@@ -27,7 +27,7 @@ public class PointRequestDto {
     private Long customerNo;
 
     @NotNull(message = "주문 아아디를 입력해주세요.")
-    private Long orderId;
+    private String orderId;
 
     @NotNull
     @NotBlank(message = "포인트 사용 내역을 입력해주세요.")
@@ -36,9 +36,6 @@ public class PointRequestDto {
 
     @NotNull(message = "사용 및 적립 금액을 입력해주세요.")
     private Integer usage;
-
-    @NotNull(message = "사용 및 적립 여부를 입력해주세요.")
-    private Boolean type;
 
     @NotNull(message = "사용 내역 날짜를 입력해주세요.")
     private LocalDateTime createdAt;

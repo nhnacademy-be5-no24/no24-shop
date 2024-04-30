@@ -27,4 +27,6 @@ replay_pid*
 
 *.iml
 
+*.icloud
+
 target/

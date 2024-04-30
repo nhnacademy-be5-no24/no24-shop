@@ -101,7 +101,7 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
     @Override
     public ParentCategoryResponseDto findParentCategory(Long categoryId) {
         ParentCategoryResponseDto parentDto = from(parentCategory)
-                .where(parentCategory.parentCategory.isNull().and(parentCategory.categoryId.eq(categoryId)))
+                .where(parentCategory.categoryId.eq(categoryId))
                 .select(Projections.constructor(ParentCategoryResponseDto.class,
                         parentCategory.categoryId,
                         parentCategory.categoryName))

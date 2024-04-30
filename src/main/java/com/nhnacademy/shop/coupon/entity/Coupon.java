@@ -3,6 +3,7 @@ package com.nhnacademy.shop.coupon.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -40,7 +41,13 @@ public class Coupon {
     private String couponName;
 
     @Column(name = "deadline", nullable = false)
-    private Date deadline;
+    private LocalDate deadline;
+
+    @Column(name = "issue_limit", nullable = false)
+    private int issueLimit;
+
+    @Column(name = "expiration_period", nullable = false)
+    private int expirationPeriod;
 
     @Column(name = "coupon_status", nullable = false)
     private Status couponStatus;

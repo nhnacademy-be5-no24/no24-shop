@@ -63,7 +63,8 @@ public class BookCreateRequestDto {
 
     private List<BookTag> tags;
 
-    private List<BookAuthor> author;
+    @JsonProperty("book_author")
+    private String author;
 
     private List<BookCategory> categories;
 

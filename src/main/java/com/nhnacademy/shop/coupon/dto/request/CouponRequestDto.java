@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -25,7 +26,9 @@ public class CouponRequestDto {
     @Length(max = 30, message = "쿠폰 이름은 30자까지 입력이 가능합니다.")
     private String couponName;
     @NotNull(message = "쿠폰 만료일을 입력해주세요.")
-    private Date deadline;
+    private LocalDate deadline;
+    @NotNull(message = "쿠폰 발급 제한 수량을 입력해주세요.")
+    private int issueLimit;
     @NotNull(message = "쿠폰 상태를 입력해주세요.")
     private Coupon.Status couponStatus;
     @NotNull(message = "쿠폰 타입을 입력해주세요.")
