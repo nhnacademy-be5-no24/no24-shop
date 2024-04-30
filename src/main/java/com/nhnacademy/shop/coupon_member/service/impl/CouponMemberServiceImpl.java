@@ -94,6 +94,7 @@ public class CouponMemberServiceImpl implements CouponMemberService {
         List<CouponMember> couponMemberDtoList = couponMembers.getContent();
 
         List<CouponMemberResponseDto> couponMemberResponseDtoList  = couponMemberDtoList.stream()
+                .filter(couponMember -> couponMember.getStatus() == CouponMember.Status.ACTIVE)
                 .map(couponMember -> {
                     Long couponId = couponMember.getCoupon().getCouponId();
                     Optional<CouponResponseDto> optionalCouponResponseDto = couponRepository.findCouponById(couponId);
