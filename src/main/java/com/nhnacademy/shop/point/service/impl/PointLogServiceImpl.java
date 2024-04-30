@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 포인트 내역 서비스 구현체 입니다.
@@ -40,6 +42,24 @@ public class PointLogServiceImpl implements PointLogService {
     @Transactional(readOnly = true)
     public Page<PointResponseDto> getPoints(Pageable pageable) {
         return pointLogRepository.findPoints(pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Long getPoint(Long customerNo) {
+        Optional<Member> member = memberRepository.findById(customerNo);
+
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        return pointLogRepository.findByMember(member.get())
+                .stream()
+                .mapToLong(PointLog::getPointUsage)
+                .sum();
     }
 
     /**

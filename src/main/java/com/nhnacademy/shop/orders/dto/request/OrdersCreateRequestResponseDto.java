@@ -42,5 +42,6 @@ public class OrdersCreateRequestResponseDto {
     private String address;
     private String addressDetail;
     private String req;
+    private Long usedPoint;
     private List<OrderDetailDto> orderDetailDtoList;
 }

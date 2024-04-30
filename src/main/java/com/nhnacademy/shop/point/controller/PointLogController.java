@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import javax.ws.rs.Path;
 import java.time.LocalDateTime;
 
 /**
@@ -49,6 +50,15 @@ public class PointLogController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(dtoList);
+    }
+
+    @GetMapping("/point/{customerNo}")
+    public ResponseEntity<Long> getUserPoint(@PathVariable Long customerNo) {
+        Long point = pointLogService.getPoint(customerNo);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(point);
     }
 
     /**

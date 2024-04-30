@@ -292,6 +292,18 @@ public class OrdersServiceImpl implements OrdersService {
                     .build();
 
             pointLogRepository.save(pointLog);
+
+
+            PointLog usedPointLog = PointLog.builder()
+                    .pointId(null)
+                    .member(optionalMember.get())
+                    .orderId(orders.getOrderId())
+                    .pointDescription("포인트 사용")
+                    .pointUsage(-ordersCreateRequestResponseDto.getUsedPoint().intValue())
+                    .createdAt(orders.getOrderDate())
+                    .build();
+
+            pointLogRepository.save(usedPointLog);
         }
 
         // orderdetails를 넣은 후 다시 재저장.
