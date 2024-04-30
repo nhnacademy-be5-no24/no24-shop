@@ -12,6 +12,7 @@ public class CartPaymentRequestDto {
     private Long customerNo;
 
     @Getter
+    @Builder
     public static class BookInfo{
         private String bookIsbn;
         private Long bookSalePrice;

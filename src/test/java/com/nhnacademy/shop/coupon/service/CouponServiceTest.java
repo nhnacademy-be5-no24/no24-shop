@@ -16,13 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,7 +143,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("TestCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.AMOUNT);
         couponDto.setCouponTarget(Coupon.CouponTarget.BOOK);
@@ -199,7 +196,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("BookPercentageCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.PERCENTAGE);
         couponDto.setCouponTarget(Coupon.CouponTarget.BOOK);
@@ -210,7 +207,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("BookPercentageCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.PERCENTAGE)
                 .couponTarget(Coupon.CouponTarget.BOOK)
@@ -254,7 +251,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("NormalAmountCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.AMOUNT);
         couponDto.setCouponTarget(Coupon.CouponTarget.NORMAL);
@@ -263,7 +260,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("NormalAmountCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.AMOUNT)
                 .couponTarget(Coupon.CouponTarget.NORMAL)
@@ -289,7 +286,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("NormalPercentageCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.PERCENTAGE);
         couponDto.setCouponTarget(Coupon.CouponTarget.NORMAL);
@@ -299,7 +296,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("NormalPercentageCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.PERCENTAGE)
                 .couponTarget(Coupon.CouponTarget.NORMAL)
@@ -325,7 +322,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("CategoryAmountCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.AMOUNT);
         couponDto.setCouponTarget(Coupon.CouponTarget.CATEGORY);
@@ -335,7 +332,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("CategoryAmountCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.AMOUNT)
                 .couponTarget(Coupon.CouponTarget.CATEGORY)
@@ -368,7 +365,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("CategoryPercentageCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.PERCENTAGE);
         couponDto.setCouponTarget(Coupon.CouponTarget.CATEGORY);
@@ -379,7 +376,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("CategoryPercentageCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.PERCENTAGE)
                 .couponTarget(Coupon.CouponTarget.CATEGORY)
@@ -413,7 +410,7 @@ class CouponServiceTest {
         CouponRequestDto couponDto = new CouponRequestDto();
         couponDto.setCouponName("CategoryPercentageCoupon");
         LocalDate deadline = LocalDate.now().plusDays(7);
-        couponDto.setDeadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        couponDto.setDeadline(LocalDate.now());
         couponDto.setCouponStatus(Coupon.Status.ACTIVE);
         couponDto.setCouponType(Coupon.CouponType.PERCENTAGE);
         couponDto.setCouponTarget(Coupon.CouponTarget.CATEGORY);
@@ -423,7 +420,7 @@ class CouponServiceTest {
         Coupon savedCoupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("CategoryPercentageCoupon")
-                .deadline(Date.from(deadline.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .deadline(LocalDate.now())
                 .couponStatus(Coupon.Status.ACTIVE)
                 .couponType(Coupon.CouponType.PERCENTAGE)
                 .couponTarget(Coupon.CouponTarget.CATEGORY)

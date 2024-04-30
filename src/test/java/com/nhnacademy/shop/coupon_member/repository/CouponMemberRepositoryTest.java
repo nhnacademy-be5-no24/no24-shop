@@ -33,7 +33,6 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -172,7 +171,7 @@ class CouponMemberRepositoryTest {
                     coupon = Coupon.builder()
                             .couponId(index)
                             .couponName("Coupon " + index)
-                            .deadline(new Date())
+                            .deadline(LocalDate.now())
                             .couponStatus(statuses[i])
                             .couponType(types[j])
                             .couponTarget(targets[k])

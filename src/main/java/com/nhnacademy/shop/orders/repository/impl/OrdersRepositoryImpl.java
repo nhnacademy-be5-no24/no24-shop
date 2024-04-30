@@ -20,7 +20,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nhnacademy.shop.wrap.domain.QWrapInfo.wrapInfo;
 
 
 public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements OrdersRepositoryCustom {
