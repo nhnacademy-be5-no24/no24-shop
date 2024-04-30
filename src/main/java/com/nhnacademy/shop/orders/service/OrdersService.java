@@ -69,13 +69,4 @@ public interface OrdersService {
      * @return CartPaymentResponseDto  포장지, 쿠폰, 책, 유저 정보 반환
      */
     CartPaymentResponseDto getCartPaymentInfo(CartPaymentRequestDto cartPaymentRequestDto);
-
-//    /**
-//     * 주문 결제 페이지에서 쿠폰, 포장지 선택 후 가격 업데이트하는 메소드
-//     * @param cartPaymentPostRequestDto 기존 주문 결제 페이지에서 쿠폰, 포장지 설정한것
-//     * @return CartPaymentResponseDto 가격 업데이트 주문 결제 dto
-//     */
-//    CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto);
-
-
 }
