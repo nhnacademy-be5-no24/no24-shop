@@ -50,6 +50,7 @@ import com.nhnacademy.shop.wrap.repository.WrapInfoRepository;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -114,7 +115,34 @@ public class OrdersServiceImpl implements OrdersService {
     @Transactional(readOnly = true)
     public Page<OrdersResponseDto> getOrderByCustomer(
             Pageable pageable, Long customerNo) {
-        return ordersRepository.getOrderListByCustomer(pageable, customerNo);
+        Customer customer = customerRepository.findById(customerNo).get();
+        List<OrdersResponseDto> orders = ordersRepository.findByCustomer(customer).stream()
+                .map(order -> {
+                            int amount = order.getOrderDetails().stream()
+                                    .mapToInt(o -> Math.toIntExact(o.getAmount()))
+                                    .sum();
+                            String title = amount != 1 ? order.getOrderDetails().get(0).getBook().getBookTitle() + " 외 " + amount + "권"
+                                    : order.getOrderDetails().get(0).getBook().getBookTitle();
+
+                            OrdersResponseDto ordersReponseDto = OrdersResponseDto.builder()
+                                    .orderId(order.getOrderId())
+                                    .bookTitle(title)
+                                    .orderDate(order.getOrderDate())
+                                    .receiverName(order.getReceiverName())
+                                    .receiverPhoneNumber(order.getReceiverPhoneNumber())
+                                    .address(order.getAddress())
+                                    .addressDetail(order.getAddressDetail())
+                                    .orderState(order.getOrderState())
+                                    .totalPrice(order.getTotalFee())
+                                    .build();
+                            return ordersReponseDto;
+                        }
+                ).collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = (int) Math.min(start + pageable.getPageSize(), orders.size());
+
+        return new PageImpl<>(orders.subList(start, end), pageable, orders.size());
     }
 
 

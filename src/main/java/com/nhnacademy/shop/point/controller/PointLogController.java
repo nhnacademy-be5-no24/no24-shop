@@ -3,9 +3,11 @@ package com.nhnacademy.shop.point.controller;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.point.dto.request.PointRequestDto;
 import com.nhnacademy.shop.point.dto.response.PointResponseDto;
+import com.nhnacademy.shop.point.dto.response.PointResponseDtoList;
 import com.nhnacademy.shop.point.service.PointLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -58,13 +60,17 @@ public class PointLogController {
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
     @GetMapping("/points/{customerNo}")
-    public ResponseEntity<Page<PointResponseDto>> getPointsByCustomerNo(@PathVariable Long customerNo, Pageable pageable) {
+    public ResponseEntity<PointResponseDtoList> getPointsByCustomerNo(@PathVariable Long customerNo,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
         try {
+            Pageable pageable = PageRequest.of(page, size);
             Page<PointResponseDto> dtoList = pointLogService.getPointsByCustomerNo(customerNo, pageable);
+            PointResponseDtoList response = new PointResponseDtoList(dtoList.getContent());
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(dtoList);
+                    .body(response);
         } catch (MemberNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Member Not Found : %d", customerNo));
         }

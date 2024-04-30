@@ -86,7 +86,8 @@ public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements O
                         orders.receiverPhoneNumber.as("수취인전화번호"),
                         orders.address.as("주소"),
                         orders.addressDetail.as("주소상세"),
-                        orders.orderState.as("배송상태")
+                        orders.orderState.as("배송상태"),
+                        orders.totalFee.as("총 금액")
                 ))
                 .innerJoin(orders.customer, customer)
                 .innerJoin(orders.orderDetails, orderDetail)
@@ -118,7 +119,8 @@ public class OrdersRepositoryImpl extends QuerydslRepositorySupport implements O
                                 orders.receiverPhoneNumber.as("수취인전화번호"),
                                 orders.address.as("주소"),
                                 orders.addressDetail.as("주소상세"),
-                                orders.orderState.as("배송상태")
+                                orders.orderState.as("배송상태"),
+                                orders.totalFee.as("총 금액")
 
                         ))
                         .innerJoin(orders.orderDetails, orderDetail)

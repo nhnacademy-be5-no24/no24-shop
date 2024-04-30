@@ -2,6 +2,7 @@ package com.nhnacademy.shop.orders.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.shop.orders.domain.Orders;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class OrdersResponseDto {
     private String orderId;
     private String bookTitle;
@@ -24,6 +26,7 @@ public class OrdersResponseDto {
     private String address;
     private String addressDetail;
     private Orders.OrderState orderState;
+    private Long totalPrice;
 
     public OrdersResponseDto(String orderId,
                              String bookTitle,
@@ -41,6 +44,26 @@ public class OrdersResponseDto {
         this.bookSalePrice = bookSalePrice;
         this.wrapName = wrapName;
         this.wrapCost = wrapCost;
+        this.orderDate = orderDate;
+        this.receiverName = receiverName;
+        this.receiverPhoneNumber = receiverPhoneNumber;
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.orderState = orderState;
+    }
+
+    public OrdersResponseDto(String orderId,
+                             String bookTitle,
+                             Long bookSalePrice,
+                             LocalDateTime orderDate,
+                             String receiverName,
+                             String receiverPhoneNumber,
+                             String address,
+                             String addressDetail,
+                             Orders.OrderState orderState) {
+        this.orderId = orderId;
+        this.bookTitle = bookTitle;
+        this.bookSalePrice = bookSalePrice;
         this.orderDate = orderDate;
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
