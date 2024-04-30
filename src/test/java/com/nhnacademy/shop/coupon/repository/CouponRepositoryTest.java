@@ -122,7 +122,7 @@ class CouponRepositoryTest {
                     coupon = Coupon.builder()
                             .couponId(index)
                             .couponName("Coupon " + index)
-                            .deadline(new Date())
+                            .deadline(LocalDate.now())
                             .couponStatus(statuses[i])
                             .couponType(types[j])
                             .couponTarget(targets[k])

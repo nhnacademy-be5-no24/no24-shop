@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.wrap.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class WrapInfo {
 
     @MapsId(value = "orderDetailId")
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
@@ -38,7 +40,6 @@ public class WrapInfo {
     private Long amount;
 
     @NoArgsConstructor
-    @AllArgsConstructor
     @EqualsAndHashCode
     @Getter
     @Setter
@@ -49,5 +50,9 @@ public class WrapInfo {
         @Column(name = "order_detail_id")
         private Long orderDetailId;
 
+        public Pk(Long wrapId, Long orderDetailId) {
+            this.wrapId = wrapId;
+            this.orderDetailId = orderDetailId;
+        }
     }
 }

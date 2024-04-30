@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders.service.impl;
 
-
 import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.book.entity.Book;
@@ -12,7 +11,6 @@ import com.nhnacademy.shop.category.service.CategoryService;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
-import com.nhnacademy.shop.coupon.repository.BookCouponRepository;
 import com.nhnacademy.shop.coupon.repository.CategoryCouponRepository;
 import com.nhnacademy.shop.coupon.repository.CouponRepository;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
@@ -29,10 +27,8 @@ import com.nhnacademy.shop.order_detail.domain.OrderDetail;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
 import com.nhnacademy.shop.order_detail.repository.OrderDetailRepository;
 import com.nhnacademy.shop.orders.domain.Orders;
-import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
@@ -92,14 +88,14 @@ public class OrdersServiceImpl implements OrdersService {
     private final CategoryService categoryService;
     private final BookCategoryRepository bookCategoryRepository;
     private final CategoryCouponRepository categoryCouponRepository;
-    private final BookCouponRepository bookCouponRepository;
+
 
 
     // 주문리스트 전체 가져오기(admin)
     @Override
     @Transactional(readOnly = true)
     public Page<OrdersListForAdminResponseDto> getOrders(Pageable pageable) {
-       return ordersRepository.getOrderList(pageable);
+        return ordersRepository.getOrderList(pageable);
     }
 
     // 주문아이디로 상품리스트 가져오기
@@ -321,7 +317,6 @@ public class OrdersServiceImpl implements OrdersService {
             } else {
                 throw new BookNotFoundException();
             }
-
             Pageable pageable = PageRequest.of(0, 100);
             Long customerNo = optionalCustomer.get().getCustomerNo();
             List<Long> categoryIds = bookCategoryRepository.findByBook(optionalBook.get()).stream()
@@ -384,11 +379,4 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
     }
-
-    @Override
-    public CartPaymentPostResponseDto createCartPaymentInfo(CartPaymentPostRequestDto cartPaymentPostRequestDto) {
-        return null;
-    }
-
-
 }

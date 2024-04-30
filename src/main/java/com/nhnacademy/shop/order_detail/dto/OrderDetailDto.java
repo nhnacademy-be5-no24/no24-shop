@@ -25,6 +25,7 @@ public class OrderDetailDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class WrapDto {
         Long wrapId;
         Long quantity;

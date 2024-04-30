@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 public class  OrdersListForAdminResponseDto {
     private String orderId;
     private String customerName;
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
+    private LocalDate shipDate;
     private Orders.OrderState orderState;
     private String address;
     private String addressDetail;
@@ -22,19 +24,11 @@ public class  OrdersListForAdminResponseDto {
     private String bookTitle;
     private Long bookSalePrice;
 
-    public OrdersListForAdminResponseDto(String orderId,
-                                         String customerName,
-                                         LocalDate orderDate,
-                                         Orders.OrderState orderState,
-                                         String address,
-                                         String addressDetail,
-                                         String wrapName,
-                                         Long wrapCost,
-                                         String bookTitle,
-                                         Long bookSalePrice) {
+    public OrdersListForAdminResponseDto(String orderId, String customerName, LocalDateTime orderDate, LocalDate shipDate, Orders.OrderState orderState, String address, String addressDetail, String wrapName, Long wrapCost, String bookTitle, Long bookSalePrice) {
         this.orderId = orderId;
         this.customerName = customerName;
         this.orderDate = orderDate;
+        this.shipDate = shipDate;
         this.orderState = orderState;
         this.address = address;
         this.addressDetail = addressDetail;

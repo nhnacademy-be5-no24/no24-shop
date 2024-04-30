@@ -4,6 +4,7 @@ import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.*;
 import com.nhnacademy.shop.coupon.repository.*;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,6 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +47,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 @Transactional
 @WebAppConfiguration
-public class CouponMemberRepositoryTest {
+@Import(
+        {RedisConfig.class}
+)
+class CouponMemberRepositoryTest {
     private Pageable pageable;
     private Coupon coupon;
     private AmountCoupon amountCoupon;
@@ -167,7 +171,7 @@ public class CouponMemberRepositoryTest {
                     coupon = Coupon.builder()
                             .couponId(index)
                             .couponName("Coupon " + index)
-                            .deadline(new Date())
+                            .deadline(LocalDate.now())
                             .couponStatus(statuses[i])
                             .couponType(types[j])
                             .couponTarget(targets[k])

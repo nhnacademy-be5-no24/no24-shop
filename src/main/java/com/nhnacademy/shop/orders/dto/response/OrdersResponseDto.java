@@ -5,8 +5,7 @@ import com.nhnacademy.shop.orders.domain.Orders;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -19,7 +18,7 @@ public class OrdersResponseDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
     private String receiverName;
     private String receiverPhoneNumber;
     private String address;
@@ -31,7 +30,7 @@ public class OrdersResponseDto {
                              Long bookSalePrice,
                              String wrapName,
                              Long wrapCost,
-                             LocalDate orderDate,
+                             LocalDateTime orderDate,
                              String receiverName,
                              String receiverPhoneNumber,
                              String address,
