@@ -13,13 +13,17 @@ import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.repository.*;
 import com.nhnacademy.shop.coupon.service.CouponService;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Coupon Service 구현체
@@ -30,6 +34,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
+    private final CouponMemberRepository couponMemberRepository;
     private final AmountCouponRepository amountCouponRepository;
     private final BookCouponRepository bookCouponRepository;
     private final CategoryCouponRepository categoryCouponRepository;
@@ -46,6 +51,68 @@ public class CouponServiceImpl implements CouponService {
     @Transactional(readOnly = true)
     public Page<CouponResponseDto> getAllCoupons(Integer pageSize, Integer offset) {
         return couponRepository.findAllCoupons(PageRequest.of(pageSize, offset));
+    }
+
+    @Override
+    public Page<CouponResponseDto> getAllAvailableCoupons(Long customerNo, Integer pageSize, Integer offset) {
+        List<Long> memberCouponIdList = couponMemberRepository.findCouponMembersByMember_CustomerNo(customerNo).stream()
+                .map(couponMember -> couponMember.getCoupon().getCouponId())
+                .collect(Collectors.toList());
+
+        Map<Long, Integer> couponReceiveMap = new HashMap<>();
+
+        for(Long couponId: memberCouponIdList) {
+            if(couponReceiveMap.containsKey(couponId)) {
+                couponReceiveMap.put(couponId, couponReceiveMap.get(couponId) + 1);
+            }
+            else {
+                couponReceiveMap.put(couponId, 1);
+            }
+        }
+
+        List<Coupon> couponList1 = couponRepository.findAll();
+
+        List<CouponResponseDto> couponList = couponRepository.findAll().stream()
+                .filter(coupon -> !couponReceiveMap.containsKey(coupon.getCouponId()) || couponReceiveMap.get(coupon.getCouponId()) < coupon.getIssueLimit())
+                .map(coupon -> {
+                    CouponResponseDto couponResponseDto = CouponResponseDto.builder()
+                            .couponId(coupon.getCouponId())
+                            .couponName(coupon.getCouponName())
+                            .deadline(coupon.getDeadline())
+                            .issueLimit(coupon.getIssueLimit())
+                            .couponStatus(coupon.getCouponStatus())
+                            .couponType(coupon.getCouponType())
+                            .couponTarget(coupon.getCouponTarget())
+                            .build();
+
+                    // for Type
+                    if(coupon.getCouponType() == Coupon.CouponType.AMOUNT) {
+                        AmountCoupon amountCoupon = amountCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setDiscountPrice(amountCoupon.getDiscountPrice());
+                    }
+                    else {
+                        PercentageCoupon percentageCoupon = percentageCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setDiscountRate(percentageCoupon.getDiscountRate());
+                        couponResponseDto.setMaxDiscountPrice(percentageCoupon.getMaxDiscountPrice());
+                    }
+
+                    // for target
+                    if(coupon.getCouponTarget() == Coupon.CouponTarget.BOOK) {
+                        BookCoupon bookCoupon = bookCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setBookIsbn(bookCoupon.getBook().getBookIsbn());
+                    }
+                    else if(coupon.getCouponTarget() == Coupon.CouponTarget.CATEGORY) {
+                        CategoryCoupon categoryCoupon = categoryCouponRepository.findById(coupon.getCouponId()).get();
+                        couponResponseDto.setCategoryId(categoryCoupon.getCategory().getCategoryId());
+                    }
+
+                    return couponResponseDto;
+                }).collect(Collectors.toList());
+
+        int start = (pageSize - 1) * offset;
+        int end = Math.min(start + offset, couponList.size());
+
+        return new PageImpl<>(couponList.subList(start, end), PageRequest.of(pageSize, offset), couponList.size());
     }
 
     /**

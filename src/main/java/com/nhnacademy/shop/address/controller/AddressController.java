@@ -3,6 +3,7 @@ package com.nhnacademy.shop.address.controller;
 import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
+import com.nhnacademy.shop.address.dto.response.AddressResponseDtoList;
 import com.nhnacademy.shop.address.service.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,14 @@ public class AddressController {
     }
 
     // 주소 조회
-    @GetMapping("/{customerNo}")
-    public List<AddressResponseDto> getAddresses(@PathVariable Long customerNo) {
-        return addressService.getAddresses(customerNo);
+    @GetMapping("/customer/{customerNo}")
+    public AddressResponseDtoList getAddresses(@PathVariable Long customerNo) {
+        return new AddressResponseDtoList(addressService.getAddresses(customerNo));
+    }
+
+    @GetMapping("/{addressId}")
+    public AddressResponseDto getAddress(@PathVariable Long addressId) {
+        return addressService.getAddress(addressId);
     }
 
     // 주소 등록
