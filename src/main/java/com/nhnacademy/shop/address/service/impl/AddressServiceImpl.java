@@ -36,6 +36,15 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.addressToAddressResponseDtoList(addresses);
     }
 
+    // 주소 조회
+    @Override
+    @Transactional(readOnly = true)
+    public AddressResponseDto getAddress(Long addressId) {
+        Address address = addressRepository.findById(addressId).get();
+
+        return AddressMapper.addressToAddressResponseDto(address);
+    }
+
     // 주소 등록
     @Override
     @Transactional

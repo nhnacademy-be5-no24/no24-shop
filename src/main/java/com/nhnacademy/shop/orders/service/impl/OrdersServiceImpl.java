@@ -348,9 +348,9 @@ public class OrdersServiceImpl implements OrdersService {
 
             couponMemberResponseDtoList = couponMemberResponseDtoList.stream()
                     .filter(couponMemberResponseDto ->
-                                    couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
-                                    categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
-                                    couponMemberResponseDto.getBookIsbn() == bookIsbn)
+                        couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
+                        categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
+                        (couponMemberResponseDto.getBookIsbn() != null && couponMemberResponseDto.getBookIsbn().equals(bookIsbn))) // text 비교 수정
                     .collect(Collectors.toList());
 
             List<Wrap> wraps = optionalBook.get().isBookIsPacking() ? wrapRepository.findAll() : new ArrayList<>();

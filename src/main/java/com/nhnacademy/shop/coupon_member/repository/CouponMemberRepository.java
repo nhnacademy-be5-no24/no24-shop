@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Coupon Member Repository.
  *
@@ -14,4 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface CouponMemberRepository extends JpaRepository<CouponMember, Long>, CouponMemberRepositoryCustom {
     Page<CouponMember> findCouponMembersByMember_CustomerNo(Long customerNo, Pageable pageable);
+    List<CouponMember> findCouponMembersByMember_CustomerNo(Long customerNo);
 }
