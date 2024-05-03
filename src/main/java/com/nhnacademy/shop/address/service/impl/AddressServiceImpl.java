@@ -4,6 +4,7 @@ import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
+import com.nhnacademy.shop.address.exception.AddressNotFoundException;
 import com.nhnacademy.shop.address.exception.AddressOutOfBoundsException;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.AddressService;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -81,7 +81,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public AddressResponseDto modifyAddress(Long addressId, AddressModifyRequestDto addressModifyRequestDto) {
         Address originAddress = addressRepository.findById(addressId)
-                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
 
         Address updatedAddress = Address.builder()
                 .addressId(originAddress.getAddressId())
@@ -118,6 +118,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public void deleteAddress(Long addressId) {
+        if (addressRepository.findById(addressId).isEmpty()) {
+            throw new AddressNotFoundException(addressId);
+        }
         addressRepository.deleteById(addressId);
     }
 }

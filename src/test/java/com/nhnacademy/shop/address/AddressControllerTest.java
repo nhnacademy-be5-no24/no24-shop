@@ -8,7 +8,6 @@ import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
-import com.nhnacademy.shop.category.controller.CategoryController;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
