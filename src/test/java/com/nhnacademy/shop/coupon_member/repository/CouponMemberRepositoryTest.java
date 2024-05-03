@@ -12,7 +12,7 @@ import com.nhnacademy.shop.coupon_member.domain.CouponMember;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
-import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.grade.repository.GradeRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -100,7 +100,7 @@ class CouponMemberRepositoryTest {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
-    private GradeRespository gradeRespository;
+    private GradeRepository gradeRespository;
     @Autowired
     private CouponMemberRepository couponMemberRepository;
 

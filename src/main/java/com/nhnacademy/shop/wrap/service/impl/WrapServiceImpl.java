@@ -80,7 +80,12 @@ public class WrapServiceImpl implements WrapService {
         if (optionalWrap.isEmpty()) {
             throw new NotFoundWrapException(modifyWrappingRequestDto.getWrapId());
         }
-        Wrap wrap = optionalWrap.get();
+        Wrap wrap = Wrap.builder()
+                .wrapId(optionalWrap.get().getWrapId())
+                .wrapName(modifyWrappingRequestDto.getWrapName())
+                .wrapCost(modifyWrappingRequestDto.getWrapCost())
+                .build();
+
         Wrap updatedWrap = wrapRepository.save(wrap);
         return new WrapResponseDto(updatedWrap);
     }

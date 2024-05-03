@@ -19,7 +19,8 @@ import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.exception.CustomerNotFoundException;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
-import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.grade.domain.Grade;
+import com.nhnacademy.shop.grade.repository.GradeRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.member.repository.MemberRepository;
@@ -83,13 +84,13 @@ public class OrdersServiceImpl implements OrdersService {
     private final WrapInfoRepository wrapInfoRepository;
     private final PointLogRepository pointLogRepository;
     private final MemberRepository memberRepository;
-    private final GradeRespository gradeRespository;
+    private final GradeRepository gradeRespository;
     private final CouponRepository couponRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
     private final BookCategoryRepository bookCategoryRepository;
     private final CategoryCouponRepository categoryCouponRepository;
-
+    private final GradeRepository gradeRepository;
 
 
     // 주문리스트 전체 가져오기(admin)
@@ -273,7 +274,7 @@ public class OrdersServiceImpl implements OrdersService {
             orderDetails.add(orderDetail);
         }
 
-        // 회원인 경우, 포인트 이력 추가
+        // 회원인 경우, 포인트 이력 추가 및 등급 업데이트
         if(ordersCreateRequestResponseDto.getCustomerNo() != null) {
             // 회원 가져오기
             Optional<Member> optionalMember = memberRepository.findById(ordersCreateRequestResponseDto.getCustomerNo());
@@ -286,7 +287,7 @@ public class OrdersServiceImpl implements OrdersService {
                     .pointId(null)
                     .member(optionalMember.get())
                     .orderId(orders.getOrderId())
-                    .pointDescription("포인트 적립(상품구매 " + optionalMember.get().getGrade().getGradeName() + " 등급 적립)")
+                    .pointDescription("포인트 적립(상품구매 " + optionalMember.get().getGrade().getGradeNameKor() + " 등급 적립)")
                     .pointUsage((int) ((orders.getTotalFee() * optionalMember.get().getGrade().getAccumulateRate()) / 100))
                     .createdAt(orders.getOrderDate())
                     .build();
@@ -304,6 +305,29 @@ public class OrdersServiceImpl implements OrdersService {
                     .build();
 
             pointLogRepository.save(usedPointLog);
+
+            // 멤버등급 업 조건 만족 시
+            List<Grade> grades = gradeRespository.findAll().stream()
+                    .sorted((a, b) -> (int) (a.getGradeId() - b.getGradeId()))
+                    .collect(Collectors.toList());
+
+            Long userPayment = ordersRepository.findByCustomer(optionalMember.get().getCustomer()).stream()
+                    .mapToLong(order -> order.getTotalFee())
+                    .sum();
+            Long gradeId = optionalMember.get().getGrade().getGradeId();
+
+            for(int i = 0; i < grades.size() - 1; i++) {
+                if(grades.get(i).getRequiredPayment() <= userPayment && userPayment < grades.get(i + 1).getRequiredPayment()) {
+                    gradeId = grades.get(i).getGradeId();
+                }
+            }
+
+            Grade grade = gradeRepository.findById(gradeId).get();
+
+            Member member = optionalMember.get();
+            member.setGrade(grade);
+
+            memberRepository.save(member);
         }
 
         // orderdetails를 넣은 후 다시 재저장.
