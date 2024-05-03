@@ -40,4 +40,8 @@ public class Member {
 
     @Column(name = "member_state")
     private MemberState memberState;
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
 }

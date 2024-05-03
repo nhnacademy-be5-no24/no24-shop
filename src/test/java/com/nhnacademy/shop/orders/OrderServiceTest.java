@@ -19,7 +19,7 @@ import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
-import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.grade.repository.GradeRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.order_detail.domain.OrderDetail;
@@ -94,7 +94,7 @@ class OrderServiceTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private GradeRespository gradeRespository;
+    private GradeRepository gradeRespository;
     @Mock
     private CouponRepository couponRepository;
     @Mock

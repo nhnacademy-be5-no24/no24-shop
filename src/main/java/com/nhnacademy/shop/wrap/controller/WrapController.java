@@ -108,7 +108,7 @@ public class WrapController {
      * @throws NotFoundWrapException 포장id로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND 반환합니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
-    @PutMapping("/wraps/")
+    @PutMapping("/wraps")
     public ResponseEntity<WrapResponseDto> modifyWrap(@RequestBody ModifyWrapRequestDto modifyWrapRequestDto){
         try{
             WrapResponseDto wrapResponseDto = wrapService.modifyWrap(modifyWrapRequestDto);

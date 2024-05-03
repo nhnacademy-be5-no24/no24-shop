@@ -3,24 +3,19 @@ package com.nhnacademy.shop.point.repository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
-import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.grade.repository.GradeRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import com.nhnacademy.shop.point.domain.PointLog;
 import com.nhnacademy.shop.point.dto.response.PointResponseDto;
-import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -45,7 +40,7 @@ public class PointRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private GradeRespository gradeRespository;
+    private GradeRepository gradeRespository;
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
