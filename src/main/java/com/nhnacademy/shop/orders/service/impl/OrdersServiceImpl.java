@@ -104,11 +104,24 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional(readOnly = true)
     public OrdersResponseDto getOrderByOrdersId(String orderId) {
-        Optional<OrdersResponseDto> optionalOrders = ordersRepository.getOrderByOrderId(orderId);
-        if(optionalOrders.isEmpty()){
+        Optional<Orders> optionalOrders = ordersRepository.findById(orderId);
+
+        if(optionalOrders.isEmpty()) {
             throw new NotFoundOrderException(orderId);
         }
-        return optionalOrders.get();
+
+        OrdersResponseDto ordersResponseDto = OrdersResponseDto.builder()
+                .orderId(optionalOrders.get().getOrderId())
+                .orderDate(optionalOrders.get().getOrderDate())
+                .receiverName(optionalOrders.get().getReceiverName())
+                .receiverPhoneNumber(optionalOrders.get().getReceiverPhoneNumber())
+                .address(optionalOrders.get().getAddress())
+                .addressDetail(optionalOrders.get().getAddressDetail())
+                .orderState(optionalOrders.get().getOrderState())
+                .totalPrice(optionalOrders.get().getTotalFee())
+                .build();
+
+        return ordersResponseDto;
     }
 
     // 고객번호로 상품리스트 들고오기
@@ -316,9 +329,16 @@ public class OrdersServiceImpl implements OrdersService {
                     .sum();
             Long gradeId = optionalMember.get().getGrade().getGradeId();
 
-            for(int i = 0; i < grades.size() - 1; i++) {
-                if(grades.get(i).getRequiredPayment() <= userPayment && userPayment < grades.get(i + 1).getRequiredPayment()) {
-                    gradeId = grades.get(i).getGradeId();
+            for(int i = 0; i < grades.size(); i++) {
+                if(i == grades.size() - 1) {
+                    if(grades.get(i).getRequiredPayment() <= userPayment) {
+                        gradeId = grades.get(i).getGradeId();
+                    }
+                }
+                else {
+                    if(grades.get(i).getRequiredPayment() <= userPayment && userPayment < grades.get(i + 1).getRequiredPayment()) {
+                        gradeId = grades.get(i).getGradeId();
+                    }
                 }
             }
 

@@ -44,7 +44,7 @@ public class OrderDetail {
     @Column(name="amount")
     private Long amount;
 
-    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<WrapInfo> wrapInfos = new ArrayList<>();
 

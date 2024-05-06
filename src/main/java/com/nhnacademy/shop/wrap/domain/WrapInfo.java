@@ -27,6 +27,7 @@ public class WrapInfo {
 
     @MapsId(value = "wrapId")
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "wrap_id")
     private Wrap wrap;
 
