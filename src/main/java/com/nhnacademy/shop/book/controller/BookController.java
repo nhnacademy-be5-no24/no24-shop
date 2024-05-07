@@ -3,6 +3,7 @@ package com.nhnacademy.shop.book.controller;
 import java.util.Objects;
 
 
+import com.nhnacademy.shop.book.dto.response.BookResponseList;
 import com.nhnacademy.shop.book.dto.response.BookResponsePage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,16 +69,23 @@ public class BookController {
      * 페이징 처리 된
      * 모든 book을 반환합니다.
      *
-     * @param pageable
+     * @param
      * @return all books
      */
     @GetMapping("/books")
-    public ResponseEntity<Page<BookResponseDto>> getAllBooks(Pageable pageable){
-        Page<BookResponseDto> books = bookService.findAllBooks(pageable);
+    public ResponseEntity<BookResponseList> getAllBooks(
+            @RequestParam Integer pageSize,
+            @RequestParam Integer offset
+    ){
+
+        Page<BookResponseDto> books = bookService.findAllBooks(pageSize, offset);
         if(Objects.isNull(books)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(books);
+        BookResponseList bookResponseList = BookResponseList.builder()
+                .bookResponseDtoList(books.getContent())
+                .build();
+        return ResponseEntity.ok(bookResponseList);
     }
 
     /**

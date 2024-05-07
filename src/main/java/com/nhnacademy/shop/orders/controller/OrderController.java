@@ -47,7 +47,7 @@ public class OrderController {
      * 고객 번호로 고객의 모든 주문을 반환.
      *
      * @param customerNo 고객 번호.
-     * @param pageable 페이징.
+     * @param
      * @return 200, 고객의 모든 주문 반환.
      */
     @GetMapping("/customer/{customerNo}")

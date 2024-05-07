@@ -23,6 +23,7 @@ import com.nhnacademy.shop.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,8 +133,8 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<BookResponseDto> findAllBooks(Pageable pageable) {
-        Page<BookResponseDto> response = bookRepository.findAllBooks(pageable);
+    public Page<BookResponseDto> findAllBooks(Integer pageSize, Integer offset) {
+        Page<BookResponseDto> response = bookRepository.findAllBooks(PageRequest.of(pageSize, offset));
 
         if(response.getContent().isEmpty() || response.getTotalElements() == 0){
             throw new BookNotFoundException();
@@ -306,22 +307,30 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponseDto modifyBook(BookRequestDto bookRequestDto) {
         Book book = bookRepository.findById(bookRequestDto.getBookIsbn()).orElseThrow(BookNotFoundException::new);
-
+        // todo : 수정필요
         bookCategoryRepository.saveAll(book.getCategories());
         bookTagRespository.saveAll(book.getTags());
 
-        bookRepository.save(new Book(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews()
-                , book.getBookStatus(), book.getBookQuantity(), book.getBookImage(), book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
+        Book reqeustBook = new Book(book.getBookIsbn(),
+                bookRequestDto.getBookTitle(),
+                bookRequestDto.getBookDescription(),
+                book.getBookPublisher(),
+                bookRequestDto.getPublishedAt(),
+                bookRequestDto.getBookFixedPrice(),
+                bookRequestDto.getBookSalePrice(),
+                bookRequestDto.isBookIsPacking(),
+                bookRequestDto.getBookViews(),
+                bookRequestDto.getBookStatus(),
+                bookRequestDto.getBookQuantity(),
+                bookRequestDto.getBookImage(),
+                book.getCategories(),
+                book.getTags(),
+                bookRequestDto.getAuthor(),
+                bookRequestDto.getLikes());
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
-                book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(),
-                book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
-                        .collect(Collectors.toList()),
-                book.getAuthor(), book.getLikes());
+        Book modifyBook = bookRepository.save(reqeustBook);
+
+        return new BookResponseDto(modifyBook);
     }
 
     /*
