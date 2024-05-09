@@ -12,6 +12,7 @@ import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.book.service.BookService;
 import com.nhnacademy.shop.book_author.repository.BookAuthorRepository;
+import com.nhnacademy.shop.book_tag.domain.BookTag;
 import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
@@ -63,7 +64,7 @@ public class BookServiceImpl implements BookService {
         if(optionalBook.isPresent()){
             throw new BookAlreadyExistsException();
         }
-
+        // todo : category, tag 수정 필요.
         Book book = Book.builder()
                 .bookIsbn(request.getBookIsbn())
                 .bookTitle(request.getBookTitle())
@@ -77,8 +78,8 @@ public class BookServiceImpl implements BookService {
                 .bookStatus(request.getBookStatus())
                 .bookQuantity(request.getBookQuantity())
                 .bookImage(request.getBookImage())
-                .tags(request.getTags())
-                .categories(request.getCategories())
+                .tags(null)
+                .categories(null)
                 .author(request.getAuthor())
                 .likes(0L).build();
 
@@ -88,16 +89,33 @@ public class BookServiceImpl implements BookService {
         if(book.getTags() != null)
             bookTagRespository.saveAll(book.getTags());
 
-        bookRepository.save(book);
+        Book createdBook = bookRepository.save(book);
+        // todo : tag 넣어줘야함.
+        BookResponseDto bookResponseDto = BookResponseDto.builder()
+                .bookIsbn(createdBook.getBookIsbn())
+                .bookTitle(createdBook.getBookTitle())
+                .bookDescription(createdBook.getBookDesc())
+                .bookPublisher(createdBook.getBookPublisher())
+                .publishedAt(createdBook.getBookPublishedAt())
+                .bookFixedPrice(createdBook.getBookFixedPrice())
+                .bookSalePrice(createdBook.getBookSalePrice())
+                .bookIsPacking(createdBook.isBookIsPacking())
+                .bookStatus(createdBook.getBookStatus())
+                .bookQuantity(createdBook.getBookQuantity())
+                .bookImage(createdBook.getBookImage())
+                .tags(null)
+                .author(createdBook.getAuthor())
+                .likes(createdBook.getLikes())
+                .build();
+        return bookResponseDto;
+//        return new BookResponseDto(createdBook.getBookIsbn(), createdBook.getBookTitle(), createdBook.getBookDesc(), createdBook.getBookPublisher(),
+//                createdBook.getBookPublishedAt(), createdBook.getBookFixedPrice(), createdBook.getBookSalePrice(), createdBook.isBookIsPacking(), createdBook.getBookViews(), createdBook.getBookStatus(), createdBook.getBookQuantity(), createdBook.getBookImage(),
+//                book.getTags().stream()
+//                        .map(booktag -> booktag.getTag())
+//                        .map(tag -> new TagResponseDto(tag))
+//                        .collect(Collectors.toList()),
+//                book.getAuthor(), book.getLikes());
 
-
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
-                book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(),
-                book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
-                        .collect(Collectors.toList()),
-                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -276,9 +294,7 @@ public class BookServiceImpl implements BookService {
     public BookResponseDto findByIsbn(String bookIsbn) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
-        if(book.getBookStatus()==3){
-            throw new BookIsDeletedException();
-        }
+
 
         return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
