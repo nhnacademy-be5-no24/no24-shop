@@ -29,11 +29,7 @@ public class GradeController {
 
     @GetMapping("/all")
     public ResponseEntity<GradeResponseDtoList> getAllGrades() {
-        try {
-            return ResponseEntity.ok().body(new GradeResponseDtoList(gradeService.findAllGrades()));
-        } catch(Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok().body(new GradeResponseDtoList(gradeService.findAllGrades()));
     }
 
     @GetMapping("/id/{gradeId}")
@@ -47,17 +43,13 @@ public class GradeController {
 
     @GetMapping("/customer/{customerNo}")
     public ResponseEntity<GradeResponseDto> getGradeByCustomerNo(@PathVariable Long customerNo) {
-        try {
-            Optional<Member> optionalMember = memberRepository.findById(customerNo);
+        Optional<Member> optionalMember = memberRepository.findById(customerNo);
 
-            if(optionalMember.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.ok().body(new GradeResponseDto(optionalMember.get().getGrade()));
-        } catch(Exception e){
-            return ResponseEntity.badRequest().build();
+        if(optionalMember.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        return ResponseEntity.ok().body(new GradeResponseDto(optionalMember.get().getGrade()));
     }
 
     @PostMapping("/create")
