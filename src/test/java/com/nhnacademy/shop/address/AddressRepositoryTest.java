@@ -5,7 +5,7 @@ import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
-import com.nhnacademy.shop.grade.repository.GradeRespository;
+import com.nhnacademy.shop.grade.repository.GradeRepository;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ class AddressRepositoryTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private GradeRespository gradeRepository;
+    private GradeRepository gradeRepository;
 
     private Customer customer;
     private Member member;

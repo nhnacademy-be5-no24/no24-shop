@@ -3,7 +3,8 @@ package com.nhnacademy.shop.coupon.entity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +19,7 @@ class CouponEntityTest {
 
     Long couponId = 1L;
     String couponName = "Test Coupon";
-    Date deadline = new Date();
+    LocalDate deadline = LocalDate.now();
     Coupon.Status status = Coupon.Status.ACTIVE;
     Coupon.CouponType type = Coupon.CouponType.PERCENTAGE;
     Coupon.CouponTarget target = Coupon.CouponTarget.NORMAL;
@@ -54,7 +55,7 @@ class CouponEntityTest {
         // setup coupon3
         couponId = 2L;
         couponName = "Test Coupon2";
-        deadline = new Date();
+        deadline = LocalDate.now();
         status = Coupon.Status.DEACTIVATED;
         type = Coupon.CouponType.AMOUNT;
         target = Coupon.CouponTarget.CATEGORY;
@@ -70,20 +71,20 @@ class CouponEntityTest {
     }
 
     @Test
-    public void testCouponNoArgsConstructor() {
+    void testCouponNoArgsConstructor() {
         assertEquals(coupon1, coupon2);
         assertNotEquals(coupon1, coupon3);
     }
 
     @Test
-    public void testCouponEqualsAndHashCode() {
+    void testCouponEqualsAndHashCode() {
         Coupon coupon = new Coupon();
 
         assertNotNull(coupon);
     }
 
     @Test
-    public void testCouponGetter() {
+    void testCouponGetter() {
         assertEquals(couponId, coupon3.getCouponId());
         assertEquals(couponName, coupon3.getCouponName());
         assertEquals(deadline, coupon3.getDeadline());

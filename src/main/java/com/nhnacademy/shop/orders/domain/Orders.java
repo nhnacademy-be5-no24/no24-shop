@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +36,19 @@ public class Orders {
     private String orderId;
 
     @Column(name = "order_date", nullable = false)
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
+
+    @Column(name = "ship_date", nullable = false)
+    private LocalDate shipDate;
 
     @Column(name = "order_state", nullable = false)
     private OrderState orderState;
 
+    @Column
+    private Long totalFee;
+
     @Column(name = "delivery_fee", nullable = false)
-    private Long deliveryFee;
+    private int deliveryFee;
 
     @ManyToOne
     @JoinColumn(name = "payment_id", nullable = false)
@@ -75,6 +82,13 @@ public class Orders {
 
     public void modifyState(OrderState orderState){
         this.orderState = orderState;
+    }
+
+
+    public Orders setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+
+        return this;
     }
 
 }

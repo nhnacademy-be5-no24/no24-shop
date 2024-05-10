@@ -87,4 +87,14 @@ public class Book {
 
     private Long likes;
 
+    public Book setBookQuantity(int bookQuantity) {
+        this.bookQuantity = bookQuantity;
+        return this;
+    }
+
+    public Book setBookStatus(int status) {
+        this.bookStatus = status;
+        return this;
+    }
+
 }

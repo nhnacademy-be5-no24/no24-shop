@@ -41,6 +41,7 @@ public class Member {
     @Column(name = "member_state")
     private MemberState memberState;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
 }

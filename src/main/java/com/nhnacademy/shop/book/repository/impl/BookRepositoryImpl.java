@@ -43,7 +43,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 .select(Projections.constructor(BookResponseDto.class,
                         book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
                         book.bookFixedPrice, book.bookSalePrice, book.bookIsPacking, book.bookViews,
-                        book.bookStatus, book.bookQuantity, book.bookImage, book.tags, book.categories, book.author, book.likes
+                        book.bookStatus, book.bookQuantity, book.bookImage, book.author, book.likes
                 ))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());

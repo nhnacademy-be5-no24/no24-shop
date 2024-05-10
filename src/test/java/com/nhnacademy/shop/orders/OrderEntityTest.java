@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @AutoConfigureMockMvc
@@ -16,9 +17,10 @@ class OrderEntityTest {
     @Test
     void testOrder(){
         Orders order = Orders.builder()
-                .orderDate(LocalDate.now())
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
                 .orderState(Orders.OrderState.WAITING)
-                .deliveryFee(1000L)
+                .deliveryFee(1000)
                 .payment(new Payment())
                 .customer(new Customer())
                 .receiverName("John Doe")
@@ -32,7 +34,6 @@ class OrderEntityTest {
 
 
         order.modifyState(Orders.OrderState.SHIPPING);
-
         Assertions.assertEquals(Orders.OrderState.SHIPPING, order.getOrderState());
     }
 }

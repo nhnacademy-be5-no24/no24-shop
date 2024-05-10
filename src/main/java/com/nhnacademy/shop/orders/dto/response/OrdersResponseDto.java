@@ -2,14 +2,15 @@ package com.nhnacademy.shop.orders.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.shop.orders.domain.Orders;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class OrdersResponseDto {
     private String orderId;
     private String bookTitle;
@@ -19,19 +20,20 @@ public class OrdersResponseDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
     private String receiverName;
     private String receiverPhoneNumber;
     private String address;
     private String addressDetail;
     private Orders.OrderState orderState;
+    private Long totalPrice;
 
     public OrdersResponseDto(String orderId,
                              String bookTitle,
                              Long bookSalePrice,
                              String wrapName,
                              Long wrapCost,
-                             LocalDate orderDate,
+                             LocalDateTime orderDate,
                              String receiverName,
                              String receiverPhoneNumber,
                              String address,
@@ -42,6 +44,26 @@ public class OrdersResponseDto {
         this.bookSalePrice = bookSalePrice;
         this.wrapName = wrapName;
         this.wrapCost = wrapCost;
+        this.orderDate = orderDate;
+        this.receiverName = receiverName;
+        this.receiverPhoneNumber = receiverPhoneNumber;
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.orderState = orderState;
+    }
+
+    public OrdersResponseDto(String orderId,
+                             String bookTitle,
+                             Long bookSalePrice,
+                             LocalDateTime orderDate,
+                             String receiverName,
+                             String receiverPhoneNumber,
+                             String address,
+                             String addressDetail,
+                             Orders.OrderState orderState) {
+        this.orderId = orderId;
+        this.bookTitle = bookTitle;
+        this.bookSalePrice = bookSalePrice;
         this.orderDate = orderDate;
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
