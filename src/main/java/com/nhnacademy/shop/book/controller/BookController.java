@@ -3,7 +3,10 @@ package com.nhnacademy.shop.book.controller;
 import java.util.Objects;
 
 
+import com.nhnacademy.shop.book.dto.response.BookResponseList;
+import com.nhnacademy.shop.book.dto.response.BookResponsePage;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +37,13 @@ public class BookController {
     /**
      *  새로운 book을 생성합니다.
      *
-     * @param request
+     * @param bookCreateRequestDto dto
      * @throws ResponseStatusException 해당 DTO를 통해 이미 존재하는 경우 응답코드 208 ALREADY_REPORTED
      * @return 성공했을 때 응답코드 201 CREATED
      */
     @PostMapping("/books/page")
-    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookCreateRequestDto request){
-        BookResponseDto book = bookService.createBook(request);
+    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookCreateRequestDto bookCreateRequestDto){
+        BookResponseDto book = bookService.createBook(bookCreateRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
@@ -52,30 +55,37 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @DeleteMapping("/books/{bookIsbn}")
-    public ResponseEntity<BookResponseDto> deleteBook(@PathVariable String bookIsbn){
+    @DeleteMapping("/books/delete/{bookIsbn}")
+    public ResponseEntity<Void> deleteBook(@PathVariable String bookIsbn){
         BookResponseDto book = bookService.deleteBook(bookIsbn);
         if(Objects.isNull(book)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(book);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * 페이징 처리 된
      * 모든 book을 반환합니다.
      *
-     * @param pageable
+     * @param
      * @return all books
      */
     @GetMapping("/books")
-    public ResponseEntity<Page<BookResponseDto>> getAllBooks(Pageable pageable){
-        Page<BookResponseDto> books = bookService.findAllBooks(pageable);
+    public ResponseEntity<BookResponseList> getAllBooks(
+            @RequestParam Integer pageSize,
+            @RequestParam Integer offset
+    ){
+
+        Page<BookResponseDto> books = bookService.findAllBooks(pageSize, offset);
         if(Objects.isNull(books)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(books);
+        BookResponseList bookResponseList = BookResponseList.builder()
+                .bookResponseDtoList(books.getContent())
+                .build();
+        return ResponseEntity.ok(bookResponseList);
     }
 
     /**
@@ -85,7 +95,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("/books/{bookIsbn}")
+    @GetMapping("/books/isbn/{bookIsbn}")
     public ResponseEntity<BookResponseDto> getByIsbn(@PathVariable String bookIsbn){
         BookResponseDto book = bookService.findByIsbn(bookIsbn);
         if(Objects.isNull(book)){
@@ -102,14 +112,20 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("/books/{categoryId}")
-    public ResponseEntity<Page<BookResponseDto>> getBookByCategory(@PathVariable Long categoryId, Pageable pageable){
+    @GetMapping("/books/category/{categoryId}")
+    public ResponseEntity<BookResponsePage> getBookByCategory(@PathVariable Long categoryId,
+                                                                   @RequestParam Integer pageSize,
+                                                                   @RequestParam Integer offset){
+        Pageable pageable = PageRequest.of(pageSize, offset);
         Page<BookResponseDto> books = bookService.findByCategoryId(pageable, categoryId);
+        BookResponsePage bookResponsePage = new BookResponsePage();
+        bookResponsePage.setContent(books.toList());
+
         if(Objects.isNull(books)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(bookResponsePage);
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     /**
@@ -119,7 +135,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("/books/{bookName}")
+    @GetMapping("/books/bookName/{bookName}")
     public ResponseEntity<Page<BookResponseDto>> getBookByName(@PathVariable String bookName, Pageable pageable){
         Page<BookResponseDto> books = bookService.findByTitle(pageable, bookName);
         if(Objects.isNull(books)){
@@ -136,7 +152,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("books/{authorId}")
+    @GetMapping("/books/author/{authorId}")
     public ResponseEntity<Page<BookResponseDto>> getBookByAuthor(@PathVariable Long authorId, Pageable pageable){
         Page<BookResponseDto> books = bookService.findByAuthor(pageable, authorId);
         if(Objects.isNull(books)){
@@ -153,7 +169,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("/books/{bookDescription}")
+    @GetMapping("/books/description/{bookDescription}")
     public ResponseEntity<Page<BookResponseDto>> getByDesc(@PathVariable String bookDescription, Pageable pageable){
         Page<BookResponseDto> books = bookService.findByDescription(pageable, bookDescription);
         if(Objects.isNull(books)){
@@ -170,7 +186,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @GetMapping("/books/{tagId}")
+    @GetMapping("/books/tag/{tagId}")
     public ResponseEntity<Page<BookResponseDto>> getByTag(@PathVariable Long tagId, Pageable pageable){
         Page<BookResponseDto> books = bookService.findByTag(pageable, tagId);
         if(Objects.isNull(books)){
@@ -187,7 +203,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @PutMapping("books")
+    @PutMapping("/books")
     public ResponseEntity<BookResponseDto> modifyBook(@RequestBody BookRequestDto bookRequestDto){
         BookResponseDto book = bookService.modifyBook(bookRequestDto);
         if(Objects.isNull(book)){
@@ -204,7 +220,7 @@ public class BookController {
      * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
      * @return 성공했을 때 응답코드 200 OK
      */
-    @PutMapping("books/status")
+    @PutMapping("/books/status")
     public ResponseEntity<BookResponseDto> modifyBookStatus(String bookIsbn, int bookStatus){
         BookResponseDto book = bookService.modifyBookStatus(bookIsbn, bookStatus);
         if(Objects.isNull(book)){
@@ -213,9 +229,5 @@ public class BookController {
 
         return ResponseEntity.status(HttpStatus.OK).body(book);
     }
-
-
-
-
 
 }

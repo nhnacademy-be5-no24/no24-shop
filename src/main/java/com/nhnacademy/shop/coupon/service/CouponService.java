@@ -24,6 +24,15 @@ public interface CouponService {
     Page<CouponResponseDto> getAllCoupons(Integer pageSize, Integer offset);
 
     /**
+     * 발급 가능한 쿠폰 전체 조회를 위한 메소드 입니다.
+     *
+     * @param pageSize 페이지 사이즈
+     * @param offset   페이지 오프셋
+     * @return 쿠폰 정보를 담은 Dto 리스트
+     */
+    Page<CouponResponseDto> getAllAvailableCoupons(Long customerNo, Integer pageSize, Integer offset);
+
+    /**
      * 도서 쿠폰 전체 조회를 위한 메소드 입니다.
      *
      * @param bookIsbn 도서 고유 번호

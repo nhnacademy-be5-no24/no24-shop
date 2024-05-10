@@ -1,10 +1,10 @@
 package com.nhnacademy.shop.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nhnacademy.shop.author.domain.Author;
-import com.nhnacademy.shop.book_author.domain.BookAuthor;
 import com.nhnacademy.shop.book_tag.domain.BookTag;
+import com.nhnacademy.shop.book_tag.dto.response.BookTagResponseDto;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
+import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,10 +39,10 @@ public class BookRequestDto {
     private LocalDate publishedAt;
 
     @JsonProperty("book_fixed_price")
-    private int bookFixedPrice;
+    private Long bookFixedPrice;
 
     @JsonProperty("book_sale_price")
-    private int bookSalePrice;
+    private Long bookSalePrice;
 
     @JsonProperty("book_is_packing")
     private boolean bookIsPacking;
@@ -59,11 +59,12 @@ public class BookRequestDto {
     @JsonProperty("book_image")
     private String bookImage;
 
-    private List<BookTag> tags;
+//    private List<BookTagResponseDto> tags;
 
-    private List<BookAuthor> author;
+    @JsonProperty("author")
+    private String author;
 
-    private List<BookCategory> categories;
+//    private List<CategoryResponseDto> categories;
 
     private Long likes;
 

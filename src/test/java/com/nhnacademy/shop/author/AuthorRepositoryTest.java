@@ -2,10 +2,12 @@ package com.nhnacademy.shop.author;
 
 import com.nhnacademy.shop.author.domain.Author;
 import com.nhnacademy.shop.author.repository.AuthorRepository;
+import com.nhnacademy.shop.config.RedisConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -20,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 @Transactional
 @WebAppConfiguration
+@Import(
+        {RedisConfig.class}
+)
 class AuthorRepositoryTest {
 
     @Autowired

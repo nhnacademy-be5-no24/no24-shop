@@ -8,11 +8,13 @@ import com.nhnacademy.shop.author.dto.ModifyAuthorRequestDto;
 import com.nhnacademy.shop.author.exception.NotFoundAuthorException;
 import com.nhnacademy.shop.author.service.AuthorService;
 import com.nhnacademy.shop.category.controller.CategoryController;
+import com.nhnacademy.shop.config.RedisConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -31,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(AuthorController.class)
+@Import(
+        {RedisConfig.class}
+)
 class AuthorControllerTest {
     MockMvc mockMvc;
 

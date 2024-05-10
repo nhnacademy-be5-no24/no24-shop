@@ -3,7 +3,7 @@ package com.nhnacademy.shop.coupon.dto.response;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * 쿠폰 기본 정보를 반환하기 위한 dto 입니다.
@@ -19,7 +19,7 @@ public class CouponResponseDto {
 
     private Long couponId;
     private String couponName;
-    private Date deadline;
+    private LocalDate deadline;
     private int issueLimit;
     private Coupon.Status couponStatus;
     private Coupon.CouponType couponType;

@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.bookcategory.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.category.domain.Category;
 import lombok.*;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter @Setter
 @Entity
+@Builder
 @Table(name = "book_category")
 public class BookCategory {
     @Id
@@ -18,11 +20,13 @@ public class BookCategory {
     @MapsId("bookIsbn")
     @ManyToOne
     @JoinColumn(name = "book_isbn")
+    @JsonBackReference
     private Book book;
 
     @MapsId("categoryId")
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonBackReference
     private Category category;
 
     @NoArgsConstructor

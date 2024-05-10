@@ -2,6 +2,7 @@ package com.nhnacademy.shop.coupon.controller;
 
 import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
+import com.nhnacademy.shop.coupon.dto.response.CouponResponseDtoList;
 import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.service.CouponService;
@@ -26,12 +27,32 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
 
-    @GetMapping("/")
-    public ResponseEntity<Page<CouponResponseDto>> getCoupons(@RequestParam Integer pageSize,
-                                                              @RequestParam Integer offset) {
+    @GetMapping
+    public ResponseEntity<CouponResponseDtoList> getCoupons(@RequestParam Integer pageSize,
+                                                            @RequestParam Integer offset) {
         try {
             Page<CouponResponseDto> couponDtoList = couponService.getAllCoupons(pageSize, offset);
-            return ResponseEntity.ok(couponDtoList);
+            CouponResponseDtoList couponResponseDtoList = CouponResponseDtoList.builder()
+                    .couponResponseDtoList(couponDtoList.getContent())
+                    .build();
+
+            return ResponseEntity.ok(couponResponseDtoList);
+        } catch(NotFoundCouponException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/available/{customerNo}")
+    public ResponseEntity<CouponResponseDtoList> getCoupons(@PathVariable Long customerNo,
+                                                            @RequestParam Integer pageSize,
+                                                            @RequestParam Integer offset) {
+        try {
+            Page<CouponResponseDto> couponDtoList = couponService.getAllAvailableCoupons(customerNo, pageSize, offset);
+            CouponResponseDtoList couponResponseDtoList = CouponResponseDtoList.builder()
+                    .couponResponseDtoList(couponDtoList.getContent())
+                    .build();
+
+            return ResponseEntity.ok(couponResponseDtoList);
         } catch(NotFoundCouponException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /**
  * 포인트 내역 서비스 입니다.
  *
- * @author : 강병구
+ * @author : 강병구, 박병휘
  * @date : 2024-04-04
  */
 
@@ -23,6 +23,13 @@ public interface PointLogService {
      * @return PointResponseDto 포인트 내역 정보를 담고 있는 Dto 페이지가 반환됩니다.
      */
     Page<PointResponseDto> getPoints(Pageable pageable);
+
+    /**
+     * 회원의 잔여 포인트 조회를 위한 메소드입니다.
+     * @param customerNo
+     * @return
+     */
+    Long getPoint(Long customerNo);
 
     /**
      * 회원 포인트 내역 조회를 위한 메소드 입니다.

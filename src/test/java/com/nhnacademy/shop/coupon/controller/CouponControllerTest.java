@@ -1,6 +1,7 @@
 package com.nhnacademy.shop.coupon.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -33,6 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @Date : 2024/04/18
  */
 @WebMvcTest(CouponController.class)
+@Import(
+        {RedisConfig.class}
+)
 class CouponControllerTest {
     MockMvc mockMvc;
 
@@ -55,7 +60,6 @@ class CouponControllerTest {
                         .param("offset", "0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content[0].couponId").value(1));
     }
 

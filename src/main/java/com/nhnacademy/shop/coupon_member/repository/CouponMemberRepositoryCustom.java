@@ -1,13 +1,10 @@
 package com.nhnacademy.shop.coupon_member.repository;
 
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
-import com.nhnacademy.shop.customer.entity.Customer;
-import com.nhnacademy.shop.member.domain.Member;
+import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
-
-import java.util.Optional;
 
 /**
  * Coupon Member 연관 테이블에서 QueryDSL을 사용하기 위한 interface.

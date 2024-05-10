@@ -33,16 +33,13 @@ public class PointLog {
     private Member member;
 
     @Column(name = "order_id", nullable = false)
-    private Long orderId;
+    private String orderId;
 
     @Column(name = "point_description", nullable = false)
     private String pointDescription;
 
     @Column(name = "point_usage", nullable = false)
     private Integer pointUsage;
-
-    @Column(name = "point_type", nullable = false)
-    private Boolean pointType;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
