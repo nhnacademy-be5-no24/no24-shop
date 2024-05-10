@@ -55,12 +55,12 @@ class CouponControllerTest {
         Page<CouponResponseDto> couponPage = createCouponPage();
         when(couponService.getAllCoupons(anyInt(), anyInt())).thenReturn(couponPage);
 
-        mockMvc.perform(get("/shop/coupon/")
+        mockMvc.perform(get("/shop/coupon")
                         .param("pageSize", "10")
                         .param("offset", "0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content[0].couponId").value(1));
+                .andExpect(jsonPath("$.couponResponseDtoList[0].couponId").value(1));
     }
 
     @Test
