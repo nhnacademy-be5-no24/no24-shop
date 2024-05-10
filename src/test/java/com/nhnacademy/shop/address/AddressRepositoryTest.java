@@ -2,6 +2,7 @@ package com.nhnacademy.shop.address;
 
 import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.repository.AddressRepository;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -31,6 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @WebAppConfiguration
+@Import(
+        {RedisConfig.class}
+)
 class AddressRepositoryTest {
     @Autowired
     private AddressRepository addressRepository;

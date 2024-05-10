@@ -9,6 +9,7 @@ import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
 import com.nhnacademy.shop.category.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.shop.category.service.CategoryService;
+import com.nhnacademy.shop.config.RedisConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date : 2024-03-29
  **/
 @WebMvcTest(CategoryController.class)
+@Import(
+        {RedisConfig.class}
+)
 public class CategoryControllerTest {
     private MockMvc mockMvc;
     @MockBean

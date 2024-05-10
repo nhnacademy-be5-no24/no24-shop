@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.point.repository;
 
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.grade.domain.Grade;
@@ -11,6 +12,7 @@ import com.nhnacademy.shop.point.dto.response.PointResponseDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles(value = "dev")
 @WebAppConfiguration
+@Import(
+        {RedisConfig.class}
+)
 public class PointRepositoryTest {
     @Autowired
     private PointLogRepository pointLogRepository;
