@@ -4,6 +4,7 @@ import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.dto.response.CategoryInfoResponseDto;
 import com.nhnacademy.shop.category.dto.response.CategoryResponseDto;
 import com.nhnacademy.shop.category.dto.response.ParentCategoryResponseDto;
+import com.nhnacademy.shop.config.RedisConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles(value = "dev")
 @Transactional
 @WebAppConfiguration
+@Import(
+        {RedisConfig.class}
+)
 class CategoryRepositoryTest {
 
     @Autowired

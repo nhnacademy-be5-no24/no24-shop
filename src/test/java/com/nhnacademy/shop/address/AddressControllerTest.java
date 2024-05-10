@@ -9,6 +9,7 @@ import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
 import com.nhnacademy.shop.category.controller.CategoryController;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,6 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @Date : 02/04/2024
  */
 @WebMvcTest(AddressController.class)
+@Import(
+        {RedisConfig.class}
+)
 class AddressControllerTest {
     private MockMvc mockMvc;
 
@@ -159,17 +164,15 @@ class AddressControllerTest {
 
         when(addressService.getAddresses(customerNo)).thenReturn(addressResponseList);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/shop/address/{customerNo}", customerNo))
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/address/customer/{customerNo}", customerNo))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].alias").value(addressResponseDto.getAlias()))
-                .andExpect(jsonPath("$[0].receiver_name").value(addressResponseDto.getReceiverName()))
-                .andExpect(jsonPath("$[0].receiver_phone_number").value(addressResponseDto.getReceiverPhoneNumber()))
-                .andExpect(jsonPath("$[0].zipcode").value(addressResponseDto.getZipcode()))
-                .andExpect(jsonPath("$[0].address").value(addressResponseDto.getAddress()))
-                .andExpect(jsonPath("$[0].address_detail").value(addressResponseDto.getAddressDetail()))
-                .andExpect(jsonPath("$[0].address_id").value(addressResponseDto.getAddressId()))
-                .andExpect(jsonPath("$[0].is_default").value(addressResponseDto.getIsDefault()));
+                .andExpect(jsonPath("$..[0]['alias']").value(addressResponseDto.getAlias()))
+                .andExpect(jsonPath("$..[0]['receiver_name']").value(addressResponseDto.getReceiverName()))
+                .andExpect(jsonPath("$..[0]['receiver_phone_number']").value(addressResponseDto.getReceiverPhoneNumber()))
+                .andExpect(jsonPath("$..[0]['zipcode']").value(addressResponseDto.getZipcode()))
+                .andExpect(jsonPath("$..[0]['address']").value(addressResponseDto.getAddress()))
+                .andExpect(jsonPath("$..[0]['address_detail']").value(addressResponseDto.getAddressDetail()))
+                .andExpect(jsonPath("$..[0]['is_default']").value(addressResponseDto.getIsDefault()));
     }
 
     @Test

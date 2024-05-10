@@ -439,13 +439,11 @@ class OrderServiceTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("주문 생성 - 실패: 주문 상태 오류 test")
     void testCreateOrder_Fail_OrderStatusFailedException() {
         assertThrows(OrderStatusFailedException.class, () -> ordersService.createOrder(createRequestDtoNoState));
     }
     @Test
-    @Disabled
     @DisplayName("주문 생성 - 실패: 주문 저장 실패 test")
     void testCreateOrder_Fail_SaveOrderFailed() {
         doThrow(SaveOrderFailed.class).when(ordersRepository).save(any());

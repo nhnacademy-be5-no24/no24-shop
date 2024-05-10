@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.shop.book.entity.Book;
 import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.category.controller.CategoryController;
+import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date : 2024-04-02
  */
 @WebMvcTest(ReviewController.class)
+@Import(
+        {RedisConfig.class}
+)
 public class ReviewControllerTest {
     private MockMvc mockMvc;
     @MockBean

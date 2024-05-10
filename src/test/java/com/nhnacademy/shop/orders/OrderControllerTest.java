@@ -389,7 +389,6 @@ class OrderControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
     @Test
-    @Disabled
     @DisplayName("고객 번호로 고객의 모든 주문 반환 test")
     void testGetOrdersByCustomer() throws Exception {
         List<OrdersResponseDto> mockedResponse = Arrays.asList(ordersResponseDto, ordersResponseDto2);
@@ -414,7 +413,6 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.orderId", is(ordersResponseDto.getOrderId())));
     }
     @Test
-    @Disabled
     @DisplayName("주문결제페이지 test")
     void testGetCartPaymentInfo() throws  Exception{
         when(ordersService.getCartPaymentInfo(any()))
