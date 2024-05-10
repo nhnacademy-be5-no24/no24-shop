@@ -6,11 +6,16 @@ import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.coupon.dto.request.CouponRequestDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
-import com.nhnacademy.shop.coupon.entity.Coupon;
+import com.nhnacademy.shop.coupon.entity.*;
 import com.nhnacademy.shop.coupon.exception.IllegalFormCouponRequestException;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.repository.*;
 import com.nhnacademy.shop.coupon.service.impl.CouponServiceImpl;
+import com.nhnacademy.shop.coupon_member.domain.CouponMember;
+import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
+import com.nhnacademy.shop.customer.entity.Customer;
+import com.nhnacademy.shop.grade.domain.Grade;
+import com.nhnacademy.shop.member.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +25,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +61,9 @@ class CouponServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private CouponMemberRepository couponMemberRepository;
 
     @InjectMocks
     private CouponServiceImpl couponService;
@@ -519,4 +529,195 @@ class CouponServiceTest {
         verify(couponRepository, times(1)).deleteById(couponId);
     }
 
+    @Test
+    void getAllAvailableCoupons() {
+        // coupon initialize
+        Coupon normalAmountCoupon = Coupon.builder()
+                .couponId(1L)
+                .couponName("normalAmountCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.AMOUNT)
+                .couponTarget(Coupon.CouponTarget.NORMAL)
+                .build();
+        Coupon normalPercentageCoupon = Coupon.builder()
+                .couponId(2L)
+                .couponName("normalPercentageCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.PERCENTAGE)
+                .couponTarget(Coupon.CouponTarget.NORMAL)
+                .build();
+        Coupon categoryAmountCoupon = Coupon.builder()
+                .couponId(3L)
+                .couponName("categoryAmountCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.AMOUNT)
+                .couponTarget(Coupon.CouponTarget.CATEGORY)
+                .build();
+        Coupon categoryPercentageCoupon = Coupon.builder()
+                .couponId(4L)
+                .couponName("categoryPercentageCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.PERCENTAGE)
+                .couponTarget(Coupon.CouponTarget.CATEGORY)
+                .build();
+        Coupon bookAmountCoupon = Coupon.builder()
+                .couponId(5L)
+                .couponName("bookAmountCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.AMOUNT)
+                .couponTarget(Coupon.CouponTarget.BOOK)
+                .build();
+        Coupon bookPercentageCoupon = Coupon.builder()
+                .couponId(6L)
+                .couponName("bookPercentageCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.PERCENTAGE)
+                .couponTarget(Coupon.CouponTarget.BOOK)
+                .build();
+        Coupon notIssuedBookPercentageCoupon = Coupon.builder()
+                .couponId(7L)
+                .couponName("bookPercentageCoupon")
+                .deadline(LocalDate.now().plusDays(2))
+                .issueLimit(2)
+                .expirationPeriod(3)
+                .couponStatus(Coupon.Status.ACTIVE)
+                .couponType(Coupon.CouponType.PERCENTAGE)
+                .couponTarget(Coupon.CouponTarget.BOOK)
+                .build();
+
+        // member initialize
+        Customer customer = Customer.builder()
+                .customerNo(1L)
+                .customerId("123")
+                .customerPassword("password")
+                .customerName("name")
+                .customerPhoneNumber("010-1234-2345")
+                .customerEmail("name@naver.com")
+                .customerBirthday(LocalDate.of(2000, 11, 30))
+                .customerRole("GUEST")
+                .build();
+
+        Grade grade = Grade.builder()
+                .gradeId(1L)
+                .gradeName("NORMAL")
+                .accumulateRate(5L)
+                .build();
+
+        Member member = Member.builder()
+                .memberId("123")
+                .customer(customer)
+                .lastLoginAt(LocalDateTime.now())
+                .grade(grade)
+                .role("ROLE_ADMIN")
+                .memberState(Member.MemberState.ACTIVE)
+                .build();
+
+        Category category = Category.builder()
+                .categoryId(1L)
+                .categoryName("categoryName")
+                .parentCategory(null)
+                .build();
+
+        Book book = Book.builder()
+                .bookIsbn("bookIsbn")
+                .bookTitle("bookTitle")
+                .bookDesc("desc")
+                .bookPublisher("publisher")
+                .bookPublishedAt(LocalDate.of(2024, 4, 14))
+                .bookFixedPrice(1L)
+                .bookSalePrice(1L)
+                .bookIsPacking(true)
+                .bookViews(1L)
+                .bookStatus(0)
+                .bookQuantity(1)
+                .bookImage("image")
+                .build();
+
+        AmountCoupon amountCoupon = AmountCoupon.builder()
+                .coupon(bookAmountCoupon)
+                .discountPrice(2000L)
+                .build();
+        PercentageCoupon percentageCoupon = PercentageCoupon.builder()
+                .coupon(bookPercentageCoupon)
+                .maxDiscountPrice(2000L)
+                .discountRate(5L)
+                .build();
+        BookCoupon bookCoupon = BookCoupon.builder()
+                .coupon(bookAmountCoupon)
+                .book(book)
+                .build();
+        CategoryCoupon categoryCoupon = CategoryCoupon.builder()
+                .coupon(categoryAmountCoupon)
+                .category(category)
+                .build();
+
+        // all coupon save
+        when(couponRepository.findAll()).thenReturn(
+                List.of(normalAmountCoupon, normalPercentageCoupon,
+                        categoryAmountCoupon, categoryPercentageCoupon,
+                        bookAmountCoupon, bookPercentageCoupon,
+                        notIssuedBookPercentageCoupon)
+        );
+
+        // target coupon save
+        when(amountCouponRepository.findById(1L)).thenReturn(Optional.of(amountCoupon));
+        when(amountCouponRepository.findById(3L)).thenReturn(Optional.of(amountCoupon));
+        when(amountCouponRepository.findById(5L)).thenReturn(Optional.of(amountCoupon));
+        when(percentageCouponRepository.findById(2L)).thenReturn(Optional.of(percentageCoupon));
+        when(percentageCouponRepository.findById(4L)).thenReturn(Optional.of(percentageCoupon));
+        when(percentageCouponRepository.findById(6L)).thenReturn(Optional.of(percentageCoupon));
+        when(percentageCouponRepository.findById(7L)).thenReturn(Optional.of(percentageCoupon));
+
+        // type coupon save
+        when(categoryCouponRepository.findById(3L)).thenReturn(Optional.of(categoryCoupon));
+        when(categoryCouponRepository.findById(4L)).thenReturn(Optional.of(categoryCoupon));
+        when(bookCouponRepository.findById(5L)).thenReturn(Optional.of(bookCoupon));
+        when(bookCouponRepository.findById(6L)).thenReturn(Optional.of(bookCoupon));
+        when(bookCouponRepository.findById(7L)).thenReturn(Optional.of(bookCoupon));
+
+
+        // user coupon save
+        when(couponMemberRepository.findCouponMembersByMember_CustomerNo(1L)).thenReturn(
+                List.of(
+                        CouponMember.builder()
+                                .couponMemberId(1L)
+                                .coupon(bookPercentageCoupon)
+                                .member(member)
+                                .used(false)
+                                .createdAt(LocalDateTime.now())
+                                .usedAt(LocalDateTime.now())
+                                .status(CouponMember.Status.ACTIVE)
+                                .build(),
+                        CouponMember.builder()
+                                .couponMemberId(1L)
+                                .coupon(bookPercentageCoupon)
+                                .member(member)
+                                .used(false)
+                                .createdAt(LocalDateTime.now())
+                                .usedAt(LocalDateTime.now())
+                                .status(CouponMember.Status.ACTIVE)
+                                .build()
+                )
+        );
+
+        assertEquals(couponService.getAllAvailableCoupons(1L, 1, 10).getContent().size(), 6);
+    }
 }

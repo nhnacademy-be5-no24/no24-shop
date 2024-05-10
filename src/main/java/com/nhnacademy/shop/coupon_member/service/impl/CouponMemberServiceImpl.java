@@ -132,14 +132,18 @@ public class CouponMemberServiceImpl implements CouponMemberService {
                 couponMember = couponMember
                         .setStatus(status)
                         .setUsedAtToNow();
-                couponMember = couponMemberRepository.save(couponMember);
             }
             else if(status == CouponMember.Status.DESTROYED){
                 couponMember = couponMember
                         .setStatus(status)
                         .setDestroyedAtToNow();
-                couponMember = couponMemberRepository.save(couponMember);
             }
+            else {
+                couponMember = couponMember
+                        .setStatus(status)
+                        .setCouponActivate();
+            }
+            couponMember = couponMemberRepository.save(couponMember);
         }
 
         return CouponMemberResponseDto.buildDto(couponMember, couponResponseDto);

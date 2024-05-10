@@ -67,4 +67,11 @@ public class CouponMember {
         this.status = status;
         return this;
     }
+
+    public CouponMember setCouponActivate() {
+        this.status = Status.ACTIVE;
+        this.used = false;
+        this.usedAt = null;
+        return this;
+    }
 }
