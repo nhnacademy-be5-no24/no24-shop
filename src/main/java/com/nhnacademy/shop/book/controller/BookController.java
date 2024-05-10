@@ -3,6 +3,7 @@ package com.nhnacademy.shop.book.controller;
 import java.util.Objects;
 
 
+import com.nhnacademy.shop.book.dto.response.BookResponseList;
 import com.nhnacademy.shop.book.dto.response.BookResponsePage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,13 +37,13 @@ public class BookController {
     /**
      *  새로운 book을 생성합니다.
      *
-     * @param request
+     * @param bookCreateRequestDto dto
      * @throws ResponseStatusException 해당 DTO를 통해 이미 존재하는 경우 응답코드 208 ALREADY_REPORTED
      * @return 성공했을 때 응답코드 201 CREATED
      */
     @PostMapping("/books/page")
-    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookCreateRequestDto request){
-        BookResponseDto book = bookService.createBook(request);
+    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookCreateRequestDto bookCreateRequestDto){
+        BookResponseDto book = bookService.createBook(bookCreateRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
@@ -55,29 +56,36 @@ public class BookController {
      * @return 성공했을 때 응답코드 200 OK
      */
     @DeleteMapping("/books/delete/{bookIsbn}")
-    public ResponseEntity<BookResponseDto> deleteBook(@PathVariable String bookIsbn){
+    public ResponseEntity<Void> deleteBook(@PathVariable String bookIsbn){
         BookResponseDto book = bookService.deleteBook(bookIsbn);
         if(Objects.isNull(book)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(book);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * 페이징 처리 된
      * 모든 book을 반환합니다.
      *
-     * @param pageable
+     * @param
      * @return all books
      */
     @GetMapping("/books")
-    public ResponseEntity<Page<BookResponseDto>> getAllBooks(Pageable pageable){
-        Page<BookResponseDto> books = bookService.findAllBooks(pageable);
+    public ResponseEntity<BookResponseList> getAllBooks(
+            @RequestParam Integer pageSize,
+            @RequestParam Integer offset
+    ){
+
+        Page<BookResponseDto> books = bookService.findAllBooks(pageSize, offset);
         if(Objects.isNull(books)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(books);
+        BookResponseList bookResponseList = BookResponseList.builder()
+                .bookResponseDtoList(books.getContent())
+                .build();
+        return ResponseEntity.ok(bookResponseList);
     }
 
     /**

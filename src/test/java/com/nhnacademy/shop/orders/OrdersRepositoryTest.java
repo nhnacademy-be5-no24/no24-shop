@@ -18,6 +18,7 @@ import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import com.nhnacademy.shop.wrap.repository.WrapInfoRepository;
 import com.nhnacademy.shop.wrap.repository.WrapRepository;
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -180,8 +181,9 @@ class OrdersRepositoryTest {
         Pageable pageable = PageRequest.of(0,10);
         Page<OrdersResponseDto> dtoPage = ordersRepository.getOrderListByCustomer(pageable,customerNo);
         List<OrdersResponseDto> orderList = dtoPage.getContent();
-
+        System.out.println(orderList.get(0).getWrapName());
         assertThat(orderList).isNotEmpty();
+        Assertions.assertEquals("name", orderList.get(0).getWrapName());
         Assertions.assertEquals(1,orderList.size());
         Assertions.assertEquals("orderId",orderList.get(0).getOrderId());
     }

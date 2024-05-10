@@ -87,4 +87,34 @@ public class BookResponseDto {
         this.author = book.getAuthor();
         this.likes = book.getLikes();
     }
+
+    public BookResponseDto(String bookIsbn,
+                           String bookTitle,
+                           String bookDescription,
+                           String bookPublisher,
+                           LocalDate publishedAt,
+                           Long bookFixedPrice,
+                           Long bookSalePrice,
+                           boolean bookIsPacking,
+                           Long bookViews,
+                           int bookStatus,
+                           int bookQuantity,
+                           String bookImage,
+                           String author,
+                           Long likes) {
+        this.bookIsbn = bookIsbn;
+        this.bookTitle = bookTitle;
+        this.bookDescription = bookDescription;
+        this.bookPublisher = bookPublisher;
+        this.publishedAt = publishedAt;
+        this.bookFixedPrice = bookFixedPrice;
+        this.bookSalePrice = bookSalePrice;
+        this.bookIsPacking = bookIsPacking;
+        this.bookViews = bookViews;
+        this.bookStatus = bookStatus;
+        this.bookQuantity = bookQuantity;
+        this.bookImage = bookImage;
+        this.author = author;
+        this.likes = likes;
+    }
 }
