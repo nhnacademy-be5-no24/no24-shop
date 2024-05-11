@@ -20,11 +20,9 @@ import java.util.List;
  * @author : 이재원
  * @date : 2024-03-27
  */
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Getter
 public class BookRequestDto {
     @JsonProperty("book_isbn")
     private String bookIsbn;
