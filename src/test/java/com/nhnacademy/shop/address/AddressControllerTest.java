@@ -8,7 +8,6 @@ import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
 import com.nhnacademy.shop.address.service.AddressService;
-import com.nhnacademy.shop.category.controller.CategoryController;
 import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
@@ -23,7 +22,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
@@ -157,8 +155,8 @@ class AddressControllerTest {
     }
 
     @Test
-    @DisplayName(value = "주소 조회")
-    void testGetAddresses_ReturnListOfAddressResponseDto() throws Exception {
+    @DisplayName(value = "주소 조회 by customerNo")
+    void testGetAddresses_ReturnAddressResponseDtoList() throws Exception {
         Long customerNo = 1L;
         List<AddressResponseDto> addressResponseList = Collections.singletonList(addressResponseDto);
 
@@ -173,6 +171,26 @@ class AddressControllerTest {
                 .andExpect(jsonPath("$..[0]['address']").value(addressResponseDto.getAddress()))
                 .andExpect(jsonPath("$..[0]['address_detail']").value(addressResponseDto.getAddressDetail()))
                 .andExpect(jsonPath("$..[0]['is_default']").value(addressResponseDto.getIsDefault()));
+    }
+
+    @Test
+    @DisplayName(value = "주소 조회 by addressId")
+    void testGetAddress_ReturnAddressResponseDto() throws Exception {
+        Long addressId = 1L;
+
+        when(addressService.getAddress(addressId)).thenReturn(addressResponseDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/shop/address/{addressId}", addressId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alias").value(addressResponseDto.getAlias()))
+                .andExpect(jsonPath("$.receiver_name").value(addressResponseDto.getReceiverName()))
+                .andExpect(jsonPath("$.receiver_phone_number").value(addressResponseDto.getReceiverPhoneNumber()))
+                .andExpect(jsonPath("$.zipcode").value(addressResponseDto.getZipcode()))
+                .andExpect(jsonPath("$.address").value(addressResponseDto.getAddress()))
+                .andExpect(jsonPath("$.address_detail").value(addressResponseDto.getAddressDetail()))
+                .andExpect(jsonPath("$.is_default").value(addressResponseDto.getIsDefault()));
+
+
     }
 
     @Test
