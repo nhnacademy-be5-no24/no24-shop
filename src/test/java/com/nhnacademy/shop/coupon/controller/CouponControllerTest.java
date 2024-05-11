@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * 설명
+ * 쿠폰 controller test
  *
  * @Author : 박병휘
  * @Date : 2024/04/18

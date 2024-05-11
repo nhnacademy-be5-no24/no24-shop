@@ -1,9 +1,7 @@
 package com.nhnacademy.shop.coupon_member.dto.request;
 
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +13,8 @@ import java.time.LocalDateTime;
  */
 @Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CouponMemberStatusRequestDto {
     public enum Status {
         ACTIVE, USED, DESTROYED
