@@ -17,6 +17,7 @@ import com.nhnacademy.shop.book_tag.repository.BookTagRespository;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
+import com.nhnacademy.shop.category.exception.CategoryNotFoundException;
 import com.nhnacademy.shop.category.repository.CategoryRepository;
 import com.nhnacademy.shop.tag.domain.Tag;
 import com.nhnacademy.shop.tag.dto.TagResponseDto;
@@ -59,9 +60,9 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     @Transactional
-    public BookResponseDto createBook(BookCreateRequestDto request){
+    public BookResponseDto createBook(BookCreateRequestDto request) {
         Optional<Book> optionalBook = bookRepository.findByBookIsbn(request.getBookIsbn());
-        if(optionalBook.isPresent()){
+        if (optionalBook.isPresent()) {
             throw new BookAlreadyExistsException();
         }
         // todo : category, tag 수정 필요.
@@ -83,15 +84,10 @@ public class BookServiceImpl implements BookService {
                 .author(request.getAuthor())
                 .likes(0L).build();
 
-        if(book.getCategories() != null)
-            bookCategoryRepository.saveAll(book.getCategories());
-
-        if(book.getTags() != null)
-            bookTagRespository.saveAll(book.getTags());
 
         Book createdBook = bookRepository.save(book);
         // todo : tag 넣어줘야함.
-        BookResponseDto bookResponseDto = BookResponseDto.builder()
+        return BookResponseDto.builder()
                 .bookIsbn(createdBook.getBookIsbn())
                 .bookTitle(createdBook.getBookTitle())
                 .bookDescription(createdBook.getBookDesc())
@@ -103,11 +99,11 @@ public class BookServiceImpl implements BookService {
                 .bookStatus(createdBook.getBookStatus())
                 .bookQuantity(createdBook.getBookQuantity())
                 .bookImage(createdBook.getBookImage())
+                .bookViews(createdBook.getBookViews())
                 .tags(null)
                 .author(createdBook.getAuthor())
                 .likes(createdBook.getLikes())
                 .build();
-        return bookResponseDto;
 //        return new BookResponseDto(createdBook.getBookIsbn(), createdBook.getBookTitle(), createdBook.getBookDesc(), createdBook.getBookPublisher(),
 //                createdBook.getBookPublishedAt(), createdBook.getBookFixedPrice(), createdBook.getBookSalePrice(), createdBook.isBookIsPacking(), createdBook.getBookViews(), createdBook.getBookStatus(), createdBook.getBookQuantity(), createdBook.getBookImage(),
 //                book.getTags().stream()
@@ -124,25 +120,25 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     @Transactional
-    public BookResponseDto deleteBook(String bookIsbn){
+    public BookResponseDto deleteBook(String bookIsbn) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
-        if(book.getBookStatus()==3){
+        if (book.getBookStatus() == 3) {
             throw new BookIsDeletedException();
         }
 
-        bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
+        book = bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), 3, book.getBookQuantity(), book.getBookImage(),
                 book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher() ,book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),
                 book.getTags().stream()
-                    .map(booktag -> booktag.getTag())
-                    .map(tag -> new TagResponseDto(tag))
-                    .collect(Collectors.toList()),
-                book.getAuthor(),book.getLikes());
+                        .map(BookTag::getTag)
+                        .map(TagResponseDto::new)
+                        .collect(Collectors.toList()),
+                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -154,7 +150,7 @@ public class BookServiceImpl implements BookService {
     public Page<BookResponseDto> findAllBooks(Integer pageSize, Integer offset) {
         Page<BookResponseDto> response = bookRepository.findAllBooks(PageRequest.of(pageSize, offset));
 
-        if(response.getContent().isEmpty() || response.getTotalElements() == 0){
+        if (response.getContent().isEmpty() || response.getTotalElements() == 0) {
             throw new BookNotFoundException();
         }
 
@@ -168,16 +164,16 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<BookResponseDto> findByCategoryId(Pageable pageable,Long categoryId) {
+    public Page<BookResponseDto> findByCategoryId(Pageable pageable, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: "));
+                .orElseThrow(CategoryNotFoundException::new);
 
         Page<BookCategory> bookList = bookCategoryRepository.findByCategory(pageable, category);
 
         List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
-                .map(bookCategory -> bookCategory.getBook())
+                .map(BookCategory::getBook)
                 .map(book -> {
-                    BookResponseDto bookResponseDto = BookResponseDto.builder()
+                    return BookResponseDto.builder()
                             .bookIsbn(book.getBookIsbn())
                             .bookTitle(book.getBookTitle())
                             .bookDescription(book.getBookDesc())
@@ -186,33 +182,21 @@ public class BookServiceImpl implements BookService {
                             .bookFixedPrice(book.getBookFixedPrice())
                             .bookSalePrice(book.getBookSalePrice())
                             .bookIsPacking(book.isBookIsPacking())
+                            .bookViews(book.getBookViews())
                             .bookStatus(book.getBookStatus())
                             .bookQuantity(book.getBookQuantity())
                             .bookImage(book.getBookImage())
                             .tags(book.getTags().stream()
-                                    .map(booktag -> booktag.getTag())
-                                    .map(tag -> new TagResponseDto(tag))
+                                    .map(BookTag::getTag)
+                                    .map(TagResponseDto::new)
                                     .collect(Collectors.toList()))
                             .author(book.getAuthor())
+                            .likes(book.getLikes())
                             .build();
-
-                    return bookResponseDto;
                 })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
-    }
-
-    private BookResponseDto findBookByCategories(Book book){
-
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
-                book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
-                book.getBookImage(),
-                book.getTags().stream()
-                    .map(booktag -> booktag.getTag())
-                    .map(tag -> new TagResponseDto(tag))
-                    .collect(Collectors.toList()),
-                book.getAuthor(), book.getLikes());
     }
 
     /*
@@ -233,17 +217,18 @@ public class BookServiceImpl implements BookService {
         return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
     }
 
-    private BookResponseDto findBookByTags(Book book){
+    private BookResponseDto findBookByTags(Book book) {
 
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),
                 book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
+                        .map(BookTag::getTag)
+                        .map(TagResponseDto::new)
                         .collect(Collectors.toList()),
                 book.getAuthor(), book.getLikes());
     }
+
     /*
      * book name에 일치하는 book list 탐색
      * @Param : pageable, bookName
@@ -262,24 +247,20 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public Page<BookResponseDto> findByAuthor(Pageable pageable, Long authorId) {
         Author author = authorRepository.findById(authorId).get();
-
         Page<Book> bookList = bookAuthorRepository.findByAuthor(pageable, author);
-
         List<BookResponseDto> bookResponseDtoList = bookList.getContent().stream()
                 .map(this::findBookByAuthors)
                 .collect(Collectors.toList());
-
         return new PageImpl<>(bookResponseDtoList, pageable, bookList.getTotalElements());
     }
 
-    private BookResponseDto findBookByAuthors(Book book){
-
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
+    private BookResponseDto findBookByAuthors(Book book) {
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),
                 book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
+                        .map(BookTag::getTag)
+                        .map(TagResponseDto::new)
                         .collect(Collectors.toList()),
                 book.getAuthor(), book.getLikes());
     }
@@ -294,17 +275,16 @@ public class BookServiceImpl implements BookService {
     public BookResponseDto findByIsbn(String bookIsbn) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
 
-
-
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),
                 book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
+                        .map(BookTag::getTag)
+                        .map(TagResponseDto::new)
                         .collect(Collectors.toList()),
                 book.getAuthor(), book.getLikes());
     }
+
     /*
      * book description에 일치하는 book list 탐색
      * @Param : bookDescription
@@ -323,10 +303,8 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponseDto modifyBook(BookRequestDto bookRequestDto) {
         Book book = bookRepository.findById(bookRequestDto.getBookIsbn()).orElseThrow(BookNotFoundException::new);
-        // todo : 수정필요
         bookCategoryRepository.saveAll(book.getCategories());
         bookTagRespository.saveAll(book.getTags());
-
         Book reqeustBook = new Book(book.getBookIsbn(),
                 bookRequestDto.getBookTitle(),
                 bookRequestDto.getBookDescription(),
@@ -343,9 +321,7 @@ public class BookServiceImpl implements BookService {
                 book.getTags(),
                 bookRequestDto.getAuthor(),
                 bookRequestDto.getLikes());
-
         Book modifyBook = bookRepository.save(reqeustBook);
-
         return new BookResponseDto(modifyBook);
     }
 
@@ -357,18 +333,16 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponseDto modifyBookStatus(String bookIsbn, int bookStatus) {
         Book book = bookRepository.findById(bookIsbn).orElseThrow(BookNotFoundException::new);
-
         bookRepository.save(new Book(bookIsbn, book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(),
                 book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), bookStatus, book.getBookQuantity(), book.getBookImage(),
-                book.getCategories(),book.getTags(), book.getAuthor(), book.getLikes()));
+                book.getCategories(), book.getTags(), book.getAuthor(), book.getLikes()));
 
-
-        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(),book.getBookPublisher(), book.getBookPublishedAt(),
+        return new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(),
                 book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(),
                 book.getBookImage(),
                 book.getTags().stream()
-                        .map(booktag -> booktag.getTag())
-                        .map(tag -> new TagResponseDto(tag))
+                        .map(BookTag::getTag)
+                        .map(TagResponseDto::new)
                         .collect(Collectors.toList()),
                 book.getAuthor(), book.getLikes());
     }

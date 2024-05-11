@@ -16,11 +16,9 @@ import lombok.*;
  * @author : 이재원
  * @date : 2024-03-28
  */
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@Builder
-@Getter
 public class BookCreateRequestDto {
 
 

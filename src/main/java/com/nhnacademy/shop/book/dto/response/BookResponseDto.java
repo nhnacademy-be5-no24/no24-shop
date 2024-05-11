@@ -9,10 +9,7 @@ import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.category.domain.Category;
 import com.nhnacademy.shop.tag.domain.Tag;
 import com.nhnacademy.shop.tag.dto.TagResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,10 +20,9 @@ import java.util.List;
  * @author : 이재원
  * @date : 2024-03-27
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Builder
+@AllArgsConstructor
 public class BookResponseDto {
 
     @JsonProperty("book_isbn")

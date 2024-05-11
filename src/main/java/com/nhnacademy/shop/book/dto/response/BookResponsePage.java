@@ -1,6 +1,6 @@
 package com.nhnacademy.shop.book.dto.response;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -11,13 +11,11 @@ import java.util.List;
  * @Author : 박병휘
  * @Date : 2024/04/24
  */
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookResponsePage {
     private List<BookResponseDto> content;
-
-    public List<BookResponseDto> getContent() {
-        return content;
-    }
 
     public void setContent(List<BookResponseDto> content) {
         this.content = content;
