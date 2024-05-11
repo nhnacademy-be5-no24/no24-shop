@@ -4,6 +4,8 @@ import com.nhnacademy.shop.address.domain.Address;
 import com.nhnacademy.shop.address.dto.request.AddressCreateRequestDto;
 import com.nhnacademy.shop.address.dto.request.AddressModifyRequestDto;
 import com.nhnacademy.shop.address.dto.response.AddressResponseDto;
+import com.nhnacademy.shop.address.exception.AddressNotFoundException;
+import com.nhnacademy.shop.address.exception.AddressOutOfBoundsException;
 import com.nhnacademy.shop.address.repository.AddressRepository;
 import com.nhnacademy.shop.address.service.impl.AddressServiceImpl;
 import com.nhnacademy.shop.customer.entity.Customer;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -97,8 +100,8 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName(value = "주소 등록")
-    void testSaveAddress() {
+    @DisplayName(value = "주소 등록 - 성공")
+    void testSaveAddress_Success() {
         AddressCreateRequestDto addressCreateRequestDto = AddressCreateRequestDto.builder()
                 .alias("직장")
                 .receiverName("홍길동")
@@ -135,7 +138,31 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName(value = "주소 조회")
+    @DisplayName(value = "주소 등록 - 실패")
+    void testSaveAddress_Exception() {
+        AddressCreateRequestDto addressCreateRequestDto = AddressCreateRequestDto.builder()
+                .alias("직장")
+                .receiverName("홍길동")
+                .receiverPhoneNumber("01051740000")
+                .zipcode("12345")
+                .address("대전광역시 유성구 대학로99")
+                .addressDetail("충남대학교 정보화본부 교육관 1303호")
+                .isDefault(false)
+                .customerNo(member.getCustomerNo())
+                .build();
+
+        List<Address> addresses = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            addresses.add(Address.builder().build());
+        }
+
+        when(addressRepository.findByMemberCustomerNo(any())).thenReturn(addresses);
+
+        assertThrows(AddressOutOfBoundsException.class, () -> addressService.saveAddress(addressCreateRequestDto));
+    }
+
+    @Test
+    @DisplayName(value = "주소 조회 by customerNo")
     void testGetAddresses() {
         Long customerNo = 1L;
 
@@ -162,8 +189,27 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName(value = "주소 수정")
-    void testModifyAddress() {
+    @DisplayName(value = "주소 조회 by addressId")
+    void testGetAddress() {
+        Long addressId = 1L;
+
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        AddressResponseDto responseDto = addressService.getAddress(addressId);
+
+        assertThat(responseDto.getAddressId()).isEqualTo(address.getAddressId());
+        assertThat(responseDto.getAlias()).isEqualTo(address.getAlias());
+        assertThat(responseDto.getReceiverName()).isEqualTo(address.getReceiverName());
+        assertThat(responseDto.getReceiverPhoneNumber()).isEqualTo(address.getReceiverPhoneNumber());
+        assertThat(responseDto.getZipcode()).isEqualTo(address.getZipcode());
+        assertThat(responseDto.getAddress()).isEqualTo(address.getAddress());
+        assertThat(responseDto.getAddressDetail()).isEqualTo(address.getAddressDetail());
+        assertThat(responseDto.getIsDefault()).isEqualTo(address.getIsDefault());
+    }
+
+    @Test
+    @DisplayName(value = "주소 수정 - 성공")
+    void testModifyAddress_Success() {
         Long addressId = 1L;
         Long customerNo = 1L;
         List<Address> addresses = new ArrayList<>();
@@ -207,11 +253,38 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName(value = "주소 삭제")
-    void testDeleteAddress() {
+    @DisplayName(value = "주소 수정 - 실패")
+    void testModifyAddress_Exception() {
         Long addressId = 1L;
-        doNothing().when(addressRepository).deleteById(addressId);
+
+        AddressModifyRequestDto addressModifyRequestDto = AddressModifyRequestDto.builder()
+                .alias("직장")
+                .receiverName("홍길동")
+                .receiverPhoneNumber("01051740000")
+                .zipcode("12345")
+                .address("대전광역시 유성구 대학로99")
+                .addressDetail("충남대학교 기숙사 11동")
+                .isDefault(true)
+                .build();
+
+        when(addressRepository.findById(any())).thenReturn(Optional.empty());
+        assertThrows(AddressNotFoundException.class, () -> addressService.modifyAddress(addressId, addressModifyRequestDto));
+    }
+
+    @Test
+    @DisplayName(value = "주소 삭제 - 성공")
+    void testDeleteAddress_Success() {
+        Long addressId = 1L;
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
         addressService.deleteAddress(addressId);
         verify(addressRepository, times(1)).deleteById(addressId);
+    }
+
+    @Test
+    @DisplayName(value = "주소 삭제 - 실패")
+    void testDeleteAddress_Exception() {
+        Long addressId = 1L;
+        when(addressRepository.findById(addressId)).thenReturn(Optional.empty());
+        assertThrows(AddressNotFoundException.class, () -> addressService.deleteAddress(addressId));
     }
 }
