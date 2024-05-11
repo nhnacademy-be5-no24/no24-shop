@@ -2,10 +2,7 @@ package com.nhnacademy.shop.order_detail.dto;
 
 import com.nhnacademy.shop.book.dto.response.BookResponseDto;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ import java.util.List;
  * @Author : 박병휘
  * @Date : 2024/04/10
  */
-@Data
+@Getter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -25,7 +22,7 @@ public class OrderDetailResponseDto {
     Long quantity;
     List<WrapDto> wraps;
 
-    @Data
+    @Getter
     @NoArgsConstructor
     @Builder
     public static class WrapDto {

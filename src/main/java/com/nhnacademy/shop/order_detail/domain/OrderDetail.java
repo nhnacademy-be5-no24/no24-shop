@@ -22,7 +22,6 @@ import java.util.List;
  **/
 @Entity
 @Getter
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,5 +46,4 @@ public class OrderDetail {
     @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<WrapInfo> wrapInfos = new ArrayList<>();
-
 }
