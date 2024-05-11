@@ -50,10 +50,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         Long count = queryFactory.select(book.count()).from(book).fetchOne();
 
-        if(Objects.isNull(count)){
-            throw new BookNotFoundException();
-        }
-
         return new PageImpl<>(query.fetch(),pageable, count);
     }
     @Override
@@ -64,9 +60,10 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         JPAQuery<BookResponseDto> query = queryFactory.from(book)
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
-                        book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
-                        book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
+                        book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
+                        book.bookFixedPrice, book.bookSalePrice, book.bookIsPacking, book.bookViews,
+                        book.bookStatus, book.bookQuantity, book.bookImage, book.author, book.likes
+                ))
                 .where(book.bookTitle.like(bookTitle))
                 .orderBy(book.bookIsbn.asc())
                 .offset(pageable.getOffset())
@@ -76,10 +73,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 .where(book.bookTitle.like(bookTitle))
                 .from(book)
                 .fetchOne();
-
-        if(Objects.isNull(count)){
-            throw new BookNotFoundException();
-        }
 
         return new PageImpl<>(query.fetch(), pageable, count);
     }
@@ -92,9 +85,10 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         JPAQuery<BookResponseDto> query = queryFactory.from(book)
                 .select(Projections.constructor(BookResponseDto.class,
-                        book.bookIsbn, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
-                        book.bookIsPacking, book.bookImage, book.bookStatus, book.bookFixedPrice,
-                        book.bookQuantity, book.bookSalePrice, book.bookTitle, book.bookViews))
+                        book.bookIsbn, book.bookTitle, book.bookDesc, book.bookPublisher, book.bookPublishedAt,
+                        book.bookFixedPrice, book.bookSalePrice, book.bookIsPacking, book.bookViews,
+                        book.bookStatus, book.bookQuantity, book.bookImage, book.author, book.likes
+                ))
                 .where(book.bookDesc.like(desc))
                 .orderBy(book.bookIsbn.asc())
                 .offset(pageable.getOffset())
@@ -105,13 +99,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 .from(book)
                 .fetchOne();
 
-        if(Objects.isNull(count)){
-            throw new BookNotFoundException();
-        }
-
-
         return new PageImpl<>(query.fetch(), pageable, count);
     }
-
 
 }

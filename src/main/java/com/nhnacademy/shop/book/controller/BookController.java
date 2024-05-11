@@ -121,79 +121,7 @@ public class BookController {
         BookResponsePage bookResponsePage = new BookResponsePage();
         bookResponsePage.setContent(books.toList());
 
-        if(Objects.isNull(books)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(bookResponsePage);
-        }
-    }
-
-    /**
-     * book title을 통해 해당 book을 찾습니다.
-     *
-     * @param bookName
-     * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
-     * @return 성공했을 때 응답코드 200 OK
-     */
-    @GetMapping("/books/bookName/{bookName}")
-    public ResponseEntity<Page<BookResponseDto>> getBookByName(@PathVariable String bookName, Pageable pageable){
-        Page<BookResponseDto> books = bookService.findByTitle(pageable, bookName);
-        if(Objects.isNull(books)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(books);
-    }
-
-    /**
-     * author를 통해서 book을 찾습니다.
-     *
-     * @param authorId
-     * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
-     * @return 성공했을 때 응답코드 200 OK
-     */
-    @GetMapping("/books/author/{authorId}")
-    public ResponseEntity<Page<BookResponseDto>> getBookByAuthor(@PathVariable Long authorId, Pageable pageable){
-        Page<BookResponseDto> books = bookService.findByAuthor(pageable, authorId);
-        if(Objects.isNull(books)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(books);
-    }
-
-    /**
-     * book description을 통해서 book을 찾습니다.
-     *
-     * @param bookDescription
-     * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
-     * @return 성공했을 때 응답코드 200 OK
-     */
-    @GetMapping("/books/description/{bookDescription}")
-    public ResponseEntity<Page<BookResponseDto>> getByDesc(@PathVariable String bookDescription, Pageable pageable){
-        Page<BookResponseDto> books = bookService.findByDescription(pageable, bookDescription);
-        if(Objects.isNull(books)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(books);
-    }
-
-    /**
-     * Tag을 통해서 book을 찾습니다.
-     *
-     * @param tagId
-     * @throws ResponseStatusException book ISBN으로 조회했을 때 찾을 수 없을 경우 응답코드 404 NOT_FOUND
-     * @return 성공했을 때 응답코드 200 OK
-     */
-    @GetMapping("/books/tag/{tagId}")
-    public ResponseEntity<Page<BookResponseDto>> getByTag(@PathVariable Long tagId, Pageable pageable){
-        Page<BookResponseDto> books = bookService.findByTag(pageable, tagId);
-        if(Objects.isNull(books)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(books);
+        return ResponseEntity.status(HttpStatus.OK).body(bookResponsePage);
     }
 
     /**
@@ -221,7 +149,8 @@ public class BookController {
      * @return 성공했을 때 응답코드 200 OK
      */
     @PutMapping("/books/status")
-    public ResponseEntity<BookResponseDto> modifyBookStatus(String bookIsbn, int bookStatus){
+    public ResponseEntity<BookResponseDto> modifyBookStatus(@RequestParam String bookIsbn,
+                                                            @RequestParam int bookStatus){
         BookResponseDto book = bookService.modifyBookStatus(bookIsbn, bookStatus);
         if(Objects.isNull(book)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "GET : Any Book NOT FOUND");

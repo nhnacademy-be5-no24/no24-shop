@@ -22,7 +22,6 @@ import java.util.List;
  */
 @Entity
 @Getter
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
