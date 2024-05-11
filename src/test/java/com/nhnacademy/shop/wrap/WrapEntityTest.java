@@ -16,6 +16,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 @AutoConfigureMockMvc
 class WrapEntityTest {
 
@@ -91,7 +92,11 @@ class WrapEntityTest {
         Long wrapId = wrapInfo.getWrap().getWrapId();
         String wrapName = wrapInfo.getWrap().getWrapName();
         Long wrapCost = wrapInfo.getWrap().getWrapCost();
+        Long amount = wrapInfo.getAmount();
+        OrderDetail orderDetail1 = wrapInfo.getOrderDetail();
 
+        assertEquals(orderDetail, orderDetail1);
+        assertEquals(1L, amount);
         assertEquals(Long.valueOf(1L), wrapId);
         assertEquals("wrapName", wrapName);
         assertEquals(Long.valueOf(1L), wrapCost);

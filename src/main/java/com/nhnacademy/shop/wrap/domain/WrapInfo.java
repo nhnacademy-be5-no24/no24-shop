@@ -17,7 +17,6 @@ import java.io.Serializable;
  **/
 @Entity
 @Getter
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,9 +40,7 @@ public class WrapInfo {
     private Long amount;
 
     @NoArgsConstructor
-    @EqualsAndHashCode
     @Getter
-    @Setter
     @Embeddable
     public static class Pk implements Serializable {
         @Column(name = "wrap_id")
