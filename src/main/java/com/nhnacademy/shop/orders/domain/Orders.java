@@ -39,7 +39,7 @@ public class Orders {
     private LocalDate shipDate;
     @Column(name = "order_state", nullable = false)
     private OrderState orderState;
-    @Column(name = "totalFee", nullable = false)
+    @Column(name = "totalFee")
     private Long totalFee;
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
