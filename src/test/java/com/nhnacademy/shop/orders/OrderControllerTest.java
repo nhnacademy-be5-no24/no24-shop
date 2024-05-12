@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,7 +11,6 @@ import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
-import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
@@ -32,7 +30,6 @@ import com.nhnacademy.shop.point.domain.PointLog;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -45,7 +42,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -55,10 +51,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -77,27 +71,14 @@ class OrderControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Customer customer;
     private Book book;
-    private Wrap wrap;
     private Orders order;
-    private OrderDetail orderDetail;
     private Payment payment;
-    private WrapInfo wrapInfo;
-    private Address address;
-    private Member member;
-    private Grade grade;
-    private BookCategory bookCategory;
-    private Category category;
-    private Coupon coupon;
-    private CouponMember couponMember;
-    private PointLog point;
     private OrdersListForAdminResponseDto adminResponseDto;
     private OrdersListForAdminResponseDto adminResponseDto2;
     private OrdersResponseDto ordersResponseDto;
     private OrdersResponseDto ordersResponseDto2;
     private OrdersCreateRequestResponseDto createRequestDto;
-    private OrdersCreateRequestResponseDto createRequestDtoNoState;
     private CartPaymentRequestDto cartPaymentRequestDto;
-    private CouponResponseDto couponResponseDto;
     private CartPaymentResponseDto cartPaymentResponseDto;
     private OrdersCreateRequestResponseDto ordersCreateRequestResponseDto;
 
@@ -141,7 +122,7 @@ class OrderControllerTest {
                 .bookImage("image")
                 .build();
 
-        wrap = Wrap.builder()
+        Wrap wrap = Wrap.builder()
                 .wrapId(1L)
                 .wrapName("name")
                 .wrapCost(1L)
@@ -163,25 +144,25 @@ class OrderControllerTest {
                 .addressDetail("addressDetail")
                 .build();
 
-        orderDetail = OrderDetail.builder()
+        OrderDetail orderDetail = OrderDetail.builder()
                 .orderDetailId(1L)
                 .book(book)
                 .order(order)
                 .amount(1L)
                 .build();
 
-        wrapInfo = WrapInfo.builder()
+        WrapInfo wrapInfo = WrapInfo.builder()
                 .pk(new WrapInfo.Pk(wrap.getWrapId(), orderDetail.getOrderDetailId()))
                 .wrap(wrap)
                 .orderDetail(orderDetail)
                 .amount(2L)
                 .build();
-        grade = Grade.builder()
+        Grade grade = Grade.builder()
                 .gradeId(1L)
                 .gradeName("gradeName")
                 .accumulateRate(1L)
                 .build();
-        member = Member.builder()
+        Member member = Member.builder()
                 .customerNo(1L)
                 .customer(customer)
                 .memberId("memberId")
@@ -190,7 +171,7 @@ class OrderControllerTest {
                 .role("role")
                 .memberState(Member.MemberState.ACTIVE)
                 .build();
-        address = Address.builder()
+        Address address = Address.builder()
                 .addressId(1L)
                 .alias("alias")
                 .receiverName("name")
@@ -201,17 +182,17 @@ class OrderControllerTest {
                 .isDefault(Boolean.TRUE)
                 .member(member)
                 .build();
-        category = Category.builder()
+        Category category = Category.builder()
                 .categoryId(1L)
                 .categoryName("categoryName")
                 .parentCategory(null)
                 .build();
-        bookCategory = BookCategory.builder()
+        BookCategory bookCategory = BookCategory.builder()
                 .pk(new BookCategory.Pk("bookIsbn", 1L))
                 .book(book)
                 .category(category)
                 .build();
-        coupon = Coupon.builder()
+        Coupon coupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("couponName")
                 .deadline(LocalDate.now())
@@ -221,7 +202,7 @@ class OrderControllerTest {
                 .couponType(Coupon.CouponType.AMOUNT)
                 .couponTarget(Coupon.CouponTarget.BOOK)
                 .build();
-        couponMember = CouponMember.builder()
+        CouponMember couponMember = CouponMember.builder()
                 .couponMemberId(1L)
                 .coupon(coupon)
                 .member(member)
@@ -231,7 +212,7 @@ class OrderControllerTest {
                 .usedAt(null)
                 .status(CouponMember.Status.ACTIVE)
                 .build();
-        point = PointLog.builder()
+        PointLog point = PointLog.builder()
                 .pointId(1L)
                 .member(member)
                 .orderId("orderId")
@@ -323,7 +304,7 @@ class OrderControllerTest {
                 "addressDetail",
                 Orders.OrderState.COMPLETED);
 
-        couponResponseDto = CouponResponseDto.builder()
+        CouponResponseDto couponResponseDto = CouponResponseDto.builder()
                 .couponId(1L)
                 .couponName("couponName")
                 .issueLimit(1)
