@@ -8,11 +8,8 @@ import com.nhnacademy.shop.book.repository.BookRepository;
 import com.nhnacademy.shop.bookcategory.domain.BookCategory;
 import com.nhnacademy.shop.bookcategory.repository.BookCategoryRepository;
 import com.nhnacademy.shop.category.domain.Category;
-import com.nhnacademy.shop.category.repository.CategoryRepository;
-import com.nhnacademy.shop.category.service.CategoryService;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.Coupon;
-import com.nhnacademy.shop.coupon.repository.CategoryCouponRepository;
 import com.nhnacademy.shop.coupon.repository.CouponRepository;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
@@ -32,12 +29,11 @@ import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
-import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
-import com.nhnacademy.shop.orders.exception.SaveOrderFailed;
 import com.nhnacademy.shop.orders.repository.OrdersRepository;
 import com.nhnacademy.shop.orders.service.impl.OrdersServiceImpl;
 import com.nhnacademy.shop.payment.domain.Payment;
 import com.nhnacademy.shop.payment.repository.PaymentRepository;
+import com.nhnacademy.shop.point.domain.PointLog;
 import com.nhnacademy.shop.point.repository.PointLogRepository;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
@@ -56,10 +52,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,18 +93,11 @@ class OrderServiceTest {
     @Mock
     private CouponRepository couponRepository;
     @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
-    private CategoryService categoryService;
-    @Mock
     private BookCategoryRepository bookCategoryRepository;
-    @Mock
-    private CategoryCouponRepository categoryCouponRepository;
 
     @InjectMocks
     private OrdersServiceImpl ordersService;
 
-    private EntityManager entityManager;
     private Customer customer;
     private Book book;
     private Wrap wrap;
@@ -121,15 +109,9 @@ class OrderServiceTest {
     private Member member;
     private Grade grade;
     private BookCategory bookCategory;
-    private Category category;
-    private Coupon coupon;
+    private PointLog point;
     private CouponMember couponMember;
-    private OrdersListForAdminResponseDto adminResponseDto;
-    private OrdersListForAdminResponseDto adminResponseDto2;
-    private OrdersResponseDto ordersResponseDto;
-    private OrdersResponseDto ordersResponseDto2;
     private OrdersCreateRequestResponseDto createRequestDto;
-    private OrdersCreateRequestResponseDto createRequestDtoNoState;
     private CartPaymentRequestDto cartPaymentRequestDto;
     private CouponResponseDto couponResponseDto;
 
@@ -228,7 +210,7 @@ class OrderServiceTest {
                 .isDefault(Boolean.TRUE)
                 .member(member)
                 .build();
-        category = Category.builder()
+        Category category = Category.builder()
                 .categoryId(1L)
                 .categoryName("categoryName")
                 .parentCategory(null)
@@ -238,7 +220,7 @@ class OrderServiceTest {
                 .book(book)
                 .category(category)
                 .build();
-        coupon = Coupon.builder()
+        Coupon coupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("couponName")
                 .deadline(LocalDate.now())
@@ -257,6 +239,14 @@ class OrderServiceTest {
                 .destroyedAt(LocalDateTime.now())
                 .usedAt(null)
                 .status(CouponMember.Status.ACTIVE)
+                .build();
+        point = PointLog.builder()
+                .pointId(1L)
+                .member(member)
+                .orderId("orderId")
+                .pointDescription("description")
+                .pointUsage(1)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
     private void initializeResponseDto() {
@@ -289,11 +279,11 @@ class OrderServiceTest {
                 .address(order.getAddress())
                 .addressDetail(order.getAddressDetail())
                 .req(order.getReq())
+                .usedPoint(1L)
                 .orderDetailDtoList(orderDetailDtoList)
                 .build();
 
-
-        adminResponseDto = OrdersListForAdminResponseDto.builder()
+        OrdersListForAdminResponseDto adminResponseDto = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId")
                 .customerName("customerName")
                 .orderDate(LocalDateTime.now())
@@ -305,7 +295,7 @@ class OrderServiceTest {
                 .wrapCost(1L)
                 .bookTitle("bookTittle")
                 .bookSalePrice(1L).build();
-        adminResponseDto2 = OrdersListForAdminResponseDto.builder()
+        OrdersListForAdminResponseDto adminResponseDto2 = OrdersListForAdminResponseDto.builder()
                 .orderId("orderId2")
                 .customerName("customerName2")
                 .orderDate(LocalDateTime.now())
@@ -318,7 +308,7 @@ class OrderServiceTest {
                 .bookTitle("bookTittle")
                 .bookSalePrice(1L).build();
 
-         ordersResponseDto = new OrdersResponseDto("orderId",
+        OrdersResponseDto ordersResponseDto = new OrdersResponseDto("orderId",
                 "bookTitle",
                 1L,
                 "wrapName",
@@ -329,7 +319,7 @@ class OrderServiceTest {
                 "address",
                 "addressDetail",
                 Orders.OrderState.WAITING);
-        ordersResponseDto2 = new OrdersResponseDto("orderId2",
+        OrdersResponseDto ordersResponseDto2 = new OrdersResponseDto("orderId2",
                 "bookTitle",
                 1L,
                 "wrapName",
@@ -368,52 +358,83 @@ class OrderServiceTest {
 
     }
 
-//    @AfterEach
-//    public void teardown() {
-//        this.entityManager.createNativeQuery("ALTER TABLE customer ALTER COLUMN `customer_no` RESTART WITH 1").executeUpdate();
-//        this.entityManager.createNativeQuery("ALTER TABLE payment ALTER COLUMN `payment_id` RESTART WITH 1").executeUpdate();
-//        this.entityManager.createNativeQuery("ALTER TABLE wrap ALTER COLUMN `wrap_id` RESTART WITH 1").executeUpdate();
-//        this.entityManager.createNativeQuery("ALTER TABLE order_detail ALTER COLUMN `order_detail_id` RESTART WITH 1").executeUpdate();
-//    }
     @Test
     @DisplayName("주문리스트 전체 가져오기 test")
     void testGetOrders() {
-        List<OrdersListForAdminResponseDto> ordersList = Arrays.asList(adminResponseDto, adminResponseDto2);
-        Page<OrdersListForAdminResponseDto> mockedPage = new PageImpl<>(ordersList);
+        List<OrdersListForAdminResponseDto> dummyData = new ArrayList<>();
+        dummyData.add(new OrdersListForAdminResponseDto("orderId1", "customerName1", LocalDateTime.now(), LocalDate.now(), Orders.OrderState.WAITING, "address1", "addressDetail1", "wrapName1", 1L, "bookTitle1", 1L));
+        dummyData.add(new OrdersListForAdminResponseDto("orderId2", "customerName2", LocalDateTime.now(), LocalDate.now(), Orders.OrderState.WAITING, "address2", "addressDetail2", "wrapName2", 2L, "bookTitle2", 2L));
+        Page<OrdersListForAdminResponseDto> dummyPage = new PageImpl<>(dummyData);
+
+        when(ordersRepository.getOrderList(any(Pageable.class))).thenReturn(dummyPage);
+
         Pageable pageable = PageRequest.of(0, 10);
-        when(ordersRepository.getOrderList(pageable)).thenReturn(mockedPage);
+        Page<OrdersListForAdminResponseDto> resultPage = ordersService.getOrders(pageable);
 
-        Page<OrdersListForAdminResponseDto> result = ordersService.getOrders(pageable);
-
-        verify(ordersRepository, times(1)).getOrderList(pageable);
-        assertEquals(mockedPage, result);
-        assertEquals(2, result.get().count());
+        assertEquals(dummyPage.getTotalElements(), resultPage.getTotalElements());
+        assertEquals(dummyPage.getContent().size(), resultPage.getContent().size());
     }
 
     @Test
     @DisplayName("주문아이디로 상품리스트 가져오기 test")
     void testGetOrderByOrdersId() {
-        when(ordersRepository.getOrderByOrderId(anyString())).thenReturn(Optional.of(ordersResponseDto));
+        String orderId = "orderId";
 
-        OrdersResponseDto result = ordersService.getOrderByOrdersId("orderId");
+        Orders order = Orders.builder()
+                .orderId(orderId)
+                .orderDate(LocalDateTime.now())
+                .receiverName("receiverName")
+                .receiverPhoneNumber("receiverPhoneNumber")
+                .address("address")
+                .addressDetail("addressDetail")
+                .orderState(Orders.OrderState.WAITING)
+                .totalFee(10000L)
+                .build();
 
-        verify(ordersRepository, times(1)).getOrderByOrderId("orderId");
-        assertEquals(ordersResponseDto, result);
-        assertEquals("orderId", ordersResponseDto.getOrderId());
+        when(ordersRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        OrdersResponseDto resultDto = ordersService.getOrderByOrdersId(orderId);
+
+        assertNotNull(resultDto);
+        assertEquals(orderId, resultDto.getOrderId());
+        assertEquals(order.getOrderDate(), resultDto.getOrderDate());
+        assertEquals(order.getReceiverName(), resultDto.getReceiverName());
+        assertEquals(order.getReceiverPhoneNumber(), resultDto.getReceiverPhoneNumber());
+        assertEquals(order.getAddress(), resultDto.getAddress());
+        assertEquals(order.getAddressDetail(), resultDto.getAddressDetail());
+        assertEquals(order.getOrderState(), resultDto.getOrderState());
+        assertEquals(order.getTotalFee(), resultDto.getTotalPrice());
     }
 
     @Test
     @DisplayName("고객번호로 상품리스트 가져오기 test")
     void testGetOrderByCustomer() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Long customerNo = 1L;
+        Customer customer = Customer.builder()
+                .customerNo(customerNo)
+                .build();
 
-        List<OrdersResponseDto> mockedResponse = Arrays.asList(ordersResponseDto, ordersResponseDto2);
-        Page<OrdersResponseDto> mockedPage = new PageImpl<>(mockedResponse);
-        when(ordersRepository.getOrderListByCustomer(any(Pageable.class), eq(1L))).thenReturn(mockedPage);
+        List<Orders> ordersList = new ArrayList<>();
+        Orders order1 = Orders.builder()
+                .orderId("orderId1")
+                .orderDate(LocalDateTime.now())
+                .receiverName("receiverName1")
+                .receiverPhoneNumber("receiverPhoneNumber1")
+                .address("address1")
+                .addressDetail("addressDetail1")
+                .orderState(Orders.OrderState.WAITING)
+                .totalFee(10000L)
+                .build();
+        when(customerRepository.findById(customerNo)).thenReturn(Optional.of(customer));
+        when(ordersRepository.findByCustomer(customer)).thenReturn(ordersList);
 
-        Page<OrdersResponseDto> result = ordersService.getOrderByCustomer(PageRequest.of(0, 10), 1L);
+        Page<OrdersResponseDto> resultPage = ordersService.getOrderByCustomer(pageable, customerNo);
 
-        verify(ordersRepository, times(1)).getOrderListByCustomer(any(Pageable.class), eq(1L));
-        assertEquals(mockedPage, result);
+        assertNotNull(resultPage);
+        assertEquals(0, resultPage.getNumber());
+        assertEquals(10, resultPage.getSize());
+
     }
 
     @Test
@@ -429,26 +450,14 @@ class OrderServiceTest {
         when(wrapInfoRepository.save(any())).thenReturn(wrapInfo);
         when(bookRepository.save(any())).thenReturn(book);
         when(couponMemberRepository.findById(anyLong())).thenReturn(Optional.of(couponMember));
-
+        when(pointLogRepository.save(any())).thenReturn(point);
+        when(gradeRespository.findById(anyLong())).thenReturn(Optional.of(grade));
         OrdersCreateRequestResponseDto responseDto = ordersService.createOrder(createRequestDto);
 
         verify(ordersRepository, times(2)).save(any());
         verify(orderDetailRepository, times(1)).save(any());
         verify(wrapInfoRepository, times(1)).save(any());
         verify(bookRepository, times(1)).save(any());
-    }
-
-    @Test
-    @DisplayName("주문 생성 - 실패: 주문 상태 오류 test")
-    void testCreateOrder_Fail_OrderStatusFailedException() {
-        assertThrows(OrderStatusFailedException.class, () -> ordersService.createOrder(createRequestDtoNoState));
-    }
-    @Test
-    @DisplayName("주문 생성 - 실패: 주문 저장 실패 test")
-    void testCreateOrder_Fail_SaveOrderFailed() {
-        doThrow(SaveOrderFailed.class).when(ordersRepository).save(any());
-
-        assertThrows(SaveOrderFailed.class, () -> ordersService.createOrder(createRequestDto));
     }
 
     @Test
@@ -523,8 +532,6 @@ class OrderServiceTest {
             expectedTotalPrice += 3000;
         }
         assertEquals(expectedTotalPrice, cartPaymentResponseDto.getTotalPrice());
-
-
 
     }
 

@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.order_detail.service;
 
-import com.nhnacademy.shop.order_detail.dto.OrderDetailDto;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailResponseDto;
 import org.springframework.stereotype.Service;
 

@@ -61,6 +61,10 @@ class WrapInfoRepositoryTest {
     @BeforeEach
     void setup()
     {
+        this.entityManager.createNativeQuery("ALTER TABLE customer ALTER COLUMN `customer_no` RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE payment ALTER COLUMN `payment_id` RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE wrap ALTER COLUMN `wrap_id` RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE point_log ALTER COLUMN `point_id` RESTART WITH 1").executeUpdate();
         Payment payment = Payment.builder()
                 .paymentId(1L).paymentName("name").build();
         paymentRepository.save(payment);

@@ -313,7 +313,7 @@ public class OrdersServiceImpl implements OrdersService {
                     .member(optionalMember.get())
                     .orderId(orders.getOrderId())
                     .pointDescription("포인트 사용")
-                    .pointUsage(-ordersCreateRequestResponseDto.getUsedPoint().intValue())
+                    .pointUsage(-(ordersCreateRequestResponseDto.getUsedPoint().intValue()))
                     .createdAt(orders.getOrderDate())
                     .build();
 

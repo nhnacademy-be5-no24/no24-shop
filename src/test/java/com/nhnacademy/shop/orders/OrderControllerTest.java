@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,7 +11,6 @@ import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.coupon.dto.response.CouponResponseDto;
 import com.nhnacademy.shop.coupon.entity.Coupon;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
-import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
 import com.nhnacademy.shop.customer.entity.Customer;
 import com.nhnacademy.shop.grade.domain.Grade;
 import com.nhnacademy.shop.member.domain.Member;
@@ -25,12 +23,13 @@ import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.exception.OrderStatusFailedException;
 import com.nhnacademy.shop.orders.service.OrdersService;
 import com.nhnacademy.shop.payment.domain.Payment;
+import com.nhnacademy.shop.point.domain.PointLog;
 import com.nhnacademy.shop.wrap.domain.Wrap;
 import com.nhnacademy.shop.wrap.domain.WrapInfo;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -54,7 +53,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -72,27 +71,16 @@ class OrderControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Customer customer;
     private Book book;
-    private Wrap wrap;
     private Orders order;
-    private OrderDetail orderDetail;
     private Payment payment;
-    private WrapInfo wrapInfo;
-    private Address address;
-    private Member member;
-    private Grade grade;
-    private BookCategory bookCategory;
-    private Category category;
-    private Coupon coupon;
-    private CouponMember couponMember;
     private OrdersListForAdminResponseDto adminResponseDto;
     private OrdersListForAdminResponseDto adminResponseDto2;
     private OrdersResponseDto ordersResponseDto;
     private OrdersResponseDto ordersResponseDto2;
     private OrdersCreateRequestResponseDto createRequestDto;
-    private OrdersCreateRequestResponseDto createRequestDtoNoState;
     private CartPaymentRequestDto cartPaymentRequestDto;
-    private CouponResponseDto couponResponseDto;
     private CartPaymentResponseDto cartPaymentResponseDto;
+    private OrdersCreateRequestResponseDto ordersCreateRequestResponseDto;
 
     @BeforeEach
     void setup() {
@@ -134,7 +122,7 @@ class OrderControllerTest {
                 .bookImage("image")
                 .build();
 
-        wrap = Wrap.builder()
+        Wrap wrap = Wrap.builder()
                 .wrapId(1L)
                 .wrapName("name")
                 .wrapCost(1L)
@@ -156,25 +144,25 @@ class OrderControllerTest {
                 .addressDetail("addressDetail")
                 .build();
 
-        orderDetail = OrderDetail.builder()
+        OrderDetail orderDetail = OrderDetail.builder()
                 .orderDetailId(1L)
                 .book(book)
                 .order(order)
                 .amount(1L)
                 .build();
 
-        wrapInfo = WrapInfo.builder()
+        WrapInfo wrapInfo = WrapInfo.builder()
                 .pk(new WrapInfo.Pk(wrap.getWrapId(), orderDetail.getOrderDetailId()))
                 .wrap(wrap)
                 .orderDetail(orderDetail)
                 .amount(2L)
                 .build();
-        grade = Grade.builder()
+        Grade grade = Grade.builder()
                 .gradeId(1L)
                 .gradeName("gradeName")
                 .accumulateRate(1L)
                 .build();
-        member = Member.builder()
+        Member member = Member.builder()
                 .customerNo(1L)
                 .customer(customer)
                 .memberId("memberId")
@@ -183,7 +171,7 @@ class OrderControllerTest {
                 .role("role")
                 .memberState(Member.MemberState.ACTIVE)
                 .build();
-        address = Address.builder()
+        Address address = Address.builder()
                 .addressId(1L)
                 .alias("alias")
                 .receiverName("name")
@@ -194,17 +182,17 @@ class OrderControllerTest {
                 .isDefault(Boolean.TRUE)
                 .member(member)
                 .build();
-        category = Category.builder()
+        Category category = Category.builder()
                 .categoryId(1L)
                 .categoryName("categoryName")
                 .parentCategory(null)
                 .build();
-        bookCategory = BookCategory.builder()
+        BookCategory bookCategory = BookCategory.builder()
                 .pk(new BookCategory.Pk("bookIsbn", 1L))
                 .book(book)
                 .category(category)
                 .build();
-        coupon = Coupon.builder()
+        Coupon coupon = Coupon.builder()
                 .couponId(1L)
                 .couponName("couponName")
                 .deadline(LocalDate.now())
@@ -214,7 +202,7 @@ class OrderControllerTest {
                 .couponType(Coupon.CouponType.AMOUNT)
                 .couponTarget(Coupon.CouponTarget.BOOK)
                 .build();
-        couponMember = CouponMember.builder()
+        CouponMember couponMember = CouponMember.builder()
                 .couponMemberId(1L)
                 .coupon(coupon)
                 .member(member)
@@ -223,6 +211,14 @@ class OrderControllerTest {
                 .destroyedAt(LocalDateTime.now())
                 .usedAt(null)
                 .status(CouponMember.Status.ACTIVE)
+                .build();
+        PointLog point = PointLog.builder()
+                .pointId(1L)
+                .member(member)
+                .orderId("orderId")
+                .pointDescription("description")
+                .pointUsage(1)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
     private void initializeResponseDto() {
@@ -255,6 +251,7 @@ class OrderControllerTest {
                 .address(order.getAddress())
                 .addressDetail(order.getAddressDetail())
                 .req(order.getReq())
+                .usedPoint(1L)
                 .orderDetailDtoList(orderDetailDtoList)
                 .build();
 
@@ -307,7 +304,7 @@ class OrderControllerTest {
                 "addressDetail",
                 Orders.OrderState.COMPLETED);
 
-        couponResponseDto = CouponResponseDto.builder()
+        CouponResponseDto couponResponseDto = CouponResponseDto.builder()
                 .couponId(1L)
                 .couponName("couponName")
                 .issueLimit(1)
@@ -331,46 +328,26 @@ class OrderControllerTest {
                 .bookInfos(bookInfoList)
                 .customerNo(1L)
                 .build();
-        CouponMemberResponseDto couponMemberResponseDto = CouponMemberResponseDto.builder()
-                .couponMemberId(1L)
-                .couponId(1L)
+        ordersCreateRequestResponseDto = OrdersCreateRequestResponseDto.builder()
+                .orderId("orderId")
+                .orderDate(LocalDateTime.now())
+                .shipDate(LocalDate.now())
+                .orderState(Orders.OrderState.COMPLETE_PAYMENT)
+                .totalFee(1L)
+                .deliveryFee(1)
+                .paymentId(1L)
                 .customerNo(1L)
-                .couponName("couponName")
-                .createdAt(LocalDateTime.now())
-                .destroyedAt(LocalDateTime.now())
-                .usedAt(null)
-                .used(Boolean.FALSE)
-                .couponStatus(CouponMember.Status.ACTIVE)
-                .couponType(Coupon.CouponType.AMOUNT)
-                .couponTarget(Coupon.CouponTarget.BOOK)
-                .bookIsbn("bookIsbn")
-                .categoryId(1L)
-                .discountPrice(0L)
-                .discountRate(null)
-                .maxDiscountPrice(0L)
-                .build();
-        CartPaymentResponseDto.BookInfo responseBookInfo = CartPaymentResponseDto.BookInfo.builder()
-                .bookIsbn("bookIsbn")
-                .bookTitle("bookTitle")
-                .bookSalePrice(1L)
-                .quantity(1L)
-                .coupons(List.of(couponMemberResponseDto))
-                .wraps(List.of(wrap))
-                .build();
-        cartPaymentResponseDto = CartPaymentResponseDto.builder()
-                .bookInfos(List.of(responseBookInfo))
-                .totalPrice(1L)
-                .customerNo(1L)
-                .customerName("customerName")
-                .customerPhoneNumber("phoneNumber")
-                .customerEmail("email")
-                .receiverName("receiverName")
+                .jSessionId("jSeesionId")
+                .receiverName("name")
                 .receiverPhoneNumber("phoneNumber")
                 .zipcode("zipcode")
                 .address("address")
-                .addressDetail("adressDetail")
+                .addressDetail("addressDetail")
                 .req("req")
+                .usedPoint(1L)
+                .orderDetailDtoList(List.of(orderDetailDto))
                 .build();
+
 
     }
     @Test
@@ -415,18 +392,40 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문결제페이지 test")
     void testGetCartPaymentInfo() throws  Exception{
-        when(ordersService.getCartPaymentInfo(any()))
-                .thenReturn(cartPaymentResponseDto);
+       when(ordersService.getCartPaymentInfo(any(CartPaymentRequestDto.class))).thenReturn(cartPaymentResponseDto);
 
-        mockMvc.perform(post("/shop/orders/cart")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+       mockMvc.perform(MockMvcRequestBuilders.post("/shop/orders/cart")
+                       .content(objectMapper.writeValueAsString(cartPaymentRequestDto))
+                       .contentType(MediaType.APPLICATION_JSON))
+               .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("주문 생성 - 성공 test")
+    void testCreateOrder_Success() throws Exception {
+        // 모의 객체에서 반환할 값을 설정합니다.
+        when(ordersService.createOrder(any())).thenReturn(ordersCreateRequestResponseDto);
+
+        // POST 요청을 수행하고 응답을 검증합니다.
+        mockMvc.perform(MockMvcRequestBuilders.post("/shop/orders/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ordersCreateRequestResponseDto)))
+                .andExpect(status().isCreated()) // 상태 코드가 CREATED(201)인지 확인합니다.
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.totalPrice").value(1))
-                // Add more assertions if needed
-                .andExpect(jsonPath("$.bookInfos[0].bookTitle").value("bookTitle"));
+                .andExpect(jsonPath("$.orderId").value(ordersCreateRequestResponseDto.getOrderId())); // 응답 내용을 검증합니다.
     }
 
+    @Test
+    @DisplayName("주문 생성 - 실패 test")
+    void testCreateOrder_Failure() throws Exception {
+        // 모의 객체에서 예외를 던질 경우를 설정합니다.
+        when(ordersService.createOrder(any())).thenThrow(new OrderStatusFailedException("OrderState"));
+
+        // POST 요청을 수행하고 응답을 검증합니다.
+        mockMvc.perform(MockMvcRequestBuilders.post("/shop/orders/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ordersCreateRequestResponseDto)))
+                .andExpect(status().isNotFound()); // 상태 코드가 NOT_FOUND(404)인지 확인합니다.
+    }
 
 
     @Test
