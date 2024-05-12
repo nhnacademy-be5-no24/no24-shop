@@ -23,7 +23,6 @@ public class OrderDetailResponseDto {
     List<WrapDto> wraps;
 
     @Getter
-    @NoArgsConstructor
     @Builder
     public static class WrapDto {
         String wrapName;
