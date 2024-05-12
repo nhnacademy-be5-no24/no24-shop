@@ -1,10 +1,6 @@
 # No24 Bookstore
 
----
-
 ## 실행
-
----
 
 ### Package
 `mvn package -f pom.xml`
@@ -13,13 +9,9 @@
 `java -Dserver.port=${port} -jar -Dspring.profiles.active=${active_file} -Deureka.instance.instance-id=${instance_id} ~/target/shop.jar > log  2>&1 &`
 
 ## Service Introduction
-
----
 클라우드 서비스를 적용한 Spring boot 웹 도서 쇼핑몰 서비스
 
 ## System Architecture
-
----
 ![system-architecture.png](./img/system-architecture.png)
 
 > 1. 클라이언트의 요청은 NginX를 통해서 들어오고, 로드밸런서에서 Round Robin 방식으로 2개의 Front Server에 순서대로 보낸다.
@@ -38,8 +30,6 @@
 
 
 ## CI/CD
-
----
 ![cicd-pipeline.png](./img/cicd-pipeline.png)
 
 > Github을 통해 코드베이스를 관리하며 기본적으로 Github Action과 Jenkins를 통한 CI를 진행하여 빌드하고 테스트가 진행되어 성공 시 통합과정이 이뤄진다. 
@@ -50,8 +40,6 @@
 
 
 ## Project Management
-
----
 
 ### WBS
 - 구글 Sheet 및 github roadmap 활용하여 간트차트를 만들고, 해당 일자의 마일스톤을 정리 및 수행함.
@@ -67,8 +55,6 @@
 
 
 ## 주요 기능
-
----
 
 ### 인프라
 - 담당자: ???
@@ -121,8 +107,6 @@
 
 ## Stack
 
----
-
 
 ![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)<br/> <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&amp;logo=java&amp;logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&amp;logo=Spring&amp;logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&amp;logo=springboot&amp;logoColor=white"> <img src="https://img.shields.io/badge/springbatch-6DB33F?style=for-the-badge&amp;logo=Spring&amp;logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&amp;logo=docker&amp;logoColor=white"><br/>
 <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&amp;logo=mysql&amp;logoColor=white"> <img src="https://img.shields.io/badge/hibernate-59666C?style=for-the-badge&amp;logo=hibernate&amp;logoColor=white"> <img src="https://img.shields.io/badge/Jpa-FF0000?style=for-the-badge&amp;logo=Jpa&amp;logoColor=white"> <img src="https://img.shields.io/badge/Querydsl-0769AD?style=for-the-badge&amp;logo=Querydsl&amp;logoColor=white"> <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&amp;logo=redis&amp;logoColor=white"><br/>
@@ -137,8 +121,6 @@
 
 
 ## 팀원
-
----
 
 <a href="https://github.com/nhnacademy-be5-no24/contributors/no24-shop">
   <img src="https://contrib.rocks/image?repo=nhnacademy-be5-no24/no24-shop"/>
