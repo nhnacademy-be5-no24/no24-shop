@@ -26,7 +26,6 @@ public class PointRequestDto {
     @NotNull(message = "회원 번호를 입력해주세요.")
     private Long customerNo;
 
-    @NotNull(message = "주문 아아디를 입력해주세요.")
     private String orderId;
 
     @NotNull
