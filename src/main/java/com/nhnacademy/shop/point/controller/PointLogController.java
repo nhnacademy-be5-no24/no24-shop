@@ -1,5 +1,6 @@
 package com.nhnacademy.shop.point.controller;
 
+import com.nhnacademy.shop.customer.repository.CustomerRepository;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.point.dto.request.PointRequestDto;
 import com.nhnacademy.shop.point.dto.response.PointResponseDto;
@@ -32,6 +33,8 @@ import java.time.LocalDateTime;
 public class PointLogController {
     @Autowired
     private final PointLogService pointLogService;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     public PointLogController(PointLogService pointLogService) {
         this.pointLogService = pointLogService;
@@ -65,7 +68,8 @@ public class PointLogController {
      * 회원 포인트 내역 전체 조회 요청 시 사용되는 메소드입니다.
      *
      * @param customerNo 조회를 위한 회원 번호 입니다.
-     * @param pageable 페이지 정보 입니다.
+     * @param page 페이지 정보 입니다.
+     * @param size 페이지 정보 입니다.
      * @throws ResponseStatusException 회원을 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
      * @return 성공했을 때 응답코드 200 OK 반환합니다.
      */
@@ -120,6 +124,31 @@ public class PointLogController {
      */
     @PostMapping("/points")
     public ResponseEntity<PointResponseDto> createPoints(@RequestBody @Valid PointRequestDto pointRequestDto) {
+        PointResponseDto dto = pointLogService.createPointLog(pointRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(dto);
+    }
+
+    /**
+     * 회원가입 시 포인트 적립하는 메소드입니다.
+     *
+     * @param customerId
+     * @return 성공했을 때 응답코드 201 CREATED 반환합니다.
+     */
+    @PostMapping("/points/id/{customerId}")
+    public ResponseEntity<PointResponseDto> createWelcomePoint(@PathVariable String customerId) {
+        Long customerNo = customerRepository.findByCustomerId(customerId).getCustomerNo();
+
+        PointRequestDto pointRequestDto = new PointRequestDto(
+                customerNo,
+                "welcome_point",
+                "회원가입 포인트 적립",
+                5000,
+                LocalDateTime.now()
+        );
+
         PointResponseDto dto = pointLogService.createPointLog(pointRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
