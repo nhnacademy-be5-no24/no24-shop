@@ -11,9 +11,9 @@ import java.util.List;
  * @Author : 박병휘
  * @Date : 2024/04/10
  */
-@Data
-@NoArgsConstructor
+@Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class OrderDetailDto {
     String bookIsbn;
@@ -22,10 +22,10 @@ public class OrderDetailDto {
     Long couponId;
     List<WrapDto> wraps;
 
-    @Data
-    @NoArgsConstructor
+    @Getter
     @AllArgsConstructor
     @Builder
+    @NoArgsConstructor
     public static class WrapDto {
         Long wrapId;
         Long quantity;

@@ -47,7 +47,6 @@ public class OrderController {
      * 고객 번호로 고객의 모든 주문을 반환.
      *
      * @param customerNo 고객 번호.
-     * @param
      * @return 200, 고객의 모든 주문 반환.
      */
     @GetMapping("/customer/{customerNo}")
@@ -91,14 +90,11 @@ public class OrderController {
     public ResponseEntity<CartPaymentResponseDto> getCartPaymentInfo(
             @RequestBody CartPaymentRequestDto cartPaymentRequestDto
     ){
-        try {
-            CartPaymentResponseDto responseDto = orderService.getCartPaymentInfo(cartPaymentRequestDto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(responseDto);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        CartPaymentResponseDto responseDto = orderService.getCartPaymentInfo(cartPaymentRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseDto);
+
     }
 
     /**

@@ -21,7 +21,6 @@ import java.util.List;
  **/
 @Entity
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -34,52 +33,37 @@ public class Orders {
 
     @Id
     private String orderId;
-
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
-
     @Column(name = "ship_date", nullable = false)
     private LocalDate shipDate;
-
     @Column(name = "order_state", nullable = false)
     private OrderState orderState;
-
-    @Column
+    @Column(name = "totalFee")
     private Long totalFee;
-
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
-
     @ManyToOne
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
-
     @ManyToOne
     @JoinColumn(name = "customer_no", nullable = false)
     private Customer customer;
-
     @Column(name = "receiver_name", nullable = false)
     private String receiverName;
-
     @Column(name = "receiver_phone_number", nullable = false)
     private String receiverPhoneNumber;
-
     @Column(name = "zipcode", nullable = false)
     private String zipcode;
-
     @Column(name = "address", nullable = false)
     private String address;
-
     @Column(name = "address_detail", nullable = false)
     private String addressDetail;
-
     @Column(name = "req")
     private String req;
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderDetail> orderDetails = new ArrayList<>();
-
     public void modifyState(OrderState orderState){
         this.orderState = orderState;
     }
@@ -87,7 +71,6 @@ public class Orders {
 
     public Orders setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
-
         return this;
     }
 
