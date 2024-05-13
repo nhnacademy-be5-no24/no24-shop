@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * 도서관리 RestController
  *
- * @author : 이재원
+ * @author : 이재원, 강병구
  * @date : 2024-03-31
  */
 @RestController
