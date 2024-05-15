@@ -31,6 +31,7 @@ import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
 import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
+import com.nhnacademy.shop.orders.dto.response.OrderConfirmResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
 import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
 import com.nhnacademy.shop.orders.exception.NotFoundOrderException;
@@ -159,6 +160,27 @@ public class OrdersServiceImpl implements OrdersService {
         return new PageImpl<>(orders.subList(start, end), pageable, orders.size());
     }
 
+    // 고객번호로 구매확정된 order_id 들고 오기
+    @Override
+    @Transactional(readOnly = true)
+    public OrderConfirmResponseDto getConfirmedOrderByCustomer(Long customerNo) {
+        Customer customer = customerRepository.findById(customerNo).get();
+        List<Orders> orderByCustomer = ordersRepository.findByCustomer(customer);
+
+        List<String> orderIdList = new ArrayList<>();
+
+        for (Orders order : orderByCustomer) {
+            if (order.getOrderState() == Orders.OrderState.PURCHASE_CONFIRMED) {
+                orderIdList.add(order.getOrderId());
+            }
+        }
+
+        OrderConfirmResponseDto orderConfirmResponseDto = OrderConfirmResponseDto.builder()
+                .orderIdList(orderIdList)
+                .build();
+
+        return orderConfirmResponseDto;
+    }
 
     // 결제 완료되면 주문 저장하기
     @Override

@@ -5,12 +5,11 @@ import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentPostRequestDto;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentPostResponseDto;
-import com.nhnacademy.shop.orders.dto.response.CartPaymentResponseDto;
-import com.nhnacademy.shop.orders.dto.response.OrdersListForAdminResponseDto;
-import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
+import com.nhnacademy.shop.orders.dto.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * 주문(Orders) service
@@ -46,6 +45,12 @@ public interface OrdersService {
      */
     Page<OrdersResponseDto> getOrderByCustomer(Pageable pageable, Long customerNo);
 
+    /**
+     * 고객 아이디로 구매 확정된 주문 조회를 위한 method.
+     * @param customerNo
+     * @return OrderConfirmResponseDto
+     */
+    OrderConfirmResponseDto getConfirmedOrderByCustomer(Long customerNo);
 
     /**
      *  주문 등록을 위한 method.
