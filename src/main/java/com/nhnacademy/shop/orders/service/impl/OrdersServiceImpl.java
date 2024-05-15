@@ -288,7 +288,7 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         // 회원인 경우, 포인트 이력 추가 및 등급 업데이트
-        if(ordersCreateRequestResponseDto.getCustomerNo() != null) {
+        if(ordersCreateRequestResponseDto.getCustomerNo() != 0L) {
             // 회원 가져오기
             Optional<Member> optionalMember = memberRepository.findById(ordersCreateRequestResponseDto.getCustomerNo());
 
@@ -377,7 +377,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         Optional<Customer> optionalCustomer = customerRepository.findById(cartPaymentRequestDto.getCustomerNo());
         if (optionalCustomer.isEmpty()) {
-            throw new MemberNotFoundException();
+            optionalCustomer = customerRepository.findById(0L);
         }
 
         List<Address> addressList = addressRepository.findByMemberCustomerNo(cartPaymentRequestDto.getCustomerNo());
@@ -427,9 +427,9 @@ public class OrdersServiceImpl implements OrdersService {
 
             couponMemberResponseDtoList = couponMemberResponseDtoList.stream()
                     .filter(couponMemberResponseDto ->
-                        couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
-                        categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
-                        (couponMemberResponseDto.getBookIsbn() != null && couponMemberResponseDto.getBookIsbn().equals(bookIsbn))) // text 비교 수정
+                            couponMemberResponseDto.getCouponTarget() == Coupon.CouponTarget.NORMAL ||
+                                    categoryIds.contains(couponMemberResponseDto.getCategoryId()) ||
+                                    (couponMemberResponseDto.getBookIsbn() != null && couponMemberResponseDto.getBookIsbn().equals(bookIsbn))) // text 비교 수정
                     .collect(Collectors.toList());
 
             List<Wrap> wraps = optionalBook.get().isBookIsPacking() ? wrapRepository.findAll() : new ArrayList<>();
