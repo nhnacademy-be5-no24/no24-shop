@@ -186,8 +186,8 @@ public class BookServiceTest {
         bookRequestDto = new BookRequestDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(), author.getAuthorName(), book.getLikes());
         bookResponseDto = new BookResponseDto(book.getBookIsbn(), book.getBookTitle(), book.getBookDesc(), book.getBookPublisher(), book.getBookPublishedAt(), book.getBookFixedPrice(), book.getBookSalePrice(), book.isBookIsPacking(), book.getBookViews(), book.getBookStatus(), book.getBookQuantity(), book.getBookImage(), tagResponseDtos, author.getAuthorName(), book.getLikes());
         bookResponseDtos.add(bookResponseDto);
-        bookResponseList = new BookResponseList(bookResponseDtos);
-        bookResponsePage = new BookResponsePage(bookResponseDtos);
+        bookResponseList = new BookResponseList(bookResponseDtos, 1);
+        bookResponsePage = new BookResponsePage(bookResponseDtos, 1);
         bookResponseDtoPage = new PageImpl<>(List.of(bookResponseDto), pageable, 1);
         bookCategoryPage = new PageImpl<>(List.of(bookCategory.get(0)), pageable, 1);
         bookTagPage = new PageImpl<>(List.of(bookTag.get(0)), pageable, 1);
