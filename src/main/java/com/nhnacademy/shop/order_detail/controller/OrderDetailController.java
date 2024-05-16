@@ -1,14 +1,10 @@
 package com.nhnacademy.shop.order_detail.controller;
 
-import com.nhnacademy.shop.order_detail.domain.OrderDetail;
+import com.nhnacademy.shop.order_detail.dto.OrderDetailResponseDto;
 import com.nhnacademy.shop.order_detail.dto.OrderDetailResponseDtoList;
+import com.nhnacademy.shop.order_detail.dto.ConfirmedOrderDetailDto;
 import com.nhnacademy.shop.order_detail.service.OrderDetailService;
-import com.nhnacademy.shop.orders.dto.response.OrdersResponseDto;
-import com.nhnacademy.shop.orders.dto.response.OrdersResponseDtoList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,5 +35,23 @@ public class OrderDetailController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(orderDetailResponseDtoList);
+    }
+
+    @GetMapping("/confirm/{orderId}")
+    public ResponseEntity<ConfirmedOrderDetailDto> getConfirmOrderDetails(@PathVariable String orderId) {
+        List<OrderDetailResponseDto> orderDetailsByOrderId = orderDetailService.getOrderDetailsByOrderId(orderId);
+
+        List<String> bookIsbnList = new ArrayList<>();
+        for (OrderDetailResponseDto orderDetail : orderDetailsByOrderId) {
+            bookIsbnList.add(orderDetail.getBook().getBookIsbn());
+        }
+
+        ConfirmedOrderDetailDto confirmedOrderDetailDto = ConfirmedOrderDetailDto.builder()
+                .bookIsbnList(bookIsbnList)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(confirmedOrderDetailDto);
     }
 }
