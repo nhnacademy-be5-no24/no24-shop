@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -108,6 +109,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewScore(createReviewRequestDto.getReviewScore())
                 .book(bookRepository.getReferenceById(createReviewRequestDto.getBookIsbn()))
                 .member(memberRepository.getReferenceById(createReviewRequestDto.getCustomerNo()))
+                .createdAt(LocalDate.now())
                 .build();
 
         Review savedReview = reviewRepository.save(review);
@@ -119,6 +121,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewScore(savedReview.getReviewScore())
                 .bookIsbn(book.getBookIsbn())
                 .customerNo(member.getCustomerNo())
+                .createdAt(savedReview.getCreatedAt())
                 .build();
     }
 
@@ -147,6 +150,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewScore(savedReview.getReviewScore())
                 .bookIsbn(book.getBookIsbn())
                 .customerNo(member.getCustomerNo())
+                .createdAt(savedReview.getCreatedAt())
                 .build();
     }
 

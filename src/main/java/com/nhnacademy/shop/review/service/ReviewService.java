@@ -4,10 +4,7 @@ import com.nhnacademy.shop.review.dto.request.CreateReviewRequestDto;
 import com.nhnacademy.shop.review.dto.request.ModifyReviewRequestDto;
 import com.nhnacademy.shop.review.dto.response.ReviewResponseDto;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 리뷰 서비스입니다.

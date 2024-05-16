@@ -49,7 +49,8 @@ public class ReviewRepositoryImpl extends QuerydslRepositorySupport implements R
                         review.reviewScore,
                         review.reviewImage,
                         review.book.bookIsbn,
-                        review.member.customerNo))
+                        review.member.customerNo,
+                        review.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -75,7 +76,8 @@ public class ReviewRepositoryImpl extends QuerydslRepositorySupport implements R
                         review.reviewScore,
                         review.reviewImage,
                         review.book.bookIsbn,
-                        review.member.customerNo))
+                        review.member.customerNo,
+                        review.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -95,7 +97,8 @@ public class ReviewRepositoryImpl extends QuerydslRepositorySupport implements R
                         review.reviewScore,
                         review.reviewImage,
                         review.book.bookIsbn,
-                        review.member.customerNo))
+                        review.member.customerNo,
+                        review.createdAt))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -113,7 +116,8 @@ public class ReviewRepositoryImpl extends QuerydslRepositorySupport implements R
                         review.reviewScore,
                         review.reviewImage,
                         review.book.bookIsbn,
-                        review.member.customerNo))
+                        review.member.customerNo,
+                        review.createdAt))
                 .fetchOne();
         return Optional.of(dto);
     }
