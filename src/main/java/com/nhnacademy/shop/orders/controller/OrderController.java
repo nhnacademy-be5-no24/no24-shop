@@ -1,6 +1,5 @@
 package com.nhnacademy.shop.orders.controller;
 
-
 import com.nhnacademy.shop.orders.domain.Orders;
 import com.nhnacademy.shop.orders.dto.request.CartPaymentRequestDto;
 import com.nhnacademy.shop.orders.dto.request.OrdersCreateRequestResponseDto;
@@ -65,6 +64,20 @@ public class OrderController {
     }
 
     /**
+     * 고객 번호로 구매확정된 모든 주문을 반환.
+     */
+    @GetMapping("/customer/{customerNo}/orderConfirm")
+    public ResponseEntity<OrderConfirmResponseDto> getOrdersByCustomer(
+            @PathVariable Long customerNo) {
+
+        OrderConfirmResponseDto orderConfirmResponseDto = orderService.getConfirmedOrderByCustomer(customerNo);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(orderConfirmResponseDto);
+    }
+
+    /**
      * 주문아이디로 주문 정보를 반환
      *
      * @param orderId 주문 아이디.
@@ -117,7 +130,6 @@ public class OrderController {
         }
     }
 
-
     /**
      * 주문 상태 바꾸는 method.
      *
@@ -135,6 +147,4 @@ public class OrderController {
         orderService.modifyOrderState(orderId, orderState);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-
 }
