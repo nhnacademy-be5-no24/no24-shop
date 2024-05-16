@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * 리뷰(Review) 테이블 입니다.
@@ -44,4 +45,7 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "customer_no", nullable = false)
     private Member member;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 }
