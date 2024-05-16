@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 /**
  * 리뷰 기본정보를 반환하기 위한 dto 입니다.
  *
@@ -23,4 +25,5 @@ public class ReviewResponseDto {
     private String reviewImage;
     private String bookIsbn;
     private Long customerNo;
+    private LocalDate createdAt;
 }

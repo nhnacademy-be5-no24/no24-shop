@@ -4,6 +4,7 @@ import com.nhnacademy.shop.book.exception.BookNotFoundException;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.review.dto.request.CreateReviewRequestDto;
 import com.nhnacademy.shop.review.dto.request.ModifyReviewRequestDto;
+import com.nhnacademy.shop.review.dto.response.ReviewPageResponseDto;
 import com.nhnacademy.shop.review.dto.response.ReviewResponseDto;
 import com.nhnacademy.shop.review.exception.ReviewNotFoundException;
 import com.nhnacademy.shop.review.service.ReviewService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -77,15 +79,21 @@ public class ReviewController {
      * @throws ResponseStatusException 리뷰를 찾을 수 없을 때 응답코드 404 NOT_FOUND 반환합니다.
      */
     @GetMapping("/reviews/bookIsbn/{bookIsbn}")
-    public ResponseEntity<Page<ReviewResponseDto>> getReviewsByBookIsbn(@PathVariable String bookIsbn,
+    public ResponseEntity<ReviewPageResponseDto> getReviewsByBookIsbn(@PathVariable String bookIsbn,
                                                                         @RequestParam Integer offset,
                                                                         @RequestParam Integer pageSize) {
         try {
             Page<ReviewResponseDto> dtoList = reviewService.getReviewsByBookIsbn(bookIsbn, pageSize, offset);
 
+            List<ReviewResponseDto> review = dtoList.getContent();
+
+            ReviewPageResponseDto reviewPageResponseDto = ReviewPageResponseDto.builder()
+                    .reviewList(review)
+                    .build();
+
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(dtoList);
+                    .body(reviewPageResponseDto);
         } catch (BookNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book Not Found");
         } catch (ReviewNotFoundException e) {
