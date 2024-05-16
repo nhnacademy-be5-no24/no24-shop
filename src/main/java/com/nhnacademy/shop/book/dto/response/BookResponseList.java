@@ -10,4 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 public class BookResponseList {
     List<BookResponseDto> bookResponseDtoList;
+    int maxPage;
 }

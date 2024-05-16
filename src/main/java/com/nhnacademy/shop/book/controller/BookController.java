@@ -84,6 +84,7 @@ public class BookController {
         }
         BookResponseList bookResponseList = BookResponseList.builder()
                 .bookResponseDtoList(books.getContent())
+                .maxPage(books.getTotalPages())
                 .build();
         return ResponseEntity.ok(bookResponseList);
     }
@@ -120,6 +121,7 @@ public class BookController {
         Page<BookResponseDto> books = bookService.findByCategoryId(pageable, categoryId);
         BookResponsePage bookResponsePage = new BookResponsePage();
         bookResponsePage.setContent(books.toList());
+        bookResponsePage.setMaxPage(books.getTotalPages());
 
         return ResponseEntity.status(HttpStatus.OK).body(bookResponsePage);
     }

@@ -16,8 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 public class BookResponsePage {
     private List<BookResponseDto> content;
+    int maxPage;
 
     public void setContent(List<BookResponseDto> content) {
         this.content = content;
     }
+    public void setMaxPage(int maxPage) {this.maxPage = maxPage;}
 }
