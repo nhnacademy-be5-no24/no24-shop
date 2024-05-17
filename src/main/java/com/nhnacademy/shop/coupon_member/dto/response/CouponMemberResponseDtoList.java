@@ -15,4 +15,5 @@ import java.util.List;
 @Getter
 public class CouponMemberResponseDtoList {
     private List<CouponMemberResponseDto> couponMemberResponseDtoList;
+    private int maxPage;
 }

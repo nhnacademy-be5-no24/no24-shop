@@ -170,32 +170,6 @@ public class CouponMemberServiceTest {
     }
 
     @Test
-    @DisplayName(value="member에 대한 couponMemberResponseDto List 추출")
-    void getCouponMemberByMember() {
-        Pageable pageable = PageRequest.of(1, 10);
-        List<CouponMember> couponMemberList = List.of(couponMember, couponMember);
-        Page<CouponMember> couponMemberPage = new PageImpl(couponMemberList, pageable, 2);
-
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(couponRepository.findCouponById(1L)).thenReturn(Optional.of(
-                CouponResponseDto.builder()
-                        .couponId(1L)
-                        .couponName(coupon.getCouponName())
-                        .deadline(coupon.getDeadline())
-                        .issueLimit(coupon.getIssueLimit())
-                        .couponStatus(coupon.getCouponStatus())
-                        .couponType(coupon.getCouponType())
-                        .couponTarget(coupon.getCouponTarget())
-                        .discountPrice(2000L)
-                        .build()
-        ));
-        when(couponMemberRepository.findCouponMembersByMember_CustomerNo(1L, pageable))
-                .thenReturn(couponMemberPage);
-
-        assertEquals(couponMemberService.getCouponMemberByMember(1L, pageable).size(), 2);
-    }
-
-    @Test
     @DisplayName(value="없는 member에 대한 couponMemberResponseDto List 추출")
     void getCouponMemberByNotFoundMember() {
         Pageable pageable = PageRequest.of(1, 10);

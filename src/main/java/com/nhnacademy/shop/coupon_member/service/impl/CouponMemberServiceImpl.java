@@ -6,6 +6,7 @@ import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon.repository.CouponRepository;
 import com.nhnacademy.shop.coupon_member.domain.CouponMember;
 import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
+import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDtoList;
 import com.nhnacademy.shop.coupon_member.exception.MemberDoesNotHaveCouponException;
 import com.nhnacademy.shop.coupon_member.repository.CouponMemberRepository;
 import com.nhnacademy.shop.coupon_member.service.CouponMemberService;
@@ -14,6 +15,8 @@ import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import com.nhnacademy.shop.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,14 +86,14 @@ public class CouponMemberServiceImpl implements CouponMemberService {
 
     @Override
     @Transactional
-    public List<CouponMemberResponseDto> getCouponMemberByMember(Long customerNo, Pageable pageable) throws MemberNotFoundException, NotFoundCouponException {
+    public CouponMemberResponseDtoList getCouponMemberByMember(Long customerNo, Pageable pageable) throws MemberNotFoundException, NotFoundCouponException {
         Optional<Member> optionalMember = memberRepository.findById(customerNo);
 
         if(optionalMember.isEmpty()) {
             throw new MemberNotFoundException();
         }
 
-        Page<CouponMember> couponMembers = couponMemberRepository.findCouponMembersByMember_CustomerNo(customerNo, pageable);
+        Page<CouponMember> couponMembers = couponMemberRepository.findCouponMembersByMember_CustomerNo(customerNo, PageRequest.of(0, 50000));
         List<CouponMember> couponMemberDtoList = couponMembers.getContent();
 
         List<CouponMemberResponseDto> couponMemberResponseDtoList  = couponMemberDtoList.stream()
@@ -108,8 +111,14 @@ public class CouponMemberServiceImpl implements CouponMemberService {
                 }
         ).collect(Collectors.toList());
 
+        int start = (int) (pageable.getPageSize() * pageable.getPageNumber());
+        int end = Math.min(start + pageable.getPageSize(), couponMemberResponseDtoList.size());
+        int maxPage = couponMemberResponseDtoList.size() / pageable.getPageSize() + 1;
 
-        return couponMemberResponseDtoList;
+        return CouponMemberResponseDtoList.builder()
+                .couponMemberResponseDtoList(couponMemberResponseDtoList.subList(start, end))
+                .maxPage(maxPage)
+                .build();
     }
 
     @Override

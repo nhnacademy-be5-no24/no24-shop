@@ -8,6 +8,7 @@ import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDtoLis
 import com.nhnacademy.shop.coupon_member.service.CouponMemberService;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -46,10 +47,7 @@ public class CouponMemberController {
                                                                                 @RequestParam Integer offset) {
         Pageable pageable = PageRequest.of(pageSize, offset);
         try {
-            List<CouponMemberResponseDto> dtoList = couponMemberService.getCouponMemberByMember(customerNo, pageable);
-            CouponMemberResponseDtoList response = CouponMemberResponseDtoList.builder()
-                    .couponMemberResponseDtoList(dtoList)
-                    .build();
+            CouponMemberResponseDtoList response = couponMemberService.getCouponMemberByMember(customerNo, pageable);
 
             return ResponseEntity.ok(response);
         } catch (MemberNotFoundException memberNotFoundException) {
