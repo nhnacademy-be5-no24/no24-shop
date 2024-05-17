@@ -66,6 +66,7 @@ public class ReviewControllerTest {
     Pageable pageable;
     Integer pageSize;
     Integer offset;
+    LocalDate now;
 
     @BeforeEach
     void setUp() {
@@ -100,10 +101,12 @@ public class ReviewControllerTest {
                 .lastLoginAt(null)
                 .grade(grade).build();
 
-        review = new Review(1L, "nice", "abc", 5, book, member);
+        now = LocalDate.now();
+
+        review = new Review(1L, "nice", "abc", 5, book, member, now);
         createReviewRequestDto = new CreateReviewRequestDto("good", 3, "abc", "ABC123", 1L);
         modifyReviewRequestDto = new ModifyReviewRequestDto(1L, "bad", 2, "abc", "ABC123", 1L);
-        reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", "ABC123", 1L);
+        reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", "ABC123", 1L, now);
         reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
     }
 
@@ -159,8 +162,8 @@ public class ReviewControllerTest {
         when(reviewService.getReviewsByBookIsbn(review.getBook().getBookIsbn(), pageSize, offset)).thenReturn(reviewPage);
         try {
             mockMvc.perform(get("/shop/reviews/bookIsbn/ABC123")
-                            .param("pageSize", "10")
-                            .param("offset", "0")
+                            .param("pageSize", "0")
+                            .param("offset", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         } catch (Exception e) {

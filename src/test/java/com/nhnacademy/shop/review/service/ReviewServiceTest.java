@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.mockito.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +56,7 @@ class ReviewServiceTest {
     CreateReviewRequestDto createReviewRequestDto;
     ModifyReviewRequestDto modifyReviewRequestDto;
     ReviewResponseDto reviewResponseDto;
+    LocalDate now;
 
     @BeforeEach
     void setUp() {
@@ -92,10 +94,11 @@ class ReviewServiceTest {
                 .lastLoginAt(null)
                 .grade(grade).build();
 
-        review = new Review(1L, "nice", "abc", 5, book, member);
+        now = LocalDate.now();
+        review = new Review(1L, "nice", "abc", 5, book, member, now);
         createReviewRequestDto = new CreateReviewRequestDto("good", 3, "abc", "ABC123", 1L);
         modifyReviewRequestDto = new ModifyReviewRequestDto(1L, "bad", 2, "abc", "ABC123", 1L);
-        reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", "ABC123", 1L);
+        reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", "ABC123", 1L, now);
     }
 
     @Test
@@ -133,7 +136,7 @@ class ReviewServiceTest {
     @Order(3)
     @DisplayName(value = "리뷰 전체 조회 성공")
     void getReviewsTest() {
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo());
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo(), now);
         Page<ReviewResponseDto> reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
 
         when(reviewRepository.findReviews(any())).thenReturn(reviewPage);
@@ -156,7 +159,7 @@ class ReviewServiceTest {
     @Order(4)
     @DisplayName(value = "리뷰 목록 조회 성공 (도서 고유 번호)")
     void getReviewsByBookIsbnTest() {
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo());
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo(), now);
         Page<ReviewResponseDto> reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
 
         when(reviewRepository.findReviewsByBookIsbn(anyString(), any())).thenReturn(reviewPage);
@@ -180,7 +183,7 @@ class ReviewServiceTest {
     @Order(5)
     @DisplayName(value = "리뷰 목록 조회 실패 (도서 고유 번호) - BookNotFound")
     void getReviewsByBookIsbnTest_BookNotFound() {
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo());
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo(), now);
         Page<ReviewResponseDto> reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
 
         when(reviewRepository.findReviewsByBookIsbn(anyString(), any())).thenReturn(reviewPage);
@@ -195,7 +198,7 @@ class ReviewServiceTest {
     @Order(6)
     @DisplayName(value = "리뷰 목록 조회 성공 (회원 번호)")
     void getReviewsByCustomerNoTest() {
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo());
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo(), now);
         Page<ReviewResponseDto> reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
 
         when(reviewRepository.findReviewsByCustomerNo(anyLong(), any())).thenReturn(reviewPage);
@@ -219,7 +222,7 @@ class ReviewServiceTest {
     @Order(7)
     @DisplayName(value = "리뷰 목록 조회 실패 (회원 번호) - BookNotFound")
     void getReviewsByCustomerNoTest_MemberNotFound() {
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo());
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(1L, "nice", 5, "abc", book.getBookIsbn(), member.getCustomerNo(), now);
         Page<ReviewResponseDto> reviewPage = new PageImpl<>(List.of(reviewResponseDto), pageable, 1);
 
         when(reviewRepository.findReviewsByBookIsbn(anyString(), any())).thenReturn(reviewPage);

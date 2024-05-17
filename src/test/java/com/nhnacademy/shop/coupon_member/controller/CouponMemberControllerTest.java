@@ -3,6 +3,7 @@ package com.nhnacademy.shop.coupon_member.controller;
 import com.nhnacademy.shop.config.RedisConfig;
 import com.nhnacademy.shop.coupon.exception.NotFoundCouponException;
 import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDto;
+import com.nhnacademy.shop.coupon_member.dto.response.CouponMemberResponseDtoList;
 import com.nhnacademy.shop.coupon_member.service.CouponMemberService;
 import com.nhnacademy.shop.member.exception.MemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +78,10 @@ class CouponMemberControllerTest {
         Long customerNo = 1L;
         Integer pageSize = 1;
         Integer offset = 10;
-        when(couponMemberService.getCouponMemberByMember(any(), any())).thenReturn(Collections.emptyList());
+        when(couponMemberService.getCouponMemberByMember(any(), any())).thenReturn(CouponMemberResponseDtoList.builder()
+                .couponMemberResponseDtoList(Collections.emptyList())
+                .maxPage(0)
+                .build());
 
         mockMvc.perform(get("/shop/coupon/member/{customerNo}?pageSize={pageSize}&offset={offset}", customerNo, pageSize, offset))
                 .andExpect(status().isOk())
